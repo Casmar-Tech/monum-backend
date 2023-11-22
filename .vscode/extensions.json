@@ -1,0 +1,33 @@
+{
+  "recommendations": [
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-complete-tag",
+    "formulahendry.auto-rename-tag",
+    "naumovs.color-highlight",
+    "ms-azuretools.vscode-docker",
+    "dbaeumer.vscode-eslint",
+    "tamasfe.even-better-toml",
+    "github.copilot",
+    "github.copilot-chat",
+    "eamodio.gitlens",
+    "jdinhlife.gruvbox",
+    "hashicorp.hcl",
+    "hashicorp.terraform",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "ms-vscode.makefile-tools",
+    "yzhang.markdown-all-in-one",
+    "johnpapa.vscode-peacock",
+    "esbenp.prettier-vscode",
+    "ms-python.vscode-pylance",
+    "ms-python.python",
+    "donjayamanne.python-environment-manager",
+    "ms-vscode-remote.remote-ssh",
+    "ms-vscode-remote.remote-ssh-edit",
+    "ms-vscode.remote-explorer",
+    "charliermarsh.ruff",
+    "emeraldwalk.runonsave",
+    "simonsiefke.svg-preview",
+    "vscode-icons-team.vscode-icons",
+    "redhat.vscode-yaml"
+  ]
+}
