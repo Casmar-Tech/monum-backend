@@ -4,6 +4,7 @@ services:
       context: .
       args:
         - NODE_ENV=development
+        - PORT=4000
     command: ["npm", "run", "dev"]
     ports:
       - "4000:4000"
@@ -15,11 +16,11 @@ services:
       - ~/.aws/monum/dev_config:/home/node/.aws/config:ro
     env_file: .env
     healthcheck:
-      disable: true  
+      disable: true
     depends_on:
       mongo:
         condition: service_healthy
-  
+
   mongo:
     image: mongo:6
     command: mongod --quiet --logpath /dev/null
@@ -32,7 +33,7 @@ services:
     volumes:
       - mongo_data:/data/db
     healthcheck:
-      test: "[ `echo 'db.runCommand(\"ping\").ok' | mongo localhost/test --quiet` ] && echo 0 || echo 1"
+      test: '[ `echo ''db.runCommand("ping").ok'' | mongo localhost/test --quiet` ] && echo 0 || echo 1'
       interval: 5s
       start_period: 10s
       timeout: 4s
