@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
-import "./connection.js";
+// import "./connection.js";
 import usersTypeDefs from "./users/infrastructure/graphql/schema.js";
 import usersResolvers from "./users/infrastructure/graphql/resolvers.js";
 import mediasTypeDefs from "./medias/infrastructure/graphql/schema.js";
