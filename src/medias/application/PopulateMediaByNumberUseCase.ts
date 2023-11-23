@@ -49,7 +49,7 @@ export default async function PopulateMediaByNumberUseCase({
           role: "user",
           content: `I want to populate my MongoDB database. This database must contain the most important themes or topics of a place of interest. This topic or theme must be developed in depth so that it can be read later and the audios will be between 3 and 5 minutes long. For this reason, I ask you to give me back a list of the ${number} most important topics or themes of the ${place.name} place of interest.
             The structure of the objects that make up my database is as follows:
-            { 
+            {
               "title": <string> (title of the theme or topic),
               "text": <string> (text between 400 and 600 words),
               "rating": <number> (random float between 0-5 with 2 decimal places, for example: 3.67),
@@ -82,7 +82,7 @@ export default async function PopulateMediaByNumberUseCase({
             OutputFormat: "mp3",
             OutputS3BucketName: `monum-polly`,
             OutputS3KeyPrefix: `${placeId}/${language}/${mediaModel._id.toString()}`,
-            VoiceId: voiceId,
+            VoiceId: voiceId || undefined,
             LanguageCode: language,
           });
           const response = await client.send(command);

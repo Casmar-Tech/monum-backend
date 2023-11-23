@@ -66,7 +66,7 @@ export default async function TranslateMediaUseCase({
       OutputFormat: "mp3",
       OutputS3BucketName: "monum-polly",
       OutputS3KeyPrefix: `${media.place._id}/${outputLanguage}/`,
-      VoiceId: voiceId,
+      VoiceId: voiceId || undefined,
       LanguageCode: outputLanguage,
     });
     const response = await client.send(command);

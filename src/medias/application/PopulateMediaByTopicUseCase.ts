@@ -56,7 +56,7 @@ export default async function PopulateMediaByTopicUseCase({
                 : ""
             }
             The structure of the object that make up my database is as follows:
-            { 
+            {
               "title": <string> (title of the theme or topic),
               "text": <string> (text between 400 and 600 words),
               "rating": <number> (random float between 0-5 with 2 decimal places, for example: 3.67),
@@ -81,7 +81,7 @@ export default async function PopulateMediaByTopicUseCase({
         OutputFormat: "mp3",
         OutputS3BucketName: `monum-polly`,
         OutputS3KeyPrefix: `${placeId}/${language}/${mediaModel._id.toString()}`,
-        VoiceId: voiceId,
+        VoiceId: voiceId || undefined,
         LanguageCode: language,
       });
       const response = await client.send(command);
