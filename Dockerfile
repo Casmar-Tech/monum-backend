@@ -44,4 +44,4 @@ EXPOSE $PORT 9229 9230
 # HEALTHCHECK --interval=10s CMD node healthcheck.js
 WORKDIR ${LAMBDA_TASK_ROOT}
 COPY --from=builder /opt/app/dist/* ./
-CMD ["node ./dist/index.js"]
+CMD ["node index.js"]
