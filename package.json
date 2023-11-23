@@ -7,7 +7,7 @@
   "scripts": {
     "compile": "npx tsc",
     "dev": "tsx watch --tsconfig ./tsconfig.json ./src/index.ts",
-    "prod": "npm run compile && node ./dist/index.js",
+    "prod": "node ./dist/index.js",
     "build": "npm i"
   },
   "keywords": [],

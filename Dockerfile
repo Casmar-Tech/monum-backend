@@ -23,4 +23,6 @@ COPY --chown=node:node ./src ./src
 HEALTHCHECK --interval=10s \
     CMD node healthcheck.js
 
+RUN npm run compile
+
 CMD [ "npm", "run", "prod" ]
