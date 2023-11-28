@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { MongoUserModel } from "../infrastructure/mongoModel/MongoUserModel.js";
 import { ApolloError } from "apollo-server-errors";
+import { isStrongPassword } from "./utils/utils.js";
 
 interface RegisterUserDTO {
   email: string;
@@ -20,7 +21,7 @@ export default async function RegisterUserUseCase({
   if (await MongoUserModel.findOne({ email })) {
     throw new ApolloError(
       `A user is already registered with the email ${email}`,
-      `USER_ALREADY_EXISTS`
+      `userAlreadyExists`
     );
   }
   // Create a username based in the email in case we dont have it
@@ -35,6 +36,12 @@ export default async function RegisterUserUseCase({
       }
     }
   }
+  if (isStrongPassword(password) === false) {
+    throw new ApolloError(
+      "The password must match the requirements",
+      "passwordNotStrong"
+    );
+  }
   //Encrypt password
   const encryptedPassword = await bcrypt.hash(password, 10);
   // Build out mongoose model (User)
@@ -42,7 +49,6 @@ export default async function RegisterUserUseCase({
     username,
     email: email.toLowerCase(),
     hashedPassword: encryptedPassword,
-    isTemporalPassword: false,
     createdAt: new Date(),
     language: language || "en_US",
   });

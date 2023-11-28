@@ -46,6 +46,7 @@ const typeDefs = gql`
     language: String
     name: String
     photo: String
+    hasPassword: Boolean
   }
 
   type Mutation {
@@ -53,6 +54,7 @@ const typeDefs = gql`
     loginUser(loginInput: LoginInput!): User
     loginGoogleUser(loginGoogleInput: LoginGoogleInput!): User
     updateUser(updateUserInput: UpdateUserInput!): User
+    updatePassword(oldPassword: String!, newPassword: String!): Boolean
     resetPassword(resetPasswordInput: ResetPasswordInput!): Boolean
   }
 

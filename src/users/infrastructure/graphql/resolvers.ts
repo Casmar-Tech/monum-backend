@@ -1,12 +1,13 @@
-import { MongoUserModel } from "../mongoModel/MongoUserModel.js";
 import LoginGoogleUserUseCase from "../../application/LoginGoogleUserUseCase.js";
 import LoginUserUseCase from "../../application/LoginUserUseCase.js";
 import RegisterUserUseCase from "../../application/RegisterUserUseCase.js";
 import UpdateUserUseCase from "../../application/UpdateUserUseCase.js";
+import UpdatePasswordUseCase from "../../application/UpdatePasswordUseCase.js";
 import GetUserByIdUseCase from "../../application/GetUserByIdUseCase.js";
 import ResetPasswordUseCase from "../../application/ResetPasswordUseCase.js";
 import { GraphQLScalarType, Kind } from "graphql";
 import { checkToken } from "../../../middleware/auth.js";
+import IUser from "../../domain/IUser.js";
 
 interface RegisterInput {
   registerInput: {
@@ -51,6 +52,9 @@ interface ResetPasswordInput {
 }
 
 const resolvers = {
+  User: {
+    hasPassword: (parent: IUser) => parent.hashedPassword !== undefined,
+  },
   Mutation: {
     registerUser: async (
       parent: any,
@@ -89,11 +93,26 @@ const resolvers = {
         language,
       });
     },
-    resetPassword: async (
+    updatePassword: async (
       parent: any,
       {
-        resetPasswordInput: { emailOrUsername },
-      }: ResetPasswordInput
+        oldPassword,
+        newPassword,
+      }: { oldPassword: string; newPassword: string },
+      { token }: { token: string }
+    ) => {
+      const user = checkToken(token);
+      return (
+        (await UpdatePasswordUseCase({
+          userId: user.id || "",
+          oldPassword,
+          newPassword,
+        })) && true
+      );
+    },
+    resetPassword: async (
+      parent: any,
+      { resetPasswordInput: { emailOrUsername } }: ResetPasswordInput
     ) => {
       return ResetPasswordUseCase({
         emailOrUsername,
