@@ -35,7 +35,7 @@ export default async function DeleteMediaAndUpdatedAssociatedRoutesUseCase(
       route.optimizedDistance = tripData.trips[0].distance;
       route.save();
     }
-    return await MongoMediaModel.findByIdAndRemove(id);
+    return await MongoMediaModel.findByIdAndRemove(id, { lean: true });
   } catch (error) {
     console.error(
       "Error while deleting Media and updating associated Routes",

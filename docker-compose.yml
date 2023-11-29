@@ -5,11 +5,10 @@ services:
       args:
         - NODE_ENV=development
         - PORT=4000
-    command: ["npm", "run", "dev"]
+    command: ["npm", "run", "dev"] # for debugging: dev -> deb:debug
     ports:
-      - "4000:4000"
-      - "9229:9229"
-      - "9230:9230"
+      - 4000:4000
+      - 9229:9229
     volumes:
       - ./src/:/opt/app/src
       - ~/.aws/monum/dev_credentials:/home/node/.aws/credentials:ro

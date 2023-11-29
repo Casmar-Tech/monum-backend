@@ -14,7 +14,7 @@ export default async function DeletePlaceAndAssociatedMediaUseCase(
     for (const media of mediasAssociated) {
       await DeleteMediaAndUpdatedAssociatedRoutesUseCase(media._id.toString());
     }
-    return await MongoPlaceModel.findByIdAndRemove(placeId);
+    return await MongoPlaceModel.findByIdAndRemove(placeId, { lean: true });
   } catch (error) {
     console.error("Error while deleting Place and associated Media", error);
     throw new ApolloError(

@@ -5,10 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "npm i",
     "compile": "npx tsc",
-    "dev": "tsx watch --tsconfig ./tsconfig.json ./src/index.ts",
-    "prod": "node ./dist/index.js",
-    "build": "npm i"
+    "dev": "npx nodemon ./src/index.ts",
+    "dev:debug": "npx nodemon --inspect=0.0.0.0:9229 --signal SIGINT --nolazy ./src/index.ts",
+    "prod": "node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -21,12 +22,20 @@
     "@aws-sdk/s3-request-presigner": "^3.418.0",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.0",
+    "@types/axios": "^0.14.0",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.13",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.1",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^20.4.2",
     "apollo-server-errors": "^3.3.1",
     "axios": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "deepl-node": "^1.10.2",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "graphql": "^16.7.1",
     "graphql-tag": "^2.12.6",
@@ -36,18 +45,19 @@
     "openai": "^3.3.0",
     "pexels": "^1.4.0",
     "sharp": "^0.32.6",
-    "typescript": "^5.1.6",
-    "@types/axios": "^0.14.0",
-    "@types/bcryptjs": "^2.4.2",
-    "@types/cors": "^2.8.13",
-    "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.17",
-    "@types/mongoose": "^5.11.97",
-    "@types/node": "^20.4.2",
-    "dotenv": "^16.3.1"
+    "typescript": "^5.1.6"
   },
   "devDependencies": {
-    "ts-node": "^10.9.1",
-    "tsx": "^3.12.10"
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "execMap": {
+      "ts": "node --require ts-node/register --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));'"
+    }
   }
 }

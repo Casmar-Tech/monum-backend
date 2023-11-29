@@ -9,21 +9,22 @@ interface ResetPasswordDTO {
 }
 
 export default async function ResetPasswordUseCase({
-  emailOrUsername, 
+  emailOrUsername,
 }: ResetPasswordDTO): Promise<Boolean | null> {
   // See if the user exists with the email
   const user = await MongoUserModel.findOne({
     $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
   });
-  if(!user){
+  if (!user) {
     throw new ApolloError("User not found", "USER_NOT_FOUND");
   }
-  
+
   // Send reset password email using SES
   const sesClient = new SESClient({ region: "eu-west-1" });
-  const toAddress = user.email
-  const fromAddress = "no-reply@monum.es"
-  const newTempPassword = crypto.randomBytes(12).toString('hex');
+  const toAddress = user.email;
+  console.log(toAddress);
+  const fromAddress = "no-reply@monum.es";
+  const newTempPassword = crypto.randomBytes(12).toString("hex");
   const newTempEncryptedPassword = await bcrypt.hash(newTempPassword, 10);
   user.hashedPassword = newTempEncryptedPassword;
   await MongoUserModel.findByIdAndUpdate(
@@ -76,28 +77,29 @@ export default async function ResetPasswordUseCase({
   </div>
 </body>
 </html>
-  `
+  `;
   try {
-    await sesClient.send(new SendEmailCommand({
-      Destination: {
-        CcAddresses: [],
-        ToAddresses: [toAddress],
-      },
-      Message: {
-        Body: {
-          Html: {
+    await sesClient.send(
+      new SendEmailCommand({
+        Destination: {
+          CcAddresses: [],
+          ToAddresses: [toAddress],
+        },
+        Message: {
+          Body: {
+            Html: {
+              Charset: "UTF-8",
+              Data: body,
+            },
+          },
+          Subject: {
             Charset: "UTF-8",
-            Data: body,
-          }
+            Data: "MONUM: Password reset request",
+          },
         },
-        Subject: {
-          Charset: "UTF-8",
-          Data: "MONUM: Password reset request",
-        },
-      },
-      Source: fromAddress,
-      ReplyToAddresses: [],
-    })
+        Source: fromAddress,
+        ReplyToAddresses: [],
+      })
     );
   } catch (e) {
     console.error(e);
