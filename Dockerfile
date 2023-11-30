@@ -1,4 +1,6 @@
-FROM node:20-slim
+# syntax=docker/dockerfile:1
+
+FROM node:20-bookworm-slim@sha256:18aacc7993a16f1d766c21e3bff922e830bcdc7b549bbb789ceb7374a6138480
 
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
@@ -6,6 +8,11 @@ ENV NODE_ENV $NODE_ENV
 ARG PORT=8080
 ENV PORT $PORT
 EXPOSE $PORT 9229
+
+RUN apt-get update -qq && apt-get install -qy \
+    tini \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN npm i npm@latest -g
 
@@ -25,4 +32,6 @@ HEALTHCHECK --interval=10s \
 
 RUN npm run compile
 
-CMD [ "npm", "run", "prod" ]
+ENTRYPOINT ["/usr/bin/tini", "--"]
+
+CMD [ "node", "./dist/index.js" ]

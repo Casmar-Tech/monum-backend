@@ -1,0 +1,5 @@
+.git
+Dockerfile
+compose.yaml
+node_modules
+dist
