@@ -16,6 +16,6 @@ export default async function GetPlacesUseCase(
     });
   }
   return await MongoPlaceModel.find({
-    name: { $regex: textSearch, $options: "i" },
+    name: { $regex: textSearch || "", $options: "i" },
   });
 }

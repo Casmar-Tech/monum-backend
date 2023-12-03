@@ -33,7 +33,7 @@ const typeDefs = gql`
 
   type Query {
     place(id: ID!): Place
-    places: [Place]
+    places(textSearch: String, centerCoordinates: [Float]): [Place]
     placeSearcherSuggestions(textSearch: String!): [String]
   }
 
