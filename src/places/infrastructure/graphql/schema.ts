@@ -34,6 +34,7 @@ const typeDefs = gql`
   type Query {
     place(id: ID!): Place
     places: [Place]
+    placeSearcherSuggestions(textSearch: String!): [String]
   }
 
   type Mutation {

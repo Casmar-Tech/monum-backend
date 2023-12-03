@@ -39,6 +39,6 @@ export default async function LoginUserUseCase({
     return user;
   } else {
     // If user doesn't exist or it was created by google (without password) or password is incorrect throw error
-    throw new ApolloError("Incorrect password", "INCORRECT_PASSWORD");
+    throw new ApolloError("Incorrect password", "incorrectPassword");
   }
 }
