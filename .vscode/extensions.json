@@ -28,6 +28,9 @@
     "emeraldwalk.runonsave",
     "simonsiefke.svg-preview",
     "vscode-icons-team.vscode-icons",
-    "redhat.vscode-yaml"
+    "redhat.vscode-yaml",
+    "kisstkondoros.vscode-gutter-preview",
+    "graphql.vscode-graphql",
+    "graphql.vscode-graphql-syntax"
   ]
 }

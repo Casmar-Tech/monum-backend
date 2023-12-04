@@ -36,7 +36,6 @@
 
   "javascript.updateImportsOnFileMove.enabled": "always",
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "debug.javascript.autoAttachFilter": "always",
 
   "emeraldwalk.runonsave": {
     "commands": [
