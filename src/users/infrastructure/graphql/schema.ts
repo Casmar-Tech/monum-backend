@@ -60,6 +60,7 @@ const typeDefs = gql`
 
   type Query {
     user(id: String!): User
+    verifyToken: Boolean
   }
 `;
 export default typeDefs;

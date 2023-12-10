@@ -126,8 +126,14 @@ const resolvers = {
       { token }: { token: string }
     ) => {
       // checkToken(token);
-      console.log("PONG USER");
       return GetUserByIdUseCase(args.id);
+    },
+    verifyToken: async (
+      parent: any,
+      args: any,
+      { token }: { token: string }
+    ) => {
+      return checkToken(token) ? true : false;
     },
   },
 
