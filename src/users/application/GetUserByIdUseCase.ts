@@ -15,16 +15,5 @@ export default async function GetUserByIdUseCase(
       },
     });
   }
-  if (user.photo) {
-    const client = new S3Client({ region: "eu-west-1" });
-    const commandToGet = new GetObjectCommand({
-      Bucket: process.env.S3_BUCKET_IMAGES!,
-      Key: user.id,
-    });
-    const url = await getSignedUrl(client, commandToGet, {
-      expiresIn: 3600 * 24,
-    }); // 1 day
-    user.photo = url;
-  }
   return user;
 }

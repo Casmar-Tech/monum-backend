@@ -56,17 +56,8 @@ export default async function LoginGoogleUserUseCase({
     user.token = token;
 
     // If the user has already a photo, we don't need to upload it again
-    if (user.photo) {
-      const client = new S3Client({ region: "eu-west-1" });
-      const commandToGet = new GetObjectCommand({
-        Bucket: process.env.S3_BUCKET_IMAGES!,
-        Key: user.id,
-      });
-      const url = await getSignedUrl(client, commandToGet, {
-        expiresIn: 3600 * 24,
-      }); // 1 day
-      user.photo = url;
-    } else if (photo) {
+    if (!user.photo && photo) {
+      console.log("photo", photo);
       // If the user doesn't have a photo, we need to upload it
       const image = await axios.get(photo, { responseType: "arraybuffer" });
       const imageResized = await sharp(image.data)
@@ -74,7 +65,9 @@ export default async function LoginGoogleUserUseCase({
           fit: "cover",
         })
         .toBuffer();
-      const client = new S3Client({ region: "eu-west-1" });
+      const client = new S3Client({
+        region: "eu-west-1",
+      });
       // Create a command to put a file into an S3 bucket.
       const commandToPut = new PutObjectCommand({
         Body: imageResized,
@@ -82,15 +75,7 @@ export default async function LoginGoogleUserUseCase({
         Key: user.id,
       });
       await client.send(commandToPut);
-      // Create a command to get a file into an S3 bucket and then create a signed URL.
-      const commandToGet = new GetObjectCommand({
-        Bucket: process.env.S3_BUCKET_IMAGES!,
-        Key: user.id,
-      });
-      const url = await getSignedUrl(client, commandToGet, {
-        expiresIn: 3600 * 24,
-      }); // 1 day
-      user.photo = url;
+      user.photo = `https://${process.env.S3_BUCKET_IMAGES}.s3.amazonaws.com/${user.id}`;
     }
     return user.save();
   } catch (error) {

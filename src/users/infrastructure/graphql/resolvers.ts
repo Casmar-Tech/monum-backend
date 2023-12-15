@@ -8,6 +8,8 @@ import ResetPasswordUseCase from "../../application/ResetPasswordUseCase.js";
 import { GraphQLScalarType, Kind } from "graphql";
 import { checkToken } from "../../../middleware/auth.js";
 import IUser from "../../domain/IUser.js";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 interface RegisterInput {
   registerInput: {
@@ -54,6 +56,24 @@ interface ResetPasswordInput {
 const resolvers = {
   User: {
     hasPassword: (parent: IUser) => parent.hashedPassword !== undefined,
+    photo: async (parent: IUser) => {
+      if (parent.photo) {
+        const client = new S3Client({
+          region: "eu-west-1",
+        });
+
+        const commandToGet = new GetObjectCommand({
+          Bucket: process.env.S3_BUCKET_IMAGES!,
+          Key: parent.id,
+        });
+        const url = await getSignedUrl(client, commandToGet, {
+          expiresIn: 3600 * 24,
+        }); // 1 day
+        console.log("url", url);
+        return url;
+      }
+      return null;
+    },
   },
   Mutation: {
     registerUser: async (
@@ -125,6 +145,7 @@ const resolvers = {
       args: { id: string },
       { token }: { token: string }
     ) => {
+      console.log("user", args.id);
       // checkToken(token);
       return GetUserByIdUseCase(args.id);
     },
