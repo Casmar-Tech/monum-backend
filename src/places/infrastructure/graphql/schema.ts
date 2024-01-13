@@ -1,5 +1,15 @@
 import gql from "graphql-tag";
 const typeDefs = gql`
+  enum SortField {
+    rating
+    importance
+    name
+  }
+  enum SortOrder {
+    asc
+    desc
+  }
+
   type Coordinates {
     lat: Float!
     lng: Float!
@@ -33,7 +43,12 @@ const typeDefs = gql`
 
   type Query {
     place(id: ID!): Place
-    places(textSearch: String, centerCoordinates: [Float]): [Place]
+    places(
+      textSearch: String
+      centerCoordinates: [Float]
+      sortField: SortField
+      sortOrder: SortOrdero
+    ): [Place]
     placeSearcherSuggestions(textSearch: String!): [String]
   }
 

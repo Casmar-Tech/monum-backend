@@ -13,7 +13,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 interface RegisterInput {
   registerInput: {
-    username: string;
+    username?: string;
     email: string;
     password: string;
     language?: string;

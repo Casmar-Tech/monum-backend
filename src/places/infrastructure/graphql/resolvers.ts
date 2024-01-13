@@ -5,6 +5,7 @@ import GetPlaceByIdUseCase from "../../application/GetPlaceByIdUseCase.js";
 import GetPlacesUseCase from "../../application/GetPlacesUseCase.js";
 import DeletePlaceAndAssociatedMediaUseCase from "../../application/DeletePlaceAndAssociatedMediaUseCase.js";
 import UpdatePlaceAndAssociatedMediaUseCase from "../../application/UpdatePlaceAndAssociatedMediaUseCase.js";
+import { SortField, SortOrder } from "../../domain/types/SortTypes.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { ApolloError } from "apollo-server-errors";
 import { MongoPlaceSearchesModel } from "../../infrastructure/mongoModel/MongoPlaceSearchesModel.js";
@@ -22,7 +23,12 @@ const resolvers = {
     },
     places: (
       _: any,
-      args: { textSearch: string; centerCoordinates?: [number, number] },
+      args: {
+        textSearch: string;
+        centerCoordinates?: [number, number];
+        sortField?: SortField;
+        sortOrder?: SortOrder;
+      },
       { token }: { token: string }
     ) => {
       checkToken(token);
@@ -31,7 +37,12 @@ const resolvers = {
           "centerCoordinates must have exactly two elements."
         );
       }
-      return GetPlacesUseCase(args.textSearch, args.centerCoordinates);
+      return GetPlacesUseCase(
+        args.textSearch,
+        args.centerCoordinates,
+        args.sortField,
+        args.sortOrder
+      );
     },
     placeSearcherSuggestions: async (
       _: any,
