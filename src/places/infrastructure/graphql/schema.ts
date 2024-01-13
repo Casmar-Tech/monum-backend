@@ -47,7 +47,7 @@ const typeDefs = gql`
       textSearch: String
       centerCoordinates: [Float]
       sortField: SortField
-      sortOrder: SortOrdero
+      sortOrder: SortOrder
     ): [Place]
     placeSearcherSuggestions(textSearch: String!): [String]
   }
