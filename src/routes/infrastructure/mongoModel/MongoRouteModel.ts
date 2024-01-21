@@ -10,8 +10,17 @@ const StopSchema = new Schema<IStop>({
 });
 
 const RouteSchema = new Schema<IRoute>({
-  title: { type: String, required: true, unique: true },
-  description: { type: String, required: true },
+  title: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  titleTranslations: {
+    type: Map,
+    of: String,
+    required: true,
+  },
+  description: { type: Map, of: String, required: true },
   rating: { type: Number },
   stops: [{ type: StopSchema, required: true }],
   duration: { type: Number, required: true },
@@ -19,7 +28,6 @@ const RouteSchema = new Schema<IRoute>({
   distance: { type: Number, required: true },
   optimizedDistance: { type: Number, required: true },
   cityId: { type: Schema.Types.ObjectId, ref: "cities" },
-  language: { type: String, required: true },
 });
 
-export const MongoRouteModel = model("routes", RouteSchema);
+export const MongoRouteModel = model("routesNew", RouteSchema);

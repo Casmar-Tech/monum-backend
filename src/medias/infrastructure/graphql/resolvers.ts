@@ -5,7 +5,7 @@ import PopulateMediaByNumberUseCase from "../../application/PopulateMediaByNumbe
 import PopulateMediaByTopicUseCase from "../../application/PopulateMediaByTopicUseCase.js";
 import TranslateMediaUseCase from "../../application/TranslateMediaUseCase.js";
 import UpdateMediaAndAssociatedRoutesUseCase from "../../application/UpdateMediaAndAssociatedRoutesUseCase.js";
-import IMedia from "../../domain/IMedia";
+import { IMedia } from "../../domain/IMedia";
 import { checkToken } from "../../../middleware/auth.js";
 
 const resolvers = {
@@ -73,15 +73,16 @@ const resolvers = {
       { id }: { id: string },
       { token }: { token: string }
     ) => {
-      checkToken(token);
-      return GetMediaByIdUseCase(id);
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      return GetMediaByIdUseCase(id, userId);
     },
     medias: async (
       parent: any,
       args: { placeId: string; language: string },
       { token }: { token: string }
     ) => {
-      checkToken(token);
+      const user = checkToken(token);
       return GetMediasByPlaceIdUseCase(args.placeId, args.language);
     },
   },

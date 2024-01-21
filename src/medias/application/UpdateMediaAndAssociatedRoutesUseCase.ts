@@ -1,6 +1,6 @@
 import { MongoRouteModel } from "../../routes/infrastructure/mongoModel/MongoRouteModel.js";
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
-import IMedia from "../domain/IMedia.js";
+import { IMedia } from "../domain/IMedia.js";
 import { getTrip } from "../../routes/infrastructure/osrm/GetTrip.js";
 import { getRoute } from "../../routes/infrastructure/osrm/GetRoute.js";
 

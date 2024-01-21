@@ -2,7 +2,10 @@ import { Configuration, OpenAIApi } from "openai";
 import { Photo as PexelsPhoto, createClient } from "pexels";
 import PopulateMediaUseCase from "../../medias/application/PopulateMediaByNumberUseCase.js";
 import Photo from "../domain/valueObjects/Photo.js";
-import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
+import {
+  MongoPlaceModel,
+  createPlaceFromSimplePlace,
+} from "../infrastructure/mongoModel/MongoPlaceModel.js";
 
 interface PopulatePlaceByNameDTO {
   name: string; // Name of the place of interest I want to add
@@ -66,7 +69,7 @@ export default async function PopulatePlaceByNameUseCase({
           })
       );
     }
-    const placeCreated = await MongoPlaceModel.create(place);
+    const placeCreated = await createPlaceFromSimplePlace(place, "en_US");
     if (placeCreated._id && addMedia) {
       await PopulateMediaUseCase({
         placeId: placeCreated._id.toString(),
@@ -74,7 +77,7 @@ export default async function PopulatePlaceByNameUseCase({
         language: "en-US",
       });
     }
-    return placeCreated;
+    return placeCreated.getSimplifiedVersion("en_US");
   } catch (error) {
     console.log("Error", error);
     throw error;

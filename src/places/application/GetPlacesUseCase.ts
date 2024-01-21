@@ -1,14 +1,17 @@
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoPlaceSearchesModel } from "../infrastructure/mongoModel/MongoPlaceSearchesModel.js";
-import IPlace from "../domain/interfaces/IPlace.js";
+import { IPlaceSimplified } from "../domain/interfaces/IPlace.js";
 import { SortField, SortOrder } from "../domain/types/SortTypes.js";
+import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 
 export default async function GetPlacesUseCase(
+  userId: string,
   textSearch?: string,
   centerCoordinates?: [number, number],
   sortField?: SortField,
   sortOrder?: SortOrder
-): Promise<IPlace[]> {
+): Promise<IPlaceSimplified[]> {
+  const user = await GetUserByIdUseCase(userId);
   if (centerCoordinates && textSearch && textSearch !== "") {
     await MongoPlaceSearchesModel.create({
       centerCoordinates: {
@@ -19,15 +22,10 @@ export default async function GetPlacesUseCase(
     });
   }
   if (sortField) {
-    if (sortOrder === "asc") {
-      return await MongoPlaceModel.find({
-        name: { $regex: textSearch || "", $options: "i" },
-      }).sort({ [sortField]: 1 });
-    } else {
-      return await MongoPlaceModel.find({
-        name: { $regex: textSearch || "", $options: "i" },
-      }).sort({ [sortField]: -1 });
-    }
+    const places = await MongoPlaceModel.find({
+      name: { $regex: textSearch || "", $options: "i" },
+    }).sort({ [sortField]: sortOrder === "asc" ? 1 : -1 });
+    return places.map((place) => place.getSimplifiedVersion(user.language));
   }
   return await MongoPlaceModel.find({
     name: { $regex: textSearch || "", $options: "i" },

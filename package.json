@@ -5,10 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "npm i",
     "compile": "npx tsc",
-    "dev": "npx nodemon ./src/index.ts",
-    "dev:debug": "npx nodemon --inspect=0.0.0.0:9229 --signal SIGINT --nolazy ./src/index.ts"
+    "dev": "tsx watch --tsconfig ./tsconfig.json ./src/index.ts",
+    "start": "npm run compile && nodemon ./dist/index.js",
+    "start:prod": "npm run compile && node ./dist/index.js",
+    "build": "npm i"
   },
   "keywords": [],
   "author": "",

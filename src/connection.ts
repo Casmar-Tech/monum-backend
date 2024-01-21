@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://test:test@mongo:27017/");
+mongoose.connect(
+  "mongodb+srv://dev_user:tdiUZc9xGN7xg29oC2ZoEM6zeribZ3@monum-main.oiejfnj.mongodb.net/"
+);
 
 const connection = mongoose.connection;
 

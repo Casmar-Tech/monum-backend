@@ -109,7 +109,9 @@ export default async function PopulateRoutesUseCase({
                 });
                 const mediaSelectedJSON =
                   mediaSelectedString.data.choices[0].message?.content || "";
-                return medias.find((pM) => pM.title === mediaSelectedJSON);
+                return medias.find(
+                  (pM) => pM.title["en-US"] === mediaSelectedJSON
+                );
               } catch (error) {
                 console.log(error);
               }
@@ -139,7 +141,7 @@ export default async function PopulateRoutesUseCase({
             };
           });
           const cities = stops
-            .map((stop) => stop?.media?.place.address.city)
+            .map((stop) => stop?.media?.place.address.city["en-US"])
             .reduce<{ [key: string]: number }>((acc, str) => {
               acc[str || ""] = (acc[str || ""] || 0) + 1;
               return acc;
@@ -159,7 +161,12 @@ export default async function PopulateRoutesUseCase({
 
           return MongoRouteModel.create({
             title: route.title,
-            description: route.description,
+            titleTranslations: {
+              "en-US": route.title,
+            },
+            description: {
+              "en-US": route.description,
+            },
             stops,
             rating: route.rating,
             duration: routeData.routes[0].duration,
@@ -167,7 +174,6 @@ export default async function PopulateRoutesUseCase({
             distance: routeData.routes[0].distance,
             optimizedDistance: tripData.trips[0].distance,
             cityId: city ? city._id : newCity?._id,
-            language: "en-US",
           });
         }
       })

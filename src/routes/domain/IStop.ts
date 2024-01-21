@@ -1,4 +1,4 @@
-import IMedia from "../../medias/domain/IMedia.js";
+import { IMedia } from "../../medias/domain/IMedia.js";
 
 export default interface IStop {
   order: number;

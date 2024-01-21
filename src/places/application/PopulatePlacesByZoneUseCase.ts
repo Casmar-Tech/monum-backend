@@ -1,9 +1,9 @@
 import { Configuration, OpenAIApi } from "openai";
 import { Photo as PexelsPhoto, createClient } from "pexels";
 import Photo from "../domain/valueObjects/Photo.js";
-import IPlace from "../domain/interfaces/IPlace.js";
+import { IPlaceSimplified } from "../domain/interfaces/IPlace.js";
 import PopulateMediaUseCase from "../../medias/application/PopulateMediaByNumberUseCase.js";
-import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
+import { createPlaceFromSimplePlace } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import { ApolloError } from "apollo-server-errors";
 
 interface PopulatePlacesByZoneDTO {
@@ -62,7 +62,7 @@ export default async function PopulatePlacesByZoneUseCase({
       );
     }
     return await Promise.all(
-      placesJSON.map(async (place: IPlace) => {
+      placesJSON.map(async (place: IPlaceSimplified) => {
         const photos: any = await pexelsClient.photos.search({
           query: place.name,
           per_page: 5,
@@ -78,7 +78,7 @@ export default async function PopulatePlacesByZoneUseCase({
               })
           );
         }
-        const placeCreated = await MongoPlaceModel.create(place);
+        const placeCreated = await createPlaceFromSimplePlace(place, "en_US");
         if (placeCreated._id && addMedia) {
           await PopulateMediaUseCase({
             placeId: placeCreated._id.toString(),

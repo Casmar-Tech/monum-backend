@@ -1,4 +1,4 @@
-import IPlace from "../../domain/interfaces/IPlace.js";
+import { IPlace, IPlaceSimplified } from "../../domain/interfaces/IPlace.js";
 import PopulatePlacesByZoneUseCase from "../../application/PopulatePlacesByZoneUseCase.js";
 import PopulatePlacesByNameUseCase from "../../application/PopulatePlaceByNameUseCase.js";
 import GetPlaceByIdUseCase from "../../application/GetPlaceByIdUseCase.js";
@@ -13,13 +13,16 @@ import { MongoPlaceSearchesModel } from "../../infrastructure/mongoModel/MongoPl
 const resolvers = {
   Place: {
     // Resolver para el campo imagesUrl
-    imagesUrl: (parent: IPlace) => parent.photos?.map((photo) => photo.url),
-    importance: (parent: IPlace) => Math.floor(parent.importance / 2) || 0,
+    imagesUrl: (parent: IPlaceSimplified) =>
+      parent.photos?.map((photo) => photo.url),
+    importance: (parent: IPlaceSimplified) =>
+      Math.floor(parent.importance / 2) || 0,
   },
   Query: {
     place: (_: any, args: { id: string }, { token }: { token: string }) => {
-      checkToken(token);
-      return GetPlaceByIdUseCase(args.id);
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return GetPlaceByIdUseCase(args.id, userId);
     },
     places: (
       _: any,
@@ -31,13 +34,15 @@ const resolvers = {
       },
       { token }: { token: string }
     ) => {
-      checkToken(token);
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
       if (args.centerCoordinates && args.centerCoordinates.length !== 2) {
         throw new ApolloError(
           "centerCoordinates must have exactly two elements."
         );
       }
       return GetPlacesUseCase(
+        userId,
         args.textSearch,
         args.centerCoordinates,
         args.sortField,
@@ -98,8 +103,13 @@ const resolvers = {
       args: { id: string; placeUpdate: Partial<IPlace> },
       { token }: { token: string }
     ) => {
-      checkToken(token);
-      return UpdatePlaceAndAssociatedMediaUseCase(args.id, args.placeUpdate);
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return UpdatePlaceAndAssociatedMediaUseCase(
+        userId,
+        args.id,
+        args.placeUpdate
+      );
     },
     deletePlace: (
       parent: any,

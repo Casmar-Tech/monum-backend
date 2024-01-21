@@ -56,7 +56,7 @@ const typeDefs = gql`
     populatePlaceByZone(zone: String!, number: Int): [Place]
     populatePlaceByName(name: String!, addMedia: Boolean): Place
     updatePlace(id: ID!, placeUpdate: UpdatePlaceInput!): Place
-    deletePlace(id: ID!): Place
+    deletePlace(id: ID!): Boolean
   }
 
   input CoordinatesInput {
