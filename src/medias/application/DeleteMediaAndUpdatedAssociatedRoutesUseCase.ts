@@ -7,7 +7,7 @@ import { getRoute } from "../../routes/infrastructure/osrm/GetRoute.js";
 
 export default async function DeleteMediaAndUpdatedAssociatedRoutesUseCase(
   id: string
-): Promise<IMedia | null> {
+): Promise<boolean> {
   try {
     const routesToUpdate = await MongoRouteModel.find({
       "stops.media._id": id,
@@ -35,7 +35,8 @@ export default async function DeleteMediaAndUpdatedAssociatedRoutesUseCase(
       route.optimizedDistance = tripData.trips[0].distance;
       route.save();
     }
-    return await MongoMediaModel.findByIdAndRemove(id, { lean: true });
+    await MongoMediaModel.findByIdAndRemove(id, { lean: true });
+    return true;
   } catch (error) {
     console.error(
       "Error while deleting Media and updating associated Routes",

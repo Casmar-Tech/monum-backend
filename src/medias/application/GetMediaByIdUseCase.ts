@@ -1,5 +1,5 @@
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
-import { IMedia } from "../domain/IMedia.js";
+import { IMediaSimplified } from "../domain/IMedia.js";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { GraphQLError } from "graphql";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -8,10 +8,8 @@ import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 export default async function GetMediaByIdUseCase(
   id: string,
   userId: string
-): Promise<IMedia | null> {
+): Promise<IMediaSimplified> {
   const media = await MongoMediaModel.findById(id);
-  const medias = await MongoMediaModel.find();
-  console.log(medias);
   const user = await GetUserByIdUseCase(userId);
   if (!media) {
     throw new GraphQLError("Media not found", {
@@ -35,5 +33,5 @@ export default async function GetMediaByIdUseCase(
     expiresIn: 3600,
   }); // 1 hour
   media.audioUrl[user.language] = url;
-  return media;
+  return media.getSimplifiedVersion(user.language);
 }

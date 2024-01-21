@@ -12,5 +12,5 @@ export default async function GetPlaceByIdUseCase(
   if (!place) {
     throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
   }
-  return place?.getSimplifiedVersion(user.language);
+  return place.getSimplifiedVersion(user.language);
 }

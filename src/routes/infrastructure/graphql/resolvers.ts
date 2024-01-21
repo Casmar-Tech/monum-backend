@@ -3,7 +3,7 @@ import GetRouteByIdUseCase from "../../application/GetRouteByIdUseCase.js";
 import AddExistingMediaToRouteUseCase from "../../application/AddExistingMediaToRouteUseCase.js";
 import GetRoutesByFiltersUseCase from "../../application/GetRoutesByFiltersUseCase.js";
 import { checkToken } from "../../../middleware/auth.js";
-import IRoute from "../../domain/IRoute.js";
+import { IRoute } from "../../domain/IRoute.js";
 
 const resolvers = {
   Route: {

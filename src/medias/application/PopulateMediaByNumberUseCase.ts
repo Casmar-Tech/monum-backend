@@ -6,8 +6,12 @@ import {
   LanguageCode,
 } from "@aws-sdk/client-polly"; // ES Modules import
 import { MongoPlaceModel } from "../../places/infrastructure/mongoModel/MongoPlaceModel.js";
-import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
+import {
+  MongoMediaModel,
+  createMediaFromSimpleMedia,
+} from "../infrastructure/mongoModel/MongoMediaModel.js";
 import { ApolloError } from "apollo-server-errors";
+import { IMediaSimplified } from "../domain/IMedia.js";
 
 interface PopulateMediaByNumberDTO {
   placeId: string; // Normally will be the city
@@ -68,17 +72,15 @@ export default async function PopulateMediaByNumberUseCase({
       );
     }
     return await Promise.all(
-      mediaJSON.map(async (media) => {
+      mediaJSON.map(async (media: IMediaSimplified) => {
         try {
-          const mediaModel = new MongoMediaModel({
-            ...media,
-            language,
-            place,
-            voiceId,
-          });
+          const mediaModel = await createMediaFromSimpleMedia(
+            { ...media, place, voiceId },
+            'en_US"'
+          );
           const command = new StartSpeechSynthesisTaskCommand({
             Engine: "neural",
-            Text: mediaModel?.text || "",
+            Text: mediaModel?.text["en_US"] || "",
             OutputFormat: "mp3",
             OutputS3BucketName: `monum-polly`,
             OutputS3KeyPrefix: `${placeId}/${language}/${mediaModel._id.toString()}`,
@@ -87,7 +89,7 @@ export default async function PopulateMediaByNumberUseCase({
           });
           const response = await client.send(command);
           if (response?.SynthesisTask?.OutputUri) {
-            mediaModel.audioUrl = response?.SynthesisTask?.OutputUri;
+            mediaModel.audioUrl["en_US"] = response?.SynthesisTask?.OutputUri;
             return mediaModel.save();
           } else {
             throw new ApolloError(

@@ -23,6 +23,7 @@ export interface IMedia {
 export interface IMediaSimplified {
   _id?: Types.ObjectId;
   id?: Types.ObjectId;
+  place: IPlace;
   title: string;
   text: string;
   rating: number;

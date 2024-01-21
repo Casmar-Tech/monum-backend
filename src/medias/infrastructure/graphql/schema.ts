@@ -42,7 +42,7 @@ const typeDefs = gql`
     ): Media
     translateMedia(mediaId: ID!, outputLanguage: Language!): Media
     updateMedia(id: ID!, mediaUpdate: UpdateMediaInput!): Media
-    deleteMedia(id: ID!): Media
+    deleteMedia(id: ID!): Boolean
   }
 
   type Query {

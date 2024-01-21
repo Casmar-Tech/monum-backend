@@ -42,6 +42,7 @@ MediaSchema.method(
 
     return {
       id: this.id,
+      place: this.place,
       title: getTranslation(this.title),
       text: getTranslation(this.text),
       rating: this.rating,

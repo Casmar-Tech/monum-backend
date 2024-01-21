@@ -86,7 +86,7 @@ export default async function PopulateMediaByTopicUseCase({
       });
       const response = await client.send(command);
       if (response?.SynthesisTask?.OutputUri) {
-        mediaModel.audioUrl = response?.SynthesisTask?.OutputUri;
+        mediaModel.audioUrl["en_US"] = response?.SynthesisTask?.OutputUri;
         return mediaModel.save();
       } else {
         throw new ApolloError(

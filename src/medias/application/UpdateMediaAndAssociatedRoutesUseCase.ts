@@ -3,11 +3,12 @@ import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js
 import { IMedia } from "../domain/IMedia.js";
 import { getTrip } from "../../routes/infrastructure/osrm/GetTrip.js";
 import { getRoute } from "../../routes/infrastructure/osrm/GetRoute.js";
+import { ApolloError } from "apollo-server-errors";
 
 export default async function UpdateMediaAndAssociatedRoutesUseCase(
   id: string,
   mediaUpdate: Partial<IMedia>
-): Promise<IMedia | null> {
+): Promise<IMedia> {
   const mediaUpdated = await MongoMediaModel.findByIdAndUpdate(
     id,
     mediaUpdate,
@@ -43,6 +44,7 @@ export default async function UpdateMediaAndAssociatedRoutesUseCase(
         route.save();
       }
     }
+    return mediaUpdated;
   }
-  return mediaUpdated;
+  throw new ApolloError("Media not found", "MEDIA_NOT_FOUND");
 }

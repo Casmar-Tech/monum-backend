@@ -42,12 +42,12 @@ export default async function TranslateMediaUseCase({
       region: "eu-west-1",
     });
     const { text: newTitle } = await translator.translateText(
-      media.title,
+      media.title["en-US"],
       null,
       outputLanguageDeepl
     );
     const { text: newText } = await translator.translateText(
-      media.text,
+      media.text["en-US"],
       null,
       outputLanguageDeepl
     );
@@ -70,14 +70,24 @@ export default async function TranslateMediaUseCase({
       LanguageCode: outputLanguage,
     });
     const response = await client.send(command);
-    return MongoMediaModel.create({
-      rating: media.rating,
-      place: media.place,
-      audioUrl: response.SynthesisTask?.OutputUri || "",
-      language: outputLanguage,
-      text: newText,
-      title: newTitle,
-      voiceId,
+    const audioUrl = response.SynthesisTask?.OutputUri || "";
+    return MongoMediaModel.findByIdAndUpdate(id, {
+      title: {
+        ...media.title,
+        [outputLanguage]: newTitle,
+      },
+      text: {
+        ...media.text,
+        [outputLanguage]: newText,
+      },
+      audioUrl: {
+        ...media.audioUrl,
+        [outputLanguage]: audioUrl,
+      },
+      voiceId: {
+        ...media.voiceId,
+        [outputLanguage]: voiceId,
+      },
     });
   } catch (error) {
     console.log("Error", error);
