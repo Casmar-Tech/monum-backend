@@ -17,11 +17,11 @@ const StopSchema = new Schema<IStop>({
 
 const RouteSchema = new Schema<IRoute, RouteModel, IRouteMethods>({
 	title: {
-		type: Map,
+		type: Object,
 		of: String,
 		required: true,
 	},
-	description: { type: Map, of: String, required: true },
+	description: { type: Object, of: String, required: true },
 	rating: { type: Number },
 	stops: [{ type: StopSchema, required: true }],
 	duration: { type: Number, required: true },

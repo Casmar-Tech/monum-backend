@@ -45,11 +45,12 @@
     "openai": "^3.3.0",
     "pexels": "^1.4.0",
     "sharp": "^0.32.6",
+    "tsx": "^4.7.0",
     "typescript": "^5.1.6"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.2"
   },
   "nodemonConfig": {
     "watch": [
