@@ -1,6 +1,6 @@
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoPlaceSearchesModel } from "../infrastructure/mongoModel/MongoPlaceSearchesModel.js";
-import { IPlaceSimplified } from "../domain/interfaces/IPlace.js";
+import { IPlaceTranslated } from "../domain/interfaces/IPlace.js";
 import { SortField, SortOrder } from "../domain/types/SortTypes.js";
 import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 
@@ -10,7 +10,7 @@ export default async function GetPlacesUseCase(
   centerCoordinates?: [number, number],
   sortField?: SortField,
   sortOrder?: SortOrder
-): Promise<IPlaceSimplified[]> {
+): Promise<IPlaceTranslated[]> {
   const user = await GetUserByIdUseCase(userId);
   if (centerCoordinates && textSearch && textSearch !== "") {
     await MongoPlaceSearchesModel.create({
@@ -25,7 +25,7 @@ export default async function GetPlacesUseCase(
     const places = await MongoPlaceModel.find({
       name: { $regex: textSearch || "", $options: "i" },
     }).sort({ [sortField]: sortOrder === "asc" ? 1 : -1 });
-    return places.map((place) => place.getSimplifiedVersion(user.language));
+    return places.map((place) => place.getTranslatedVersion(user.language));
   }
   return await MongoPlaceModel.find({
     name: { $regex: textSearch || "", $options: "i" },

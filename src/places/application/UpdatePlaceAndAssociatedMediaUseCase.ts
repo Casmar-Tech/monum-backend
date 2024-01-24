@@ -1,4 +1,4 @@
-import { IPlace, IPlaceSimplified } from "../domain/interfaces/IPlace.js";
+import { IPlace, IPlaceTranslated } from "../domain/interfaces/IPlace.js";
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoMediaModel } from "../../medias/infrastructure/mongoModel/MongoMediaModel.js";
 import UpdateMediaAndAssociatedRoutesUseCase from "../../medias/application/UpdateMediaAndAssociatedRoutesUseCase.js";
@@ -9,7 +9,7 @@ export default async function UpdatePlaceAndAssociatedMediaUseCase(
   userId: string,
   placeId: string,
   placeUpdate: Partial<IPlace>
-): Promise<IPlaceSimplified> {
+): Promise<IPlaceTranslated> {
   const user = await GetUserByIdUseCase(userId);
   const placeUpdated = await MongoPlaceModel.findByIdAndUpdate(
     placeId,

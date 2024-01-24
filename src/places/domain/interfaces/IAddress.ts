@@ -18,14 +18,10 @@ export interface IAddress {
   };
 }
 
-export interface IAddressSimplified {
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+export interface IAddressTranslated
+  extends Omit<IAddress, "street" | "city" | "province" | "country"> {
   street?: string;
   city: string;
-  postalCode?: string;
   province?: string;
   country: string;
 }
