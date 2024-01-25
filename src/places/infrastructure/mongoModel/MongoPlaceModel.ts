@@ -57,16 +57,23 @@ export const PlaceSchema = new Schema<IPlace>({
 	internationalPhoneNumber: { type: String },
 	nationalPhoneNumber: { type: String },
 	types: { type: [String], required: true },
-	primaryType: { type: String, required: true },
+	primaryType: { type: String },
 	userRatingCount: { type: Number },
 	websiteUri: { type: String },
 });
 
 PlaceSchema.method(
-	'getSimplifiedVersion',
+	'getTranslatedVersion',
 	function (language: string): IPlaceTranslated {
-		const getTranslation = (translations: { [key: string]: string }) =>
-			translations[language] || '';
+		const getTranslation = (translations: { [key: string]: string }) => {
+			// Try to get the translation for the language
+			if (translations[language]) {
+				return translations[language];
+			}
+			// If the translation for the language is not available, get the first one
+			const anyTranslation = Object.values(translations)[0] || '';
+			return anyTranslation;
+		};
 
 		return {
 			...this,
@@ -91,6 +98,13 @@ export async function createPlaceFromTranslatedPlace(
 	place: IPlaceTranslated,
 	language: string,
 ) {
+	// Verify if the place already exists
+	const existingPlace = await MongoPlaceModel.findOne({ name: place.name });
+
+	if (existingPlace) {
+		// If the place already exists, update the translations
+		return existingPlace;
+	}
 	return await MongoPlaceModel.create({
 		...place,
 		name: place.name,

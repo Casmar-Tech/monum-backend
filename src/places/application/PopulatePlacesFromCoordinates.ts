@@ -41,37 +41,41 @@ const ORIGINAL_PHOTO_MAX_WIDTH_PX = 4800;
 
 async function getPhotoWithSizes(photoName: string): Promise<void> {
 	for (const size of ['small', 'medium', 'large', 'original']) {
-		let height = 0;
-		let width = 0;
-		switch (size) {
-			case 'small':
-				height = SMALL_PHOTO_MAX_HEIGHT_PX;
-				width = SMALL_PHOTO_MAX_WIDTH_PX;
-				break;
-			case 'medium':
-				height = MEDIUM_PHOTO_MAX_HEIGHT_PX;
-				width = MEDIUM_PHOTO_MAX_WIDTH_PX;
-				break;
-			case 'large':
-				height = LARGE_PHOTO_MAX_HEIGHT_PX;
-				width = LARGE_PHOTO_MAX_WIDTH_PX;
-				break;
-			case 'original':
-				height = ORIGINAL_PHOTO_MAX_HEIGHT_PX;
-				width = ORIGINAL_PHOTO_MAX_WIDTH_PX;
-				break;
+		try {
+			let height = 0;
+			let width = 0;
+			switch (size) {
+				case 'small':
+					height = SMALL_PHOTO_MAX_HEIGHT_PX;
+					width = SMALL_PHOTO_MAX_WIDTH_PX;
+					break;
+				case 'medium':
+					height = MEDIUM_PHOTO_MAX_HEIGHT_PX;
+					width = MEDIUM_PHOTO_MAX_WIDTH_PX;
+					break;
+				case 'large':
+					height = LARGE_PHOTO_MAX_HEIGHT_PX;
+					width = LARGE_PHOTO_MAX_WIDTH_PX;
+					break;
+				case 'original':
+					height = ORIGINAL_PHOTO_MAX_HEIGHT_PX;
+					width = ORIGINAL_PHOTO_MAX_WIDTH_PX;
+					break;
+			}
+			const url = `https://places.googleapis.com/v1/${photoName}/media?maxHeightPx=${height}&maxWidthPx=${width}&key=${apiKey}`;
+			const response = await fetch(url);
+			const buffer = await response.arrayBuffer();
+			await addPhotosToS3(photoName, buffer, size);
+		} catch (error) {
+			console.log(error);
 		}
-		const url = `https://places.googleapis.com/v1/${photoName}/media?maxHeightPx=${height}&maxWidthPx=${width}&key=${apiKey}`;
-		const response = await fetch(url);
-		const buffer = await response.arrayBuffer();
-		await addPhotosToS3(photoName, buffer, size);
 	}
 }
 
 async function searchInCircle(center: [number, number], radius: number) {
 	const data = {
 		includedTypes,
-		maxResultCount: 1,
+		maxResultCount: 20,
 		locationRestriction: {
 			circle: {
 				center: {
@@ -122,112 +126,139 @@ async function main(
 				coordinates[1] + offsetLng,
 			] as [number, number];
 
-			// Llamar a la función de búsqueda para este círculo pequeño
-			const partialResults = await searchInCircle(newCenter, smallCircleRadius);
+			try {
+				// Llamar a la función de búsqueda para este círculo pequeño
+				const partialResults = await searchInCircle(
+					newCenter,
+					smallCircleRadius,
+				);
 
-			places = Array.from(
-				new Set([
-					...places,
-					...(await Promise.all(
-						partialResults.map(async (place: any) => {
-							for (const photo of place.photos) {
-								await getPhotoWithSizes(photo.name);
-							}
-							const street = place.addressComponents.find((ad: any) =>
-								ad.types.includes('route'),
-							);
-							const number = place.addressComponents.find((ad: any) =>
-								ad.types.includes('street_number'),
-							);
-							const city = place.addressComponents.find((ad: any) =>
-								ad.types.includes('locality'),
-							);
-							const postalCode = place.addressComponents.find((ad: any) =>
-								ad.types.includes('postal_code'),
-							);
-							const province = place.addressComponents.find((ad: any) =>
-								ad.types.includes('administrative_area_level_2'),
-							);
-							const county = place.addressComponents.find((ad: any) =>
-								ad.types.includes('administrative_area_level_1'),
-							);
-							const country = place.addressComponents.find((ad: any) =>
-								ad.types.includes('country'),
-							);
+				places = Array.from(
+					new Set([
+						...places,
+						...(await Promise.all(
+							partialResults.map(async (place: any) => {
+								if (Array.isArray(place.photos)) {
+									for (const photo of place.photos) {
+										await getPhotoWithSizes(photo.name);
+									}
+								}
+								const street = place.addressComponents.find((ad: any) =>
+									ad.types.includes('route'),
+								);
+								const number = place.addressComponents.find((ad: any) =>
+									ad.types.includes('street_number'),
+								);
+								const city = place.addressComponents.find((ad: any) =>
+									ad.types.includes('locality'),
+								);
+								const postalCode = place.addressComponents.find((ad: any) =>
+									ad.types.includes('postal_code'),
+								);
+								const province = place.addressComponents.find((ad: any) =>
+									ad.types.includes('administrative_area_level_2'),
+								);
+								const county = place.addressComponents.find((ad: any) =>
+									ad.types.includes('administrative_area_level_1'),
+								);
+								const country = place.addressComponents.find((ad: any) =>
+									ad.types.includes('country'),
+								);
+								const primaryType =
+									place.primaryType ||
+									(Array.isArray(place.types) && place.types[0]);
 
-							return {
-								name: place.displayName.text,
-								nameTranslations: {},
-								address: {
-									street: {
-										[fromGoogleToMonumLanguage(
-											street.languageCode,
-										)]: `${street.longText} ${number.longText}`,
+								return {
+									name: place.displayName.text,
+									nameTranslations: {
+										[place.displayName
+											? fromGoogleToMonumLanguage(
+													place.displayName.languageCode,
+											  )
+											: 'en_US']: place.displayName.text,
 									},
-									city: {
-										[fromGoogleToMonumLanguage(city.languageCode)]:
-											city.longText,
-									},
-									postalCode: postalCode.longText,
-									province: {
-										[fromGoogleToMonumLanguage(province.languageCode)]:
-											province.longText,
-									},
-									county: {
-										[fromGoogleToMonumLanguage(county.languageCode)]:
-											county.longText,
-									},
-									country: {
-										[fromGoogleToMonumLanguage(country.languageCode)]:
-											country.longText,
-									},
-									coordinates: {
-										lat: place.location.latitude,
-										lng: place.location.longitude,
-									},
-								},
-								description: {
-									[fromGoogleToMonumLanguage(
-										place.editorialSummary.languageCode,
-									)]: place.editorialSummary.text,
-								},
-								photos: place.photos.map((photo: any) => {
-									return {
-										url: photo.name,
-										width: photo.widthPx,
-										height: photo.heightPx,
-										sizes: {
-											original: `${photo.name}/original.jpg`,
-											small: `${photo.name}/small.jpg`,
-											medium: `${photo.name}/medium.jpg`,
-											large: `${photo.name}/large.jpg`,
+									address: {
+										street: {
+											[street?.languageCode
+												? fromGoogleToMonumLanguage(street.languageCode)
+												: 'en_US']: `${street?.longText} ${number?.longText}`,
 										},
-									};
-								}),
-								rating: place.rating,
-								googleId: place.id,
-								googleMapsUri: place.googleMapsUri,
-								internationalPhoneNumber: place.internationalPhoneNumber,
-								nationalPhoneNumber: place.nationalPhoneNumber,
-								types: place.types,
-								primaryType: place.primaryType,
-								userRatingCount: place.userRatingCount,
-								websiteUri: place.websiteUri,
-							} as IPlace;
-						}),
-					)),
-				]),
-			);
-			count += partialResults.length;
-
+										city: {
+											[city?.languageCode
+												? fromGoogleToMonumLanguage(city.languageCode)
+												: 'en_US']: city?.longText,
+										},
+										postalCode: postalCode.longText,
+										province: {
+											[province?.languageCode
+												? fromGoogleToMonumLanguage(province.languageCode)
+												: 'en_US']: province?.longText,
+										},
+										county: {
+											[county?.languageCode
+												? fromGoogleToMonumLanguage(county.languageCode)
+												: 'en_US']: county?.longText,
+										},
+										country: {
+											[country?.languageCode
+												? fromGoogleToMonumLanguage(country.languageCode)
+												: 'en_US']: country?.longText,
+										},
+										coordinates: {
+											lat: place.location.latitude,
+											lng: place.location.longitude,
+										},
+									},
+									photos:
+										Array.isArray(place.photos) &&
+										place.photos.map((photo: any) => {
+											return {
+												url: photo.name,
+												width: photo.widthPx,
+												height: photo.heightPx,
+												sizes: {
+													original: `${photo.name}/original.jpg`,
+													small: `${photo.name}/small.jpg`,
+													medium: `${photo.name}/medium.jpg`,
+													large: `${photo.name}/large.jpg`,
+												},
+											};
+										}),
+									rating: place.rating,
+									googleId: place.id,
+									googleMapsUri: place.googleMapsUri,
+									internationalPhoneNumber: place.internationalPhoneNumber,
+									nationalPhoneNumber: place.nationalPhoneNumber,
+									types: place.types,
+									primaryType: primaryType,
+									userRatingCount: place.userRatingCount,
+									websiteUri: place.websiteUri,
+								} as IPlace;
+							}),
+						)),
+					]),
+				);
+				count += partialResults.length;
+			} catch (error) {
+				console.log(error);
+			}
 			// Verificar si ya alcanzamos el maxResultCount
 			if (count >= maxResultCount) break;
 		}
 		if (count >= maxResultCount) break;
 	}
 
-	// Put photos in S3
-	await MongoPlaceModel.insertMany(places);
+	// Al final, en lugar de MongoPlaceModel.insertMany(places);
+	for (const place of places) {
+		try {
+			await MongoPlaceModel.create(place);
+		} catch (error) {
+			console.error(
+				`Error creating the place: ${place.name}, error: ${error.message}`,
+			);
+		}
+	}
+	console.log('Done!');
 }
 
-main([41.98, 2.82], 20000, 1);
+main([41.98, 2.82], 20000, 50);

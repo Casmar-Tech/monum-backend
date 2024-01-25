@@ -6,6 +6,8 @@ export function fromGoogleToMonumLanguage(language: string) {
 			return 'es_ES';
 		case 'fr':
 			return 'fr_FR';
+		case 'ca':
+			return 'ca_ES';
 		default:
 			return 'en_US';
 	}

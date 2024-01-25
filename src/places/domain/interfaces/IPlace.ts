@@ -20,7 +20,7 @@ export interface IPlace {
 	internationalPhoneNumber: string;
 	nationalPhoneNumber: string;
 	types: string[];
-	primaryType: string;
+	primaryType?: string;
 	userRatingCount?: number;
 	websiteUri?: string;
 	getTranslatedVersion: (language: string) => IPlaceTranslated;

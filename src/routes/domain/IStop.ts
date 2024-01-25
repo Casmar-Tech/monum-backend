@@ -1,4 +1,4 @@
-import { IMedia, IMediaSimplified } from '../../medias/domain/IMedia.js';
+import { IMedia, IMediaTranslated } from '../../medias/domain/IMedia.js';
 
 export interface IStop {
 	order: number;
@@ -9,5 +9,5 @@ export interface IStop {
 export interface IStopSimplified {
 	order: number;
 	optimizedOrder: number;
-	media: IMediaSimplified;
+	media: IMediaTranslated;
 }
