@@ -1,13 +1,20 @@
 import '../../connection.js';
 import { MongoPlaceModel } from '../../places/infrastructure/mongoModel/MongoPlaceModel.js';
-import PopulateMediaByNumberUseCase from '../application/PopulateMediaByNumberUseCase.js';
+import PopulateMediaByTopic from '../application/PopulateMediaByTopic.js';
+import { MongoMediaTopicModel } from '../infrastructure/mongoModel/MongoMediaTopicModel.js';
+
 async function main() {
 	let places = await MongoPlaceModel.aggregate([
 		{
+			$match: {
+				importance: { $eq: 9 },
+			},
+		},
+		{
 			$lookup: {
-				from: 'medias', // Asegúrate de que el nombre de la colección es correcto
+				from: 'medias-news', // Asegúrate de que el nombre de la colección es correcto
 				localField: '_id',
-				foreignField: 'place',
+				foreignField: 'placeId',
 				as: 'mediaDocs',
 			},
 		},
@@ -16,19 +23,28 @@ async function main() {
 				_id: 1,
 				name: 1, // Incluye otros campos del place que necesites
 				mediaCount: { $size: '$mediaDocs' },
-			},
-		},
-		{
-			$match: {
-				mediaCount: { $lt: 3 },
+				mediaTopics: {
+					$map: {
+						input: '$mediaDocs',
+						as: 'media',
+						in: { $toString: '$$media.topicId' },
+					},
+				},
 			},
 		},
 	]);
+	const allMediaTopics = await MongoMediaTopicModel.find();
 	await Promise.all(
-		places
-			.slice(0, 1)
-			.map(async (place) => await PopulateMediaByNumberUseCase(place._id)),
+		places.map(async (place) => {
+			await Promise.all(
+				allMediaTopics.map(async (topic) => {
+					if (place.mediaTopics.includes(topic._id.toString())) return;
+					await PopulateMediaByTopic(place._id, topic);
+				}),
+			);
+		}),
 	);
+
 	console.log('Done!');
 }
 

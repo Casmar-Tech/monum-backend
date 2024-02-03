@@ -14,16 +14,5 @@ export default async function GetMediasByPlaceIdUseCase(
 		Object.assign(query, { 'place._id': placeId });
 	}
 	const medias = await MongoMediaModel.find(query);
-	for (const media of medias) {
-		const client = new S3Client({ region: 'eu-west-1' });
-		const commandToGet = new GetObjectCommand({
-			Bucket: process.env.S3_BUCKET_AUDIOS!,
-			Key: media.audioUrl[user.language],
-		});
-		const url = await getSignedUrl(client, commandToGet, {
-			expiresIn: 3600,
-		}); // 1 hour
-		media.audioUrl[user.language] = url;
-	}
-	return medias.map((media) => media.getSimplifiedVersion(user.language));
+	return medias.map((media) => media.getTranslatedVersion(user.language));
 }

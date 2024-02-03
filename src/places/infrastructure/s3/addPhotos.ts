@@ -12,6 +12,8 @@ const s3 = new S3Client({
 	},
 });
 
+const bucketName = process.env.S3_BUCKET_PLACES_IMAGES!;
+
 export async function addPhotosToS3(
 	photoName: string,
 	photo: ArrayBuffer,
@@ -19,7 +21,7 @@ export async function addPhotosToS3(
 ) {
 	try {
 		const buffer = Buffer.from(photo);
-		const bucketName = 'monum-place-photos';
+
 		const objectKey = `${photoName}/${size}.jpg`;
 
 		// Optional: Check if the object already exists in S3

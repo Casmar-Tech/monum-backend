@@ -2,25 +2,54 @@ import { IPlace, IPlaceTranslated } from '../../domain/interfaces/IPlace.js';
 import GetPlaceByIdUseCase from '../../application/GetPlaceByIdUseCase.js';
 import GetPlacesUseCase from '../../application/GetPlacesUseCase.js';
 import DeletePlaceAndAssociatedMediaUseCase from '../../application/DeletePlaceAndAssociatedMediaUseCase.js';
-import UpdatePlaceAndAssociatedMediaUseCase from '../../application/UpdatePlaceAndAssociatedMediaUseCase.js';
+import UpdatePlaceUseCase from '../../application/UpdatePlaceUseCase.js';
 import { SortField, SortOrder } from '../../domain/types/SortTypes.js';
 import { checkToken } from '../../../middleware/auth.js';
 import { ApolloError } from 'apollo-server-errors';
 import { MongoPlaceSearchesModel } from '../../infrastructure/mongoModel/MongoPlaceSearchesModel.js';
+import { ImageSize } from '../../domain/types/ImageTypes.js';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 const resolvers = {
 	Place: {
-		// Resolver para el campo imagesUrl
-		imagesUrl: (parent: IPlaceTranslated) =>
-			parent.photos?.map((photo) => photo.url),
+		imagesUrl: async (parent: IPlaceTranslated) => {
+			return Array.isArray(parent.photos)
+				? await Promise.all(
+						parent.photos?.map(async (photo) => {
+							const client = new S3Client({
+								region: 'eu-west-1',
+								credentials: {
+									accessKeyId: process.env.AWS_ACCESS_KEY_ID_MONUM!,
+									secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_MONUM!,
+								},
+							});
+							const commandToGet = new GetObjectCommand({
+								Bucket: process.env.S3_BUCKET_PLACES_IMAGES!,
+								Key: photo,
+							});
+							const url = await getSignedUrl(client, commandToGet, {
+								expiresIn: 3600 * 24,
+							}); // 1 day
+							console.log('url', url);
+							return url;
+						}),
+				  )
+				: [];
+		},
 		importance: (parent: IPlaceTranslated) =>
 			(parent.importance && Math.ceil(parent.importance / 2)) || 0,
+		rating: (parent: IPlaceTranslated) => parent.rating || 0,
 	},
 	Query: {
-		place: (_: any, args: { id: string }, { token }: { token: string }) => {
+		place: (
+			_: any,
+			args: { id: string; imageSize: ImageSize },
+			{ token }: { token: string },
+		) => {
 			const { id: userId } = checkToken(token);
 			if (!userId) throw new ApolloError('User not found', 'USER_NOT_FOUND');
-			return GetPlaceByIdUseCase(args.id, userId);
+			return GetPlaceByIdUseCase(userId, args.id, args.imageSize);
 		},
 		places: (
 			_: any,
@@ -80,11 +109,7 @@ const resolvers = {
 		) => {
 			const { id: userId } = checkToken(token);
 			if (!userId) throw new ApolloError('User not found', 'USER_NOT_FOUND');
-			return UpdatePlaceAndAssociatedMediaUseCase(
-				userId,
-				args.id,
-				args.placeUpdate,
-			);
+			return UpdatePlaceUseCase(userId, args.id, args.placeUpdate);
 		},
 		deletePlace: (
 			parent: any,

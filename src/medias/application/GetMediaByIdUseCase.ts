@@ -4,6 +4,7 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { GraphQLError } from 'graphql';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import GetUserByIdUseCase from '../../users/application/GetUserByIdUseCase.js';
+import { MongoPlaceModel } from '../../places/infrastructure/mongoModel/MongoPlaceModel.js';
 
 export default async function GetMediaByIdUseCase(
 	id: string,
@@ -20,22 +21,17 @@ export default async function GetMediaByIdUseCase(
 				},
 			});
 		}
-		const client = new S3Client({
-			region: 'eu-west-1',
-			credentials: {
-				accessKeyId: process.env.AWS_ACCESS_KEY_ID_MONUM!,
-				secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_MONUM!,
-			},
-		});
-		const commandToGet = new GetObjectCommand({
-			Bucket: process.env.S3_BUCKET_AUDIOS!,
-			Key: media.audioUrl['en_US'],
-		});
-		const url = await getSignedUrl(client, commandToGet, {
-			expiresIn: 3600,
-		}); // 1 hour
-		media.audioUrl[user.language] = url;
-		return media.getSimplifiedVersion(user.language);
+		const place = await MongoPlaceModel.findById(media.placeId);
+		if (!place) {
+			throw new GraphQLError('Place not found', {
+				extensions: {
+					code: 'PLACE_NOT_FOUND',
+					http: { status: 404 },
+				},
+			});
+		}
+		media.place = place;
+		return media.getTranslatedVersion(user.language);
 	} catch (error: any) {
 		throw new GraphQLError(error?.message, {
 			extensions: {

@@ -1,10 +1,10 @@
 import { Model, model, Schema } from 'mongoose';
-import { IRoute, IRouteSimplified } from '../../domain/IRoute.js';
+import { IRoute, IRouteTranslated } from '../../domain/IRoute.js';
 import { MediaSchema } from '../../../medias/infrastructure/mongoModel/MongoMediaModel.js';
 import { IStop } from '../../domain/IStop.js';
 
 interface IRouteMethods {
-	getSimplifiedVersion: (language: string) => IRouteSimplified;
+	getTranslatedVersion: (language: string) => IRouteTranslated;
 }
 
 type RouteModel = Model<IRoute, {}, IRouteMethods>;
@@ -15,25 +15,28 @@ const StopSchema = new Schema<IStop>({
 	media: { type: MediaSchema },
 });
 
-const RouteSchema = new Schema<IRoute, RouteModel, IRouteMethods>({
-	title: {
-		type: Object,
-		of: String,
-		required: true,
+const RouteSchema = new Schema<IRoute, RouteModel, IRouteMethods>(
+	{
+		title: {
+			type: Object,
+			of: String,
+			required: true,
+		},
+		description: { type: Object, of: String, required: true },
+		rating: { type: Number },
+		stops: [{ type: StopSchema, required: true }],
+		duration: { type: Number, required: true },
+		optimizedDuration: { type: Number, required: true },
+		distance: { type: Number, required: true },
+		optimizedDistance: { type: Number, required: true },
+		cityId: { type: Schema.Types.ObjectId, ref: 'cities' },
 	},
-	description: { type: Object, of: String, required: true },
-	rating: { type: Number },
-	stops: [{ type: StopSchema, required: true }],
-	duration: { type: Number, required: true },
-	optimizedDuration: { type: Number, required: true },
-	distance: { type: Number, required: true },
-	optimizedDistance: { type: Number, required: true },
-	cityId: { type: Schema.Types.ObjectId, ref: 'cities' },
-});
+	{ timestamps: true },
+);
 
 RouteSchema.method(
-	'getSimplifiedVersion',
-	function (language: string): IRouteSimplified {
+	'getTranslatedVersion',
+	function (language: string): IRouteTranslated {
 		const getTranslation = (translations: { [key: string]: string }) =>
 			translations[language] || '';
 
@@ -45,7 +48,7 @@ RouteSchema.method(
 			stops: this.stops.map((stop) => ({
 				order: stop.order,
 				optimizedOrder: stop.optimizedOrder,
-				media: stop.media.getSimplifiedVersion(language),
+				media: stop.media.getTranslatedVersion(language),
 			})),
 			duration: this.duration,
 			optimizedDuration: this.optimizedDuration,
@@ -57,7 +60,7 @@ RouteSchema.method(
 );
 
 export async function createRouteFromSimpleRoute(
-	route: IRouteSimplified,
+	route: IRouteTranslated,
 	language: string,
 ) {
 	return await MongoRouteModel.create({

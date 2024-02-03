@@ -1,12 +1,12 @@
 import GetUserByIdUseCase from '../../users/application/GetUserByIdUseCase.js';
-import { IRouteSimplified } from '../domain/IRoute.js';
+import { IRouteTranslated } from '../domain/IRoute.js';
 import { MongoRouteModel } from '../infrastructure/mongoModel/MongoRouteModel.js';
 import { ApolloError } from 'apollo-server-errors';
 
 export default async function GetRouteByIdUseCase(
 	userId: string,
 	id: string,
-): Promise<IRouteSimplified> {
+): Promise<IRouteTranslated> {
 	const route = await MongoRouteModel.findById(id);
 	const user = await GetUserByIdUseCase(userId);
 	if (!route) {
@@ -20,5 +20,5 @@ export default async function GetRouteByIdUseCase(
 			'ROUTE_WITH_NO_STOPS',
 		);
 	}
-	return route.getSimplifiedVersion(user.language);
+	return route.getTranslatedVersion(user.language);
 }

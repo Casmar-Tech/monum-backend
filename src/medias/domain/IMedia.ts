@@ -2,11 +2,12 @@ import { Types } from 'mongoose';
 import {
 	IPlace,
 	IPlaceTranslated,
-} from '../../places/domain/interfaces/IPlace.js';
-
+} from '../../places/domain/interfaces/IPlace';
 export interface IMedia {
 	_id?: Types.ObjectId;
-	place: IPlace;
+	id?: String;
+	placeId: Types.ObjectId;
+	topicId: Types.ObjectId;
 	title: {
 		[key: string]: string;
 	};
@@ -21,17 +22,20 @@ export interface IMedia {
 		[key: string]: string;
 	};
 	duration: number;
-	getSimplifiedVersion: (language: string) => IMediaTranslated;
+	createdAt: Date;
+	updatedAt: Date;
+	place?: IPlace;
+	getTranslatedVersion: (language: string) => IMediaTranslated;
 }
 
 export interface IMediaTranslated
 	extends Omit<
 		IMedia,
-		'title' | 'text' | 'audioUrl' | 'voiceId' | 'getSimplifiedVersion' | 'place'
+		'title' | 'text' | 'audioUrl' | 'voiceId' | 'getTranslatedVersion' | 'place'
 	> {
 	title: string;
 	text: string;
 	audioUrl: string;
 	voiceId: string;
-	place: IPlaceTranslated;
+	place?: IPlaceTranslated;
 }

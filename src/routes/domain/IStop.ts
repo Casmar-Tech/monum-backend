@@ -6,7 +6,7 @@ export interface IStop {
 	media: IMedia;
 }
 
-export interface IStopSimplified {
+export interface IStopTranslated {
 	order: number;
 	optimizedOrder: number;
 	media: IMediaTranslated;

@@ -1,16 +1,18 @@
-import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
-import { IPlaceTranslated } from "../domain/interfaces/IPlace.js";
-import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
-import { ApolloError } from "apollo-server-errors";
+import { MongoPlaceModel } from '../infrastructure/mongoModel/MongoPlaceModel.js';
+import { IPlaceTranslated } from '../domain/interfaces/IPlace.js';
+import GetUserByIdUseCase from '../../users/application/GetUserByIdUseCase.js';
+import { ApolloError } from 'apollo-server-errors';
+import { ImageSize } from '../domain/types/ImageTypes.js';
 
 export default async function GetPlaceByIdUseCase(
-  placeId: string,
-  userId: string
+	userId: string,
+	placeId: string,
+	imageSize: ImageSize,
 ): Promise<IPlaceTranslated> {
-  const user = await GetUserByIdUseCase(userId);
-  const place = await MongoPlaceModel.findById(placeId);
-  if (!place) {
-    throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
-  }
-  return place.getTranslatedVersion(user.language);
+	const user = await GetUserByIdUseCase(userId);
+	const place = await MongoPlaceModel.findById(placeId);
+	if (!place) {
+		throw new ApolloError('Place not found', 'PLACE_NOT_FOUND');
+	}
+	return place.getTranslatedVersion(user.language, imageSize);
 }

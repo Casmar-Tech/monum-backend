@@ -42,7 +42,7 @@
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.4.0",
-    "openai": "^3.3.0",
+    "openai": "^4.26.0",
     "pexels": "^1.4.0",
     "sharp": "^0.32.6",
     "tsx": "^4.7.0",

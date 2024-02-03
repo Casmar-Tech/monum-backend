@@ -1,38 +1,47 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 import { IMedia, IMediaTranslated } from '../../domain/IMedia.js';
-import {
-	createPlaceFromTranslatedPlace,
-	PlaceSchema,
-} from '../../../places/infrastructure/mongoModel/MongoPlaceModel.js';
+import { PlaceSchema } from '../../../places/infrastructure/mongoModel/MongoPlaceModel.js';
 
-export const MediaSchema = new Schema<IMedia>({
-	place: { type: PlaceSchema, required: true },
-	title: {
-		type: Object,
-		of: String,
-		required: true,
+export const MediaSchema = new Schema<IMedia>(
+	{
+		placeId: {
+			type: Schema.Types.ObjectId,
+			ref: 'places-news',
+			required: true,
+		},
+		topicId: {
+			type: Schema.Types.ObjectId,
+			ref: 'media-topics',
+			required: true,
+		},
+		title: {
+			type: Object,
+			of: String,
+			required: true,
+		},
+		text: {
+			type: Object,
+			of: String,
+			required: true,
+		},
+		rating: { type: Number, required: true },
+		audioUrl: {
+			type: Object,
+			of: String,
+			required: true,
+		},
+		voiceId: {
+			type: Object,
+			of: String,
+			required: true,
+		},
+		duration: { type: Number },
 	},
-	text: {
-		type: Object,
-		of: String,
-		required: true,
-	},
-	rating: { type: Number, required: true },
-	audioUrl: {
-		type: Object,
-		of: String,
-		required: true,
-	},
-	voiceId: {
-		type: Object,
-		of: String,
-		required: true,
-	},
-	duration: { type: Number },
-});
+	{ timestamps: true },
+);
 
 MediaSchema.method(
-	'getSimplifiedVersion',
+	'getTranslatedVersion',
 	function (language: string): IMediaTranslated {
 		const getTranslation = (translations: { [key: string]: string }) => {
 			// Try to get the translation for the language
@@ -45,14 +54,13 @@ MediaSchema.method(
 		};
 
 		return {
-			_id: this.id,
-			place: this.place.getTranslatedVersion(language),
+			...this.toObject(),
+			id: this._id.toString(),
 			title: getTranslation(this.title),
 			text: getTranslation(this.text),
-			rating: this.rating,
 			audioUrl: getTranslation(this.audioUrl),
 			voiceId: getTranslation(this.voiceId),
-			duration: this.duration,
+			place: this.place?.getTranslatedVersion(language),
 		};
 	},
 );
@@ -76,7 +84,7 @@ export async function createMediaFromSimpleMedia(
 			[language]: media.voiceId,
 		},
 		duration: media.duration,
-		place: await createPlaceFromTranslatedPlace(media.place, language),
+		placeId: media.placeId,
 	});
 }
 

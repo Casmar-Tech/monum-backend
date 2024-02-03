@@ -1,11 +1,9 @@
 import { IPlace, IPlaceTranslated } from '../domain/interfaces/IPlace.js';
 import { MongoPlaceModel } from '../infrastructure/mongoModel/MongoPlaceModel.js';
-import { MongoMediaModel } from '../../medias/infrastructure/mongoModel/MongoMediaModel.js';
-import UpdateMediaAndAssociatedRoutesUseCase from '../../medias/application/UpdateMediaAndAssociatedRoutesUseCase.js';
 import GetUserByIdUseCase from '../../users/application/GetUserByIdUseCase.js';
 import { ApolloError } from 'apollo-server-errors';
 
-export default async function UpdatePlaceAndAssociatedMediaUseCase(
+export default async function UpdatePlaceUseCase(
 	userId: string,
 	placeId: string,
 	placeUpdate: Partial<IPlace>,
@@ -17,15 +15,7 @@ export default async function UpdatePlaceAndAssociatedMediaUseCase(
 		{ new: true },
 	);
 	if (placeUpdated) {
-		const mediasToBeUpdated = await MongoMediaModel.find({
-			'place._id': placeId,
-		});
-		for (const media of mediasToBeUpdated) {
-			await UpdateMediaAndAssociatedRoutesUseCase(media._id.toString(), {
-				place: placeUpdated,
-			});
-		}
-		return placeUpdated?.getTranslatedVersion(user.language);
+		return placeUpdated.getTranslatedVersion(user.language);
 	}
 	throw new ApolloError('Place not found', 'PLACE_NOT_FOUND');
 }

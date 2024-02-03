@@ -13,58 +13,62 @@ const Photo = new Schema<IPhoto>({
 	},
 });
 
-export const PlaceSchema = new Schema<IPlace>({
-	name: { type: String, required: true, unique: true },
-	nameTranslations: {
-		type: Object,
-		of: String,
-		required: true,
-	},
-	address: {
-		coordinates: {
-			lat: { type: Number, required: true },
-			lng: { type: Number, required: true },
-		},
-		street: {
-			type: Object,
-			of: String,
-		},
-		city: {
+export const PlaceSchema = new Schema<IPlace>(
+	{
+		name: { type: String, required: true, unique: true },
+		nameTranslations: {
 			type: Object,
 			of: String,
 			required: true,
 		},
-		postalCode: { type: String },
-		province: {
-			type: Object,
-			of: String,
+		address: {
+			coordinates: {
+				lat: { type: Number, required: true },
+				lng: { type: Number, required: true },
+			},
+			street: {
+				type: Object,
+				of: String,
+			},
+			city: {
+				type: Object,
+				of: String,
+				required: true,
+			},
+			postalCode: { type: String },
+			province: {
+				type: Object,
+				of: String,
+			},
+			country: {
+				type: Object,
+				of: String,
+				required: true,
+			},
 		},
-		country: {
+		description: {
 			type: Object,
 			of: String,
 			required: true,
 		},
+		importance: { type: Number, required: true },
+		photos: { type: [Photo] },
+		rating: { type: Number },
+		googleId: { type: String, unique: true },
+		googleMapsUri: { type: String },
+		internationalPhoneNumber: { type: String },
+		nationalPhoneNumber: { type: String },
+		types: { type: [String], required: true },
+		primaryType: { type: String },
+		userRatingCount: { type: Number },
+		websiteUri: { type: String },
 	},
-	description: {
-		type: Object,
-		of: String,
-	},
-	importance: { type: Number },
-	photos: { type: [Photo] },
-	rating: { type: Number },
-	googleId: { type: String, unique: true },
-	googleMapsUri: { type: String },
-	internationalPhoneNumber: { type: String },
-	nationalPhoneNumber: { type: String },
-	types: { type: [String], required: true },
-	primaryType: { type: String },
-	userRatingCount: { type: Number },
-	websiteUri: { type: String },
-});
+	{ timestamps: true },
+);
 
 PlaceSchema.method(
 	'getTranslatedVersion',
-	function (language: string): IPlaceTranslated {
+	function (language: string, imageSize?: string): IPlaceTranslated {
 		const getTranslation = (translations: { [key: string]: string }) => {
 			// Try to get the translation for the language
 			if (translations[language]) {
@@ -76,7 +80,8 @@ PlaceSchema.method(
 		};
 
 		return {
-			...this,
+			...this.toObject(),
+			id: this._id.toString(),
 			name: getTranslation(this.nameTranslations),
 			address: {
 				coordinates: {
@@ -90,6 +95,9 @@ PlaceSchema.method(
 				country: getTranslation(this.address.country),
 			},
 			description: this.description && getTranslation(this.description),
+			photos: this.photos?.map(
+				(photo) => photo.sizes[imageSize || 'original'] || photo.url,
+			),
 		};
 	},
 );

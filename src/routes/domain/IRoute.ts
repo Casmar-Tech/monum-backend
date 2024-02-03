@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { IStop, IStopSimplified } from './IStop.js';
+import { IStop, IStopTranslated } from './IStop.js';
 
 export interface IRoute {
 	_id?: Types.ObjectId;
@@ -16,9 +16,11 @@ export interface IRoute {
 	optimizedDistance: number;
 	stops: IStop[];
 	cityId: Types.ObjectId;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
-export interface IRouteSimplified {
+export interface IRouteTranslated {
 	_id?: Types.ObjectId;
 	id?: Types.ObjectId;
 	title: string;
@@ -28,6 +30,6 @@ export interface IRouteSimplified {
 	optimizedDuration: number;
 	distance: number;
 	optimizedDistance: number;
-	stops: IStopSimplified[];
+	stops: IStopTranslated[];
 	cityId: Types.ObjectId;
 }

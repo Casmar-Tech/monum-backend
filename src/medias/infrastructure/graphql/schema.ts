@@ -26,11 +26,10 @@ const typeDefs = gql`
 		en_US
 		es_ES
 		fr_FR
+		ca_ES
 	}
 
 	type Mutation {
-		populateMediaByNumber(placeId: String!, number: Int): [Media]
-		populateMediaByTopic(placeId: String!, topic: String!): Media
 		translateMedia(mediaId: ID!, outputLanguage: Language!): Media
 		updateMedia(id: ID!, mediaUpdate: UpdateMediaInput!): Media
 		deleteMedia(id: ID!): Boolean

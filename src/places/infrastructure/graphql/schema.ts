@@ -10,6 +10,13 @@ const typeDefs = gql`
 		desc
 	}
 
+	enum ImageSize {
+		small
+		medium
+		large
+		original
+	}
+
 	type Coordinates {
 		lat: Float!
 		lng: Float!
@@ -24,13 +31,6 @@ const typeDefs = gql`
 		country: String!
 	}
 
-	type Photo {
-		id: String!
-		url: String!
-		width: Int!
-		height: Int!
-	}
-
 	type Place {
 		id: ID
 		name: String!
@@ -39,15 +39,24 @@ const typeDefs = gql`
 		importance: Int!
 		rating: Float
 		imagesUrl: [String]
+		googleId: String
+		googleMapsUri: String
+		internationalPhoneNumber: String
+		nationalPhoneNumber: String
+		types: [String]
+		primaryType: String
+		userRatingCount: Float
+		websiteUri: String
 	}
 
 	type Query {
-		place(id: ID!): Place
+		place(id: ID!, imageSize: ImageSize): Place
 		places(
 			textSearch: String
 			centerCoordinates: [Float]
 			sortField: SortField
 			sortOrder: SortOrder
+			imageSize: ImageSize
 		): [Place]
 		placeSearcherSuggestions(textSearch: String!): [String]
 	}
