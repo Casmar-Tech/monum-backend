@@ -4,35 +4,13 @@ import { MongoPlaceModel } from '../infrastructure/mongoModel/MongoPlaceModel.ts
 import { IPlace } from '../domain/interfaces/IPlace.ts';
 import { fromGoogleToMonumLanguage } from '../infrastructure/google/utils.ts';
 import OpenAI from 'openai';
+import { includedTypes } from '../infrastructure/google/utils.ts';
 
 // Define constants for the Google Places API
 const url = 'https://places.googleapis.com/v1/places:searchNearby';
 const apiKey = process.env.GOOGLE_API_KEY!;
 
 const openai = new OpenAI();
-
-const includedTypes = [
-	// Define types of places to include in searches ('airport', 'train_station' out for now)
-	'church',
-	'aquarium',
-	'art_gallery',
-	'amusement_park',
-	'bus_station',
-	'courthouse',
-	'embassy',
-	'hindu_temple',
-	'library',
-	'local_government_office',
-	'mosque',
-	'movie_theater',
-	'museum',
-	'park',
-	'stadium',
-	'synagogue',
-	'tourist_attraction',
-	'university',
-	'zoo',
-];
 
 // Define constants for photo sizes
 const SMALL_PHOTO_MAX_HEIGHT_PX = 200;
@@ -88,7 +66,7 @@ async function searchInCircle(
 ): Promise<any> {
 	// Prepare data for the POST request
 	const data = {
-		includedTypes,
+		includedPrimaryTypes: includedTypes,
 		maxResultCount: 10,
 		languageCode: 'en',
 		locationRestriction: {
