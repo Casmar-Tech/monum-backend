@@ -1,5 +1,4 @@
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
-import { IPlace } from "../domain/interfaces/IPlace.js";
 import { MongoMediaModel } from "../../medias/infrastructure/mongoModel/MongoMediaModel.js";
 import { ApolloError } from "apollo-server-errors";
 import DeleteMediaAndUpdatedAssociatedRoutesUseCase from "../../medias/application/DeleteMediaAndUpdatedAssociatedRoutesUseCase.js";
