@@ -15,6 +15,7 @@ export interface IPlace {
 	};
 	importance: number;
 	photos?: IPhoto[];
+	mainPhoto?: IPhoto;
 	rating?: number;
 	googleId?: string;
 	googleMapsUri?: string;
@@ -29,12 +30,13 @@ export interface IPlace {
 	getTranslatedVersion: (
 		language: string,
 		imageSize?: string,
-	) => IPlaceTranslated;
+	) => Promise<IPlaceTranslated>;
 }
 
 export interface IPlaceTranslated
-	extends Omit<IPlace, 'address' | 'description' | 'photos'> {
+	extends Omit<IPlace, 'address' | 'description' | 'photos' | 'mainPhoto'> {
 	address: IAddressTranslated;
 	description?: string;
 	photos?: string[];
+	mainPhoto?: string;
 }
