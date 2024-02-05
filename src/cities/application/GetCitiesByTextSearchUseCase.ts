@@ -5,6 +5,7 @@ export default async function GetCitiesByTextSearchUseCase(
   textSearch: string
 ): Promise<ICity[]> {
   return await MongoCityModel.find({
+    deleted: { $ne: true },
     $or: [
       { "translations.es_ES": { $regex: textSearch, $options: "i" } },
       { "translations.en_US": { $regex: textSearch, $options: "i" } },

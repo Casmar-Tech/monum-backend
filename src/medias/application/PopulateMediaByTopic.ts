@@ -17,7 +17,7 @@ export default async function PopulateMediaByTopic(
   if (!place) {
     throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
   }
-  const placeTranslated = place?.getTranslatedVersion("en_US");
+  const placeTranslated = await place?.getTranslatedVersion("en_US");
   const client = new PollyClient({
     region: "eu-west-1",
   });
