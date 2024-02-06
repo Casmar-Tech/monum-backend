@@ -115,11 +115,14 @@ async function TranslateAllMedias(outputLanguage: Languages) {
 		],
 	};
 	const medias = await MongoMediaModel.find(query);
+	let index = 0;
 	for (const media of medias) {
+		index++;
+		console.log(`Translating media ${index}/${medias.length}`);
 		await TranslateMedia(media.id, outputLanguage);
 	}
 	console.log('All medias translated!');
 }
 
-// TranslateAllMedias('fr_FR');
+// TranslateAllMedias('es_ES');
 // TranslateMedia('65be320dfa2cf40774610ef3', 'fr_FR');
