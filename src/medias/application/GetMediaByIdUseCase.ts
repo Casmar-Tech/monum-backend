@@ -1,8 +1,6 @@
 import { MongoMediaModel } from '../infrastructure/mongoModel/MongoMediaModel.js';
 import { IMediaTranslated } from '../domain/IMedia.js';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { GraphQLError } from 'graphql';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import GetUserByIdUseCase from '../../users/application/GetUserByIdUseCase.js';
 import { MongoPlaceModel } from '../../places/infrastructure/mongoModel/MongoPlaceModel.js';
 
