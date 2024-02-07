@@ -5,11 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "npm i",
     "compile": "npx tsc",
-    "dev": "tsx watch --tsconfig ./tsconfig.json ./src/index.ts",
-    "start": "npm run compile && nodemon ./dist/index.js",
-    "start:prod": "npm run compile && node ./dist/index.js",
-    "build": "npm i"
+    "dev": "npx nodemon ./src/index.ts",
+    "dev:debug": "npx nodemon --inspect=0.0.0.0:9229 --signal SIGINT --nolazy ./src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -46,7 +45,6 @@
     "openai": "^4.26.0",
     "pexels": "^1.4.0",
     "sharp": "^0.32.6",
-    "tsx": "^4.7.0",
     "typescript": "^5.1.6"
   },
   "devDependencies": {
