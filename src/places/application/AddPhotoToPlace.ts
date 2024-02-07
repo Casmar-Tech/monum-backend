@@ -86,12 +86,11 @@ export default async function AddImageToPlace(
       Array.isArray(place.photos) && place.photos.push(photoDocument);
     }
   }
-
   await place.save();
 }
 
-AddImageToPlace(
-  "65b26b45d1565e2a20b046da",
-  "https://estaticos-cdn.prensaiberica.es/clip/d831232f-3966-4003-993b-13d8f3ea5d86_alta-libre-aspect-ratio_default_0.jpg",
-  true
-);
+// AddImageToPlace(
+//   "65c36d752aa965fbc790594c",
+//   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/La_lleona_Girona-2.jpg/1200px-La_lleona_Girona-2.jpg",
+//   false
+// );

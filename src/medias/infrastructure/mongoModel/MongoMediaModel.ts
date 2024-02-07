@@ -1,6 +1,7 @@
 import { model, Schema, Types } from "mongoose";
 import { IMedia, IMediaTranslated } from "../../domain/IMedia.js";
 import { PlaceSchema } from "../../../places/infrastructure/mongoModel/MongoPlaceModel.js";
+import { getTranslatedPlace } from "../../../places/domain/functions/Place.js";
 
 export const MediaSchema = new Schema<IMedia>(
   {
@@ -35,7 +36,10 @@ export const MediaSchema = new Schema<IMedia>(
       of: String,
       required: true,
     },
-    duration: { type: Number },
+    duration: {
+      type: Object,
+      of: Number,
+    },
   },
   { timestamps: true }
 );
@@ -60,7 +64,8 @@ MediaSchema.method(
       text: getTranslation(this.text),
       audioUrl: getTranslation(this.audioUrl),
       voiceId: getTranslation(this.voiceId),
-      place: await this.place?.getTranslatedVersion(language),
+      place: this.place && (await getTranslatedPlace(this.place, language)),
+      duration: this.duration?.[language],
     };
   }
 );

@@ -8,6 +8,7 @@ import { MongoPlaceModel } from "../../places/infrastructure/mongoModel/MongoPla
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
 import { ApolloError } from "apollo-server-errors";
 import { IMediaTopic } from "../domain/IMediaTopic.js";
+import { getTranslatedPlace } from "../../places/domain/functions/Place.js";
 
 export default async function PopulateMediaByTopic(
   placeId: string,
@@ -17,7 +18,7 @@ export default async function PopulateMediaByTopic(
   if (!place) {
     throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
   }
-  const placeTranslated = await place?.getTranslatedVersion("en_US");
+  const placeTranslated = await getTranslatedPlace(place.toObject(), "en_US");
   const client = new PollyClient({
     region: "eu-west-1",
   });
