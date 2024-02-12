@@ -38,7 +38,7 @@ export async function getTranslatedPlace(
       ? getTranslation(place.description, language)
       : undefined,
     photos: await listAllPhotos(
-      "monum-place-photos",
+      process.env.S3_BUCKET_PLACES_IMAGES!,
       `places/${place.googleId}`,
       imageSize
     ),
