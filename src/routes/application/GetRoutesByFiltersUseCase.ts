@@ -1,5 +1,5 @@
 import { MongoRouteModel } from "../infrastructure/mongoModel/MongoRouteModel.js";
-import IRoute from "../domain/IRoute.js";
+import { IRoute } from "../domain/IRoute.js";
 
 export default async function GetRoutesByFiltersUseCase(
   cityId: string,

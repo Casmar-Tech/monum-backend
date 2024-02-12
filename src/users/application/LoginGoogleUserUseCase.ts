@@ -57,7 +57,6 @@ export default async function LoginGoogleUserUseCase({
 
     // If the user has already a photo, we don't need to upload it again
     if (!user.photo && photo) {
-      console.log("photo", photo);
       // If the user doesn't have a photo, we need to upload it
       const image = await axios.get(photo, { responseType: "arraybuffer" });
       const imageResized = await sharp(image.data)

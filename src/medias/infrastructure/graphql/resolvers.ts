@@ -1,54 +1,40 @@
 import DeleteMediaAndUpdatedAssociatedRoutesUseCase from "../../application/DeleteMediaAndUpdatedAssociatedRoutesUseCase.js";
 import GetMediaByIdUseCase from "../../application/GetMediaByIdUseCase.js";
 import GetMediasByPlaceIdUseCase from "../../application/GetMediasByPlaceIdUseCase.js";
-import PopulateMediaByNumberUseCase from "../../application/PopulateMediaByNumberUseCase.js";
-import PopulateMediaByTopicUseCase from "../../application/PopulateMediaByTopicUseCase.js";
-import TranslateMediaUseCase from "../../application/TranslateMediaUseCase.js";
+import TranslateMedia from "../../application/TranslateMedia.js";
 import UpdateMediaAndAssociatedRoutesUseCase from "../../application/UpdateMediaAndAssociatedRoutesUseCase.js";
-import IMedia from "../../domain/IMedia";
+import { IMedia, IMediaTranslated } from "../../domain/IMedia";
 import { checkToken } from "../../../middleware/auth.js";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import mm from "music-metadata";
+import { Readable } from "stream";
+
+const client = new S3Client({
+  region: "eu-west-1",
+});
 
 const resolvers = {
+  Media: {
+    audioUrl: async (parent: IMediaTranslated) => {
+      const commandToGet = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_AUDIOS!,
+        Key: parent.audioUrl,
+      });
+      const url = await getSignedUrl(client, commandToGet, {
+        expiresIn: 3600,
+      });
+      return url;
+    },
+  },
   Mutation: {
-    populateMediaByNumber: async (
-      parent: any,
-      args: { placeId: string; number?: number; language?: any },
-      { token }: { token: string }
-    ) => {
-      checkToken(token);
-      return PopulateMediaByNumberUseCase({
-        placeId: args.placeId,
-        number: args.number,
-        language: args.language?.replace("_", "-"),
-      });
-    },
-    populateMediaByTopic: async (
-      parent: any,
-      args: {
-        placeId: string;
-        topic?: string;
-        language?: any;
-      },
-      { token }: { token: string }
-    ) => {
-      checkToken(token);
-      return PopulateMediaByTopicUseCase({
-        placeId: args.placeId,
-        topic: args.topic,
-        language: args.language?.replace("_", "-"),
-      });
-    },
-
     translateMedia: async (
       parent: any,
       args: { id: string; outputLanguage: any },
       { token }: { token: string }
     ) => {
       checkToken(token);
-      return TranslateMediaUseCase({
-        id: args.id,
-        outputLanguage: args.outputLanguage?.replace("_", "-"),
-      });
+      return TranslateMedia(args.id, args.outputLanguage);
     },
     updateMedia: (
       parent: any,
@@ -73,16 +59,18 @@ const resolvers = {
       { id }: { id: string },
       { token }: { token: string }
     ) => {
-      checkToken(token);
-      return GetMediaByIdUseCase(id);
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      return GetMediaByIdUseCase(id, userId);
     },
     medias: async (
       parent: any,
-      args: { placeId: string; language: string },
+      args: { placeId: string },
       { token }: { token: string }
     ) => {
-      checkToken(token);
-      return GetMediasByPlaceIdUseCase(args.placeId, args.language);
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      return GetMediasByPlaceIdUseCase(userId, args.placeId);
     },
   },
 };

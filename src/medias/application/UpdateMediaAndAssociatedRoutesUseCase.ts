@@ -1,19 +1,25 @@
 import { MongoRouteModel } from "../../routes/infrastructure/mongoModel/MongoRouteModel.js";
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
-import IMedia from "../domain/IMedia.js";
+import { IMedia } from "../domain/IMedia.js";
 import { getTrip } from "../../routes/infrastructure/osrm/GetTrip.js";
 import { getRoute } from "../../routes/infrastructure/osrm/GetRoute.js";
+import { ApolloError } from "apollo-server-errors";
+import { MongoPlaceModel } from "../../places/infrastructure/mongoModel/MongoPlaceModel.js";
 
 export default async function UpdateMediaAndAssociatedRoutesUseCase(
   id: string,
   mediaUpdate: Partial<IMedia>
-): Promise<IMedia | null> {
+): Promise<IMedia> {
   const mediaUpdated = await MongoMediaModel.findByIdAndUpdate(
     id,
     mediaUpdate,
     { new: true }
   );
   if (mediaUpdated) {
+    const place = await MongoPlaceModel.findById(mediaUpdated.placeId);
+    if (!place) {
+      throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
+    }
     const routesToUpdate = await MongoRouteModel.find({
       "stops.media._id": id,
     });
@@ -25,8 +31,8 @@ export default async function UpdateMediaAndAssociatedRoutesUseCase(
         route.stops[stopIndex].media = mediaUpdated;
         const coordinates = route.stops
           .map((stop) => [
-            stop.media.place.address.coordinates.lng,
-            stop.media.place.address.coordinates.lat,
+            place.address.coordinates.lng,
+            place.address.coordinates.lat,
           ])
           .filter(Boolean) as [number, number][];
         const tripData = await getTrip("foot", coordinates);
@@ -43,6 +49,7 @@ export default async function UpdateMediaAndAssociatedRoutesUseCase(
         route.save();
       }
     }
+    return mediaUpdated;
   }
-  return mediaUpdated;
+  throw new ApolloError("Media not found", "MEDIA_NOT_FOUND");
 }

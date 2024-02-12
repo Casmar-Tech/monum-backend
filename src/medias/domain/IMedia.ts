@@ -1,14 +1,50 @@
 import { Types } from "mongoose";
-import IPlace from "../../places/domain/interfaces/IPlace.js";
-
-export default interface IMedia {
+import {
+  IPlace,
+  IPlaceTranslated,
+} from "../../places/domain/interfaces/IPlace";
+export interface IMedia {
   _id?: Types.ObjectId;
-  place: IPlace;
+  id?: String;
+  placeId: Types.ObjectId;
+  topicId: Types.ObjectId;
+  title: {
+    [key: string]: string;
+  };
+  text: {
+    [key: string]: string;
+  };
+  rating: number;
+  audioUrl: {
+    [key: string]: string;
+  };
+  voiceId: {
+    [key: string]: string;
+  };
+  duration: {
+    [key: string]: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+  place?: IPlace;
+  getTranslatedVersion: (language: string) => IMediaTranslated;
+}
+
+export interface IMediaTranslated
+  extends Omit<
+    IMedia,
+    | "title"
+    | "text"
+    | "audioUrl"
+    | "voiceId"
+    | "getTranslatedVersion"
+    | "place"
+    | "duration"
+  > {
   title: string;
   text: string;
-  language: string;
-  rating: number;
   audioUrl: string;
   voiceId: string;
-  duration: number;
+  place?: IPlaceTranslated;
+  duration?: number;
 }

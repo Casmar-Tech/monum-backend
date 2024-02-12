@@ -44,7 +44,9 @@ export default async function UpdateUserUserCase({
         fit: "cover",
       })
       .toBuffer();
-    const client = new S3Client({ region: "eu-west-1" });
+    const client = new S3Client({
+      region: "eu-west-1",
+    });
     // Create a command to put a file into an S3 bucket.
     const commandToPut = new PutObjectCommand({
       Body: imageResized,
@@ -57,7 +59,6 @@ export default async function UpdateUserUserCase({
       Bucket: process.env.S3_BUCKET_IMAGES!,
       Key: id,
     });
-    console.log("commandToGet", commandToGet);
     const url = await getSignedUrl(client, commandToGet, { expiresIn: 3600 });
     photo = url;
   }
