@@ -3,7 +3,6 @@ import ICity from "../domain/interfaces/ICity.js";
 import { MongoCityModel } from "../infrastructure/mongoModel/MongoCityModel.js";
 import * as deepl from "deepl-node";
 import Photo from "../domain/valueObjects/Photo.js";
-import { GraphQLError } from "graphql";
 
 interface LanguagesToTranslate {
   language: string;

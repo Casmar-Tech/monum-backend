@@ -1,7 +1,7 @@
 import "../../connection.js";
 import { Types } from "mongoose";
 import sharp from "sharp";
-import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel";
+import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import {
   LARGE_PHOTO_MAX_WIDTH_PX,
   MEDIUM_PHOTO_MAX_WIDTH_PX,

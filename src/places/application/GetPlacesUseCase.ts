@@ -1,7 +1,4 @@
-import {
-  MongoPlaceModel,
-  PlaceSchema,
-} from "../infrastructure/mongoModel/MongoPlaceModel.js";
+import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoPlaceSearchesModel } from "../infrastructure/mongoModel/MongoPlaceSearchesModel.js";
 import { IPlace, IPlaceTranslated } from "../domain/interfaces/IPlace.js";
 import { SortField, SortOrder } from "../domain/types/SortTypes.js";

@@ -1,8 +1,6 @@
 import { model, Schema } from "mongoose";
 import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
 import IPhoto from "../../domain/interfaces/IPhoto.js";
-import { listAllPhotos } from "../s3/photos.js";
-import { ImageSize } from "../../domain/types/ImageTypes.js";
 
 export const Photo = new Schema<IPhoto>({
   url: { type: String, required: true },

@@ -1,6 +1,6 @@
-import { listAllPhotos } from "../../infrastructure/s3/photos";
-import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace";
-import { ImageSize } from "../../domain/types/ImageTypes";
+import { listAllPhotos } from "../../infrastructure/s3/photos.js";
+import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
+import { ImageSize } from "../../domain/types/ImageTypes.js";
 
 const getTranslation = (
   translations: { [key: string]: string },
