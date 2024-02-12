@@ -59,7 +59,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    user(id: String!): User
+    user: User
     verifyToken: Boolean
   }
 `;

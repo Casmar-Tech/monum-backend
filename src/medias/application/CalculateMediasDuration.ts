@@ -41,6 +41,7 @@ async function CalculateMediasDuration() {
       await media.save();
     })
   );
+  console.log("All medias duration calculated!");
 }
 
 CalculateMediasDuration();

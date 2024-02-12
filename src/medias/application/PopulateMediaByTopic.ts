@@ -33,6 +33,9 @@ export default async function PopulateMediaByTopic(
       (Array.isArray(responsesListVoices.Voices) &&
         responsesListVoices.Voices[0].Id) ||
       "";
+
+    const textWillStartWithPlaceName = Math.floor(Math.random() * 2);
+
     const mediaString = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-1106",
       response_format: { type: "json_object" },
@@ -43,8 +46,16 @@ export default async function PopulateMediaByTopic(
         },
         {
           role: "user",
-          content: `I would like you to write me a text about this place of interest: ${placeTranslated.name} located in ${placeTranslated.address.city}.
-          The topic must be about ${topic.topic} and must be aprox 800 words long.
+          content: `I would like you to write me a text about this place of interest: ${
+            placeTranslated.name
+          } located in ${placeTranslated.address.city}.
+          The topic must be about ${
+            topic.topic
+          } and must be aprox 800 words long.${
+            textWillStartWithPlaceName
+              ? " Try not to start the text with the same name of the site of interest."
+              : ""
+          }
 					The answer must have a "title" () and a "text". `,
         },
       ],

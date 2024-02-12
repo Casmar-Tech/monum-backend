@@ -35,6 +35,7 @@ async function main() {
     },
   ]);
   const allMediaTopics = await MongoMediaTopicModel.find();
+  console.log(`Adding media to ${places.length} places...`);
   await Promise.all(
     places.map(async (place) => {
       await Promise.all(

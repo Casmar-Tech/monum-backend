@@ -75,7 +75,6 @@ export async function listAllPhotos(
     Bucket: bucketName,
     Prefix: key,
   };
-  console.log("params", params);
   const data = await s3.send(new ListObjectsV2Command(params));
   if (!Array.isArray(data.Contents)) return [];
   const allKeys = data.Contents?.map((content) => content.Key || "");

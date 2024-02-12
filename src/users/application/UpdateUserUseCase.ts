@@ -62,14 +62,14 @@ export default async function UpdateUserUserCase({
     const url = await getSignedUrl(client, commandToGet, { expiresIn: 3600 });
     photo = url;
   }
-  return await MongoUserModel.findByIdAndUpdate(
+  const userUpdated = await MongoUserModel.findByIdAndUpdate(
     id,
     {
       username,
-      name,
       photo,
       language,
     },
     { new: true }
   );
+  return userUpdated;
 }
