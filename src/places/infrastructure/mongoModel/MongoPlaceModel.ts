@@ -69,49 +69,6 @@ export const PlaceSchema = new Schema<IPlace>(
   { timestamps: true }
 );
 
-PlaceSchema.method(
-  "getTranslatedVersion",
-  async function (
-    language: string,
-    imageSize?: ImageSize
-  ): Promise<IPlaceTranslated> {
-    const getTranslation = (translations: { [key: string]: string }) => {
-      // Try to get the translation for the language
-      if (translations[language]) {
-        return translations[language];
-      }
-      // If the translation for the language is not available, get the first one
-      const anyTranslation = Object.values(translations)[0] || "";
-      return anyTranslation;
-    };
-
-    return {
-      ...this.toObject(),
-      id: this._id.toString(),
-      name: getTranslation(this.nameTranslations),
-      address: {
-        coordinates: {
-          lat: this.address.coordinates.lat,
-          lng: this.address.coordinates.lng,
-        },
-        postalCode: this.address.postalCode,
-        street: this.address.street && getTranslation(this.address.street),
-        city: this.address.city && getTranslation(this.address.city),
-        province:
-          this.address.province && getTranslation(this.address.province),
-        country: this.address.country && getTranslation(this.address.country),
-      },
-      description: this.description && getTranslation(this.description),
-      photos: await listAllPhotos(
-        "monum-place-photos",
-        `places/${this.googleId}`,
-        imageSize || "original"
-      ),
-      mainPhoto: this.mainPhoto?.sizes[imageSize || "original"],
-    };
-  }
-);
-
 export async function createPlaceFromTranslatedPlace(
   place: IPlaceTranslated,
   language: string
