@@ -7,7 +7,7 @@ export const MediaSchema = new Schema<IMedia>(
   {
     placeId: {
       type: Schema.Types.ObjectId,
-      ref: "places-news",
+      ref: "places",
       required: true,
     },
     topicId: {
@@ -93,4 +93,4 @@ export async function createMediaFromSimpleMedia(
   });
 }
 
-export const MongoMediaModel = model("medias-news", MediaSchema);
+export const MongoMediaModel = model("medias", MediaSchema);

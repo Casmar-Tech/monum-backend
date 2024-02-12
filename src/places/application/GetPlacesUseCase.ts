@@ -45,7 +45,7 @@ export default async function GetPlacesUseCase(
     },
     {
       $lookup: {
-        from: "medias-news",
+        from: "medias",
         localField: "_id",
         foreignField: "placeId",
         as: "mediaDocs",

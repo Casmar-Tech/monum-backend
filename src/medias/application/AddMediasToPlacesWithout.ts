@@ -13,7 +13,7 @@ async function main() {
     },
     {
       $lookup: {
-        from: "medias-news", // Asegúrate de que el nombre de la colección es correcto
+        from: "medias", // Asegúrate de que el nombre de la colección es correcto
         localField: "_id",
         foreignField: "placeId",
         as: "mediaDocs",
