@@ -37,11 +37,7 @@ export async function getTranslatedPlace(
     description: place.description
       ? getTranslation(place.description, language)
       : undefined,
-    photos: await listAllPhotos(
-      process.env.S3_BUCKET_PLACES_IMAGES!,
-      `places/${place.googleId}`,
-      imageSize
-    ),
+    photos: await listAllPhotos(`places/${place.googleId}`, imageSize),
     mainPhoto: place.mainPhoto?.sizes[imageSize],
   };
 }
