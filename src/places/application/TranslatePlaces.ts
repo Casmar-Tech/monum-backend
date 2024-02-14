@@ -4,43 +4,28 @@ import deepl, {
 } from "deepl-node";
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import { Languages } from "../../shared/Types.js";
+import { translateStringGoogle } from "../../shared/translations/googleTranslation.js";
+import { translateStringDeepl } from "../../shared/translations/deepl.js";
 
-async function TranslatePlace(placeId: string, outputLanguage: Languages) {
-  let outputLanguageDeepl: TargetLanguageCodeDeepl;
-  switch (outputLanguage) {
-    case "fr_FR":
-      outputLanguageDeepl = "fr";
-      break;
-    case "en_US":
-      outputLanguageDeepl = "en-US";
-      break;
-    case "es_ES":
-      outputLanguageDeepl = "es";
-      break;
-    default:
-      outputLanguageDeepl = "en-US";
-      break;
-  }
+async function TranslatePlace(
+  placeId: string,
+  outputLanguage: Languages,
+  translationPlatform: "deepl" | "google" = "deepl"
+) {
   let place = await MongoPlaceModel.findById(placeId);
   if (!place) {
     throw new Error("Place not found");
   }
   try {
-    const translator = new deepl.Translator(process.env.DEEPL_AUTH_KEY!);
-    const translateString = async (text?: string): Promise<string> => {
-      try {
-        return text
-          ? (await translator.translateText(text, null, outputLanguageDeepl))
-              .text
-          : "";
-      } catch (error) {
-        console.error(error);
-        return text || "";
-      }
-    };
-
+    const translateFunction =
+      translationPlatform === "deepl"
+        ? translateStringDeepl
+        : translateStringGoogle;
     if (!place.nameTranslations[outputLanguage]) {
-      const translatedName = await translateString(place.name);
+      const translatedName = await translateFunction(
+        place.name,
+        outputLanguage
+      );
       place.nameTranslations = {
         ...place.nameTranslations,
         [outputLanguage]: translatedName,
@@ -48,9 +33,10 @@ async function TranslatePlace(placeId: string, outputLanguage: Languages) {
     }
 
     if (place.description && !place.description[outputLanguage]) {
-      const translatedDescription = await translateString(
+      const translatedDescription = await translateFunction(
         place.description?.en_US ||
-          (place.description && Object.values(place.description)[0])
+          (place.description && Object.values(place.description)[0]),
+        outputLanguage
       );
       place.description = {
         ...place.description,
@@ -59,8 +45,9 @@ async function TranslatePlace(placeId: string, outputLanguage: Languages) {
     }
 
     if (!place.address?.city[outputLanguage]) {
-      const translatedCity = await translateString(
-        place.address?.city?.en_US || Object.values(place.address.city)[0]
+      const translatedCity = await translateFunction(
+        place.address?.city?.en_US || Object.values(place.address.city)[0],
+        outputLanguage
       );
       place.address.city = {
         ...place.address.city,
@@ -69,8 +56,10 @@ async function TranslatePlace(placeId: string, outputLanguage: Languages) {
     }
 
     if (!place.address?.country[outputLanguage]) {
-      const translatedCountry = await translateString(
-        place.address?.country?.en_US || Object.values(place.address.country)[0]
+      const translatedCountry = await translateFunction(
+        place.address?.country?.en_US ||
+          Object.values(place.address.country)[0],
+        outputLanguage
       );
       place.address.country = {
         ...place.address.country,
@@ -79,9 +68,10 @@ async function TranslatePlace(placeId: string, outputLanguage: Languages) {
     }
 
     if (place.address.province && !place.address?.province[outputLanguage]) {
-      const translatedProvince = await translateString(
+      const translatedProvince = await translateFunction(
         place.address?.province?.en_US ||
-          (place.address.province && Object.values(place.address.province)[0])
+          (place.address.province && Object.values(place.address.province)[0]),
+        outputLanguage
       );
       place.address.province = {
         ...place.address.province,
@@ -106,7 +96,10 @@ async function TranslatePlace(placeId: string, outputLanguage: Languages) {
   }
 }
 
-async function TranslateAllPlacesWithDescription(outputLanguage: Languages) {
+async function TranslateAllPlacesWithDescription(
+  outputLanguage: Languages,
+  translationPlatform: "deepl" | "google" = "deepl"
+) {
   const query = {
     description: { $exists: true },
     deleted: { $ne: true },
@@ -124,8 +117,8 @@ async function TranslateAllPlacesWithDescription(outputLanguage: Languages) {
   for (const place of places) {
     index++;
     console.log(`Translating place ${index}/${places.length}`);
-    await TranslatePlace(place.id, outputLanguage);
+    await TranslatePlace(place.id, outputLanguage, translationPlatform);
   }
 }
 
-TranslateAllPlacesWithDescription("es_ES");
+// TranslateAllPlacesWithDescription('ca_ES', 'google');

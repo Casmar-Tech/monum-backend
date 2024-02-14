@@ -1,6 +1,6 @@
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoPlaceSearchesModel } from "../infrastructure/mongoModel/MongoPlaceSearchesModel.js";
-import { IPlace, IPlaceTranslated } from "../domain/interfaces/IPlace.js";
+import { IPlaceTranslated } from "../domain/interfaces/IPlace.js";
 import { SortField, SortOrder } from "../domain/types/SortTypes.js";
 import { getTranslatedPlace } from "../domain/functions/Place.js";
 import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
@@ -28,8 +28,30 @@ export default async function GetPlacesUseCase(
   let places = [];
   let query = {
     deleted: { $ne: true },
-    name: { $regex: textSearch || "", $options: "i" },
-    [`nameTranslations.${language}`]: { $exists: true },
+    $or: [
+      { name: { $regex: textSearch || "", $options: "i" } },
+      {
+        $expr: {
+          $gt: [
+            {
+              $size: {
+                $filter: {
+                  input: { $objectToArray: "$nameTranslations" },
+                  cond: {
+                    $regexMatch: {
+                      input: "$$this.v",
+                      regex: textSearch || "",
+                      options: "i",
+                    },
+                  },
+                },
+              },
+            },
+            0,
+          ],
+        },
+      },
+    ],
     [`description.${language}`]: { $exists: true },
     [`address.city.${language}`]: { $exists: true },
     [`address.country.${language}`]: { $exists: true },
