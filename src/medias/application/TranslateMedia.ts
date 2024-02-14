@@ -79,5 +79,5 @@ async function TranslateAllMedias(
   console.log("All medias translated!");
 }
 
-// TranslateAllMedias('ca_ES', 'google');
+// TranslateAllMedias("es_ES", "google");
 // TranslateMedia('65be320dfa2cf40774610ef3', 'fr_FR');

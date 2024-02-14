@@ -10,37 +10,37 @@ const client = new S3Client({
 
 async function CalculateMediasDuration() {
   let medias = await MongoMediaModel.find({ deleted: { $ne: true } });
-  await Promise.all(
-    medias.map(async (media) => {
-      await Promise.all(
-        Object.entries(media.audioUrl).map(async (audio) => {
-          const { Body } = await client.send(
-            new GetObjectCommand({
-              Bucket: process.env.S3_BUCKET_AUDIOS!,
-              Key: audio[1],
-            })
-          );
-          if (!Body) return 0;
-          const chunks: any[] = [];
-          if (Body instanceof Readable) {
-            for await (const chunk of Body) {
-              chunks.push(chunk);
-            }
+  let index = 0;
+  for (const media of medias) {
+    console.log(`Calculating media ${index++} of ${medias.length}`);
+    await Promise.all(
+      Object.entries(media.audioUrl).map(async (audio) => {
+        const { Body } = await client.send(
+          new GetObjectCommand({
+            Bucket: process.env.S3_BUCKET_AUDIOS!,
+            Key: audio[1],
+          })
+        );
+        if (!Body) return 0;
+        const chunks: any[] = [];
+        if (Body instanceof Readable) {
+          for await (const chunk of Body) {
+            chunks.push(chunk);
           }
-          const buffer = Buffer.concat(chunks);
-          const metadata = await mm.parseBuffer(buffer, {
-            mimeType: "audio/mpeg",
-            size: buffer.length,
-          });
-          media.duration = {
-            ...media.duration,
-            [audio[0]]: metadata.format.duration || 0,
-          };
-        })
-      );
-      await media.save();
-    })
-  );
+        }
+        const buffer = Buffer.concat(chunks);
+        const metadata = await mm.parseBuffer(buffer, {
+          mimeType: "audio/mpeg",
+          size: buffer.length,
+        });
+        media.duration = {
+          ...media.duration,
+          [audio[0]]: metadata.format.duration || 0,
+        };
+      })
+    );
+    await media.save();
+  }
   console.log("All medias duration calculated!");
 }
 
