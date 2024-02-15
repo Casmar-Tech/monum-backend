@@ -1,5 +1,7 @@
 import { TranslationServiceClient } from "@google-cloud/translate";
 import { Languages } from "../Types";
+import dotenv from "dotenv";
+dotenv.config();
 
 const translationClient = new TranslationServiceClient();
 const projectId = process.env.GOOGLE_PROJECT_ID;
