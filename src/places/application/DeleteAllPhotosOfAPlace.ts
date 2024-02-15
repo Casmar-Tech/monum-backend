@@ -4,7 +4,7 @@ import {
   ListObjectsV2Command,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel";
+import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 
 const bucketName = process.env.S3_BUCKET_PLACES_IMAGES!;
 
