@@ -1,17 +1,17 @@
 import { MongoRouteModel } from "../infrastructure/mongoModel/MongoRouteModel.js";
-import { IRoute } from "../domain/IRoute.js";
+import { IRouteTranslated } from "../domain/interfaces/IRoute.js";
+import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
+import { getTranslatedRoute } from "../domain/functions/Route.js";
 
 export default async function GetRoutesByFiltersUseCase(
+  userId: string,
   cityId: string,
-  language: string,
   textSearch: string
-): Promise<IRoute[]> {
+): Promise<IRouteTranslated[]> {
+  const user = await GetUserByIdUseCase(userId);
   const query = {};
   if (cityId) {
     Object.assign(query, { cityId });
-  }
-  if (language) {
-    Object.assign(query, { language: language.replace("_", "-") });
   }
   if (textSearch) {
     Object.assign(query, {
@@ -21,5 +21,10 @@ export default async function GetRoutesByFiltersUseCase(
       ],
     });
   }
-  return MongoRouteModel.find(query);
+  const routes = await MongoRouteModel.find(query);
+  return await Promise.all(
+    routes.map(
+      async (route) => await getTranslatedRoute(route.toObject(), user.language)
+    )
+  );
 }

@@ -1,55 +1,90 @@
-import PopulateRoutesUseCase from '../../application/PopulateRoutesUseCase.js';
-import GetRouteByIdUseCase from '../../application/GetRouteByIdUseCase.js';
-import GetRoutesByFiltersUseCase from '../../application/GetRoutesByFiltersUseCase.js';
-import { checkToken } from '../../../middleware/auth.js';
-import { IRoute } from '../../domain/IRoute.js';
-import { ApolloError } from 'apollo-server-errors';
+import GetRouteByIdUseCase from "../../application/GetRouteByIdUseCase.js";
+import GetRoutesByFiltersUseCase from "../../application/GetRoutesByFiltersUseCase.js";
+import { checkToken } from "../../../middleware/auth.js";
+import { IRoute } from "../../domain/interfaces/IRoute.js";
+import { ApolloError } from "apollo-server-errors";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { IMediaTranslated } from "../../../medias/domain/interfaces/IMedia.js";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { IPlaceTranslated } from "../../../places/domain/interfaces/IPlace.js";
+const client = new S3Client({
+  region: "eu-west-1",
+});
 
 const resolvers = {
-	Route: {
-		stopsCount: (parent: IRoute) => parent.stops.length,
-	},
-	Mutation: {
-		populateRoutes: async (
-			parent: any,
-			args: { place: string; topic: string; stops?: number; number?: number },
-			{ token }: { token: string },
-		) => {
-			checkToken(token);
-			return PopulateRoutesUseCase({
-				place: args.place,
-				topic: args.topic,
-				stops: args.stops,
-				number: args.number,
-			});
-		},
-	},
+  Media: {
+    audioUrl: async (parent: IMediaTranslated) => {
+      const commandToGet = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_AUDIOS!,
+        Key: parent.audioUrl,
+      });
+      const url = await getSignedUrl(client, commandToGet, {
+        expiresIn: 3600,
+      });
+      return url;
+    },
+  },
 
-	Query: {
-		route: async (
-			parent: any,
-			args: { id: string },
-			{ token }: { token: string },
-		) => {
-			const { id: userId } = checkToken(token);
-			if (!userId) throw new ApolloError('User not found', 'USER_NOT_FOUND');
-			const route = await GetRouteByIdUseCase(userId, args.id);
-			return route;
-		},
-		routes: async (
-			parent: any,
-			args: { cityId: string; language: string; textSearch: string },
-			{ token }: { token: string },
-		) => {
-			checkToken(token);
-			const routes = await GetRoutesByFiltersUseCase(
-				args.cityId,
-				args.language || 'en_US',
-				args.textSearch,
-			);
-			return routes;
-		},
-	},
+  Place: {
+    imagesUrl: async (parent: IPlaceTranslated) => {
+      const allPhotos: string[] = [];
+      if (parent.mainPhoto) allPhotos.push(parent.mainPhoto);
+      if (Array.isArray(parent.photos)) allPhotos.push(...parent.photos);
+
+      const allPhotosUnique = Array.from(new Set(allPhotos)).slice(0, 5);
+
+      return await Promise.all(
+        allPhotosUnique?.map(async (photo) => {
+          const commandToGet = new GetObjectCommand({
+            Bucket: process.env.S3_BUCKET_PLACES_IMAGES!,
+            Key: photo,
+          });
+          const url = await getSignedUrl(client, commandToGet, {
+            expiresIn: 3600 * 24,
+          });
+          return url;
+        })
+      );
+    },
+    importance: (parent: IPlaceTranslated) =>
+      parent.importance
+        ? parent.importance === 10
+          ? 6
+          : Math.ceil(parent.importance / 2)
+        : 0,
+    rating: (parent: IPlaceTranslated) => parent.rating || 0,
+  },
+
+  Route: {
+    stopsCount: (parent: IRoute) => parent.stops.length,
+  },
+
+  Query: {
+    route: async (
+      parent: any,
+      args: { id: string },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      const route = await GetRouteByIdUseCase(userId, args.id);
+      return route;
+    },
+    routes: async (
+      parent: any,
+      args: { cityId: string; textSearch: string },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      const routes = await GetRoutesByFiltersUseCase(
+        userId,
+        args.cityId,
+        args.textSearch
+      );
+      return routes;
+    },
+  },
 };
 
 export default resolvers;

@@ -7,7 +7,7 @@ import {
 import { MongoPlaceModel } from "../../places/infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
 import { ApolloError } from "apollo-server-errors";
-import { IMediaTopic } from "../domain/IMediaTopic.js";
+import { IMediaTopic } from "../domain/interfaces/IMediaTopic.js";
 import { getTranslatedPlace } from "../../places/domain/functions/Place.js";
 
 export default async function PopulateMediaByTopic(

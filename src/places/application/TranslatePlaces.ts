@@ -128,4 +128,4 @@ async function TranslateAllPlacesWithDescription(
   }
 }
 
-// TranslateAllPlacesWithDescription("ca_ES", "google");
+// TranslateAllPlacesWithDescription("fr_FR", "google");

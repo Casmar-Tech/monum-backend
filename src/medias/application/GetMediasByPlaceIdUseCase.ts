@@ -1,6 +1,7 @@
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
-import { IMediaTranslated } from "../domain/IMedia.js";
+import { IMediaTranslated } from "../domain/interfaces/IMedia.js";
 import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
+import { getTranslatedMedia } from "../domain/functions/Media.js";
 
 export default async function GetMediasByPlaceIdUseCase(
   userId: string,
@@ -12,5 +13,10 @@ export default async function GetMediasByPlaceIdUseCase(
     Object.assign(query, { placeId });
   }
   const medias = await MongoMediaModel.find(query);
-  return medias.map((media) => media.getTranslatedVersion(user.language));
+  const translatedMedias = await Promise.all(
+    medias.map(
+      async (media) => await getTranslatedMedia(media.toObject(), user.language)
+    )
+  );
+  return translatedMedias;
 }

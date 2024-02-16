@@ -3,12 +3,10 @@ import GetMediaByIdUseCase from "../../application/GetMediaByIdUseCase.js";
 import GetMediasByPlaceIdUseCase from "../../application/GetMediasByPlaceIdUseCase.js";
 import TranslateMedia from "../../application/TranslateMedia.js";
 import UpdateMediaAndAssociatedRoutesUseCase from "../../application/UpdateMediaAndAssociatedRoutesUseCase.js";
-import { IMedia, IMediaTranslated } from "../../domain/IMedia";
+import { IMedia, IMediaTranslated } from "../../domain/interfaces/IMedia.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import mm from "music-metadata";
-import { Readable } from "stream";
 
 const client = new S3Client({
   region: "eu-west-1",

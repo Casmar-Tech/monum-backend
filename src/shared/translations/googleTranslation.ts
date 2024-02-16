@@ -33,7 +33,7 @@ export async function translateStringGoogle(
       parent: `projects/${projectId}/locations/${location}`,
       contents: [text],
       mimeType: "text/plain",
-      sourceLanguageCode: "en",
+      sourceLanguageCode: outputLanguageGoogle === "en" ? null : "en",
       targetLanguageCode: outputLanguageGoogle,
     };
 

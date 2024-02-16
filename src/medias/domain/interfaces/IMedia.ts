@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import {
   IPlace,
   IPlaceTranslated,
-} from "../../places/domain/interfaces/IPlace";
+} from "../../../places/domain/interfaces/IPlace";
 export interface IMedia {
   _id?: Types.ObjectId;
   id?: String;
@@ -27,19 +27,12 @@ export interface IMedia {
   createdAt: Date;
   updatedAt: Date;
   place?: IPlace;
-  getTranslatedVersion: (language: string) => IMediaTranslated;
 }
 
 export interface IMediaTranslated
   extends Omit<
     IMedia,
-    | "title"
-    | "text"
-    | "audioUrl"
-    | "voiceId"
-    | "getTranslatedVersion"
-    | "place"
-    | "duration"
+    "title" | "text" | "audioUrl" | "voiceId" | "place" | "duration"
   > {
   title: string;
   text: string;

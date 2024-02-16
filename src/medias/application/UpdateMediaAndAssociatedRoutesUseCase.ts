@@ -1,6 +1,6 @@
 import { MongoRouteModel } from "../../routes/infrastructure/mongoModel/MongoRouteModel.js";
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
-import { IMedia } from "../domain/IMedia.js";
+import { IMedia } from "../domain/interfaces/IMedia.js";
 import { getTrip } from "../../routes/infrastructure/osrm/GetTrip.js";
 import { getRoute } from "../../routes/infrastructure/osrm/GetRoute.js";
 import { ApolloError } from "apollo-server-errors";
