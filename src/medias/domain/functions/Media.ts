@@ -1,5 +1,5 @@
-import { getTranslatedPlace } from "../../../places/domain/functions/Place";
-import { IMedia, IMediaTranslated } from "../interfaces/IMedia";
+import { getTranslatedPlace } from "../../../places/domain/functions/Place.js";
+import { IMedia, IMediaTranslated } from "../interfaces/IMedia.js";
 
 const getTranslation = (
   translations: { [key: string]: string },
