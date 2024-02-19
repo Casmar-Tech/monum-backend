@@ -5,6 +5,8 @@ import UpdateUserUseCase from "../../application/UpdateUserUseCase.js";
 import UpdatePasswordUseCase from "../../application/UpdatePasswordUseCase.js";
 import GetUserByIdUseCase from "../../application/GetUserByIdUseCase.js";
 import ResetPasswordUseCase from "../../application/ResetPasswordUseCase.js";
+import VerificateCodeUseCase from "../../application/VerificateCodeUseCase.js";
+import UpdatePasswordWithoutOldUseCase from "../../application/UpdatePasswordWithoutOldUseCase.js";
 import { GraphQLScalarType, Kind } from "graphql";
 import { checkToken } from "../../../middleware/auth.js";
 import IUser from "../../domain/IUser.js";
@@ -51,7 +53,22 @@ interface UpdateUserInput {
 
 interface ResetPasswordInput {
   resetPasswordInput: {
-    emailOrUsername: string;
+    email: string;
+    resend: boolean;
+  };
+}
+
+interface VerificateCodeInput {
+  verificateCodeInput: {
+    code: string;
+    email: string;
+  };
+}
+
+interface UpdatePasswordWithoutOldInput {
+  updatePasswordWithoutOldInput: {
+    newPassword: string;
+    token: string;
   };
 }
 
@@ -132,11 +149,27 @@ const resolvers = {
     },
     resetPassword: async (
       parent: any,
-      { resetPasswordInput: { emailOrUsername } }: ResetPasswordInput
+      { resetPasswordInput: { email, resend } }: ResetPasswordInput
     ) => {
-      return ResetPasswordUseCase({
-        emailOrUsername,
-      });
+      return ResetPasswordUseCase(email, resend);
+    },
+    verificateCode: async (
+      parent: any,
+      { verificateCodeInput: { code, email } }: VerificateCodeInput
+    ) => {
+      return VerificateCodeUseCase(code, email);
+    },
+    updatePasswordWithoutOld: async (
+      parent: any,
+      {
+        updatePasswordWithoutOldInput: { newPassword, token },
+      }: UpdatePasswordWithoutOldInput
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return (
+        (await UpdatePasswordWithoutOldUseCase(userId, newPassword)) && true
+      );
     },
   },
   Query: {

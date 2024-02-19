@@ -109,13 +109,13 @@ async function AddMultipleImagesToPlace(
 }
 
 // AddMultipleImagesToPlace(
-//   "65c36a662aa965fbc7905944",
+//   "65bc06e0073d78313963e72a",
 //   [
-//     "https://4.bp.blogspot.com/-qWVXYHanydg/Ul8CiBW0BHI/AAAAAAAAATg/OkpHhEkNCrc/s1600/IMG_2034.JPG",
-//     "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/46/70/91/pujada-de-sant-domenec.jpg?w=1200&h=-1&s=1",
-//     "https://live.staticflickr.com/5057/5486234301_7ded2ece9d_b.jpg",
-//     "https://i2.wp.com/funitopic.es/wp-content/uploads/2017/09/La-pujada-Ingrid-Llorens-e1506789632606.jpg?fit=900%2C603&ssl=1",
-//     "https://i0.wp.com/xn--lacompaialibredebraavos-yhc.com/wp-content/uploads/2018/07/sant-dom%C3%A8nec-por-Dani-Oliver1.jpg?resize=1500%2C1004&ssl=1",
+//     "https://images.pexels.com/photos/819764/pexels-photo-819764.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+//     "https://images.pexels.com/photos/11328998/pexels-photo-11328998.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+//     "https://images.pexels.com/photos/14576258/pexels-photo-14576258.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+//     "https://images.pexels.com/photos/18506409/pexels-photo-18506409/free-photo-of-punto-de-referencia-iglesia-monumento-espana.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+//     "https://images.pexels.com/photos/11920332/pexels-photo-11920332.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
 //   ],
 //   true
 // );

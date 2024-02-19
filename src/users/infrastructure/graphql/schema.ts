@@ -32,7 +32,18 @@ const typeDefs = gql`
   }
 
   input ResetPasswordInput {
-    emailOrUsername: String!
+    email: String!
+    resend: Boolean
+  }
+
+  input VerificateCodeInput {
+    email: String!
+    code: String!
+  }
+
+  input UpdatePasswordWithoutOldInput {
+    newPassword: String!
+    token: String!
   }
 
   type User {
@@ -56,6 +67,10 @@ const typeDefs = gql`
     updateUser(updateUserInput: UpdateUserInput!): User
     updatePassword(oldPassword: String!, newPassword: String!): Boolean
     resetPassword(resetPasswordInput: ResetPasswordInput!): Boolean
+    verificateCode(verificateCodeInput: VerificateCodeInput!): String
+    updatePasswordWithoutOld(
+      updatePasswordWithoutOldInput: UpdatePasswordWithoutOldInput!
+    ): String
   }
 
   type Query {

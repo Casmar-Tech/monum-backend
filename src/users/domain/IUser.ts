@@ -9,8 +9,11 @@ export default interface IUser {
   name?: string;
   photo?: string;
   hashedPassword?: string;
-  isTemporalPassword?: boolean;
   googleId?: string;
   token?: string;
   language: string;
+  recoveryPasswordHashedCode?: string;
+  lastRecoveryPasswordEmailSent?: Date;
+  lastRecoveryPasswordEmailResent?: Date;
+  recoveryPasswordCodeValidity?: Date;
 }
