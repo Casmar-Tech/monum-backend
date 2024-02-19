@@ -15,7 +15,7 @@ export default async function UpdatePasswordWithoutOldUseCase(
   if (isStrongPassword(newPassword) === false) {
     throw new ApolloError(
       "The password must match the requirements",
-      "passwordNotStrong"
+      "PASSWORD_NOT_STRONG"
     );
   }
   const encryptedPassword = await bcrypt.hash(newPassword, 10);

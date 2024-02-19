@@ -21,7 +21,7 @@ export default async function RegisterUserUseCase({
   if (await MongoUserModel.findOne({ email })) {
     throw new ApolloError(
       `A user is already registered with the email ${email}`,
-      `userAlreadyExists`
+      `USER_ALREADY_EXISTS`
     );
   }
   // Create a username based in the email in case we dont have it
@@ -39,7 +39,7 @@ export default async function RegisterUserUseCase({
   if (isStrongPassword(password) === false) {
     throw new ApolloError(
       "The password must match the requirements",
-      "passwordNotStrong"
+      "PASSWORD_NOT_STRONG"
     );
   }
   //Encrypt password

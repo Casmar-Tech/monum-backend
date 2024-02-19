@@ -22,7 +22,7 @@ export default async function UpdatePasswordUseCase({
     if (isStrongPassword(newPassword) === false) {
       throw new ApolloError(
         "The password must match the requirements",
-        "passwordNotStrong"
+        "PASSWORD_NOT_STRONG"
       );
     }
     const encryptedPassword = await bcrypt.hash(newPassword, 10);
@@ -30,6 +30,6 @@ export default async function UpdatePasswordUseCase({
     return userToUpdate.save();
   } else {
     // If user doesn't exist or it was created by google (without password) or password is incorrect throw error
-    throw new ApolloError("Incorrect password", "incorrectPassword");
+    throw new ApolloError("Incorrect password", "INCORRECT_PASSWORD");
   }
 }
