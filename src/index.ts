@@ -19,6 +19,8 @@ import plansTypeDefs from "./plans/infrastructure/graphql/schema.js";
 import plansResolvers from "./plans/infrastructure/graphql/resolvers.js";
 import organizationsTypeDefs from "./organizations/infrastructure/graphql/schema.js";
 import organizationsResolvers from "./organizations/infrastructure/graphql/resolvers.js";
+import rolesTypeDefs from "./roles/infrastructure/graphql/schema.js";
+import rolesResolvers from "./roles/infrastructure/graphql/resolvers.js";
 
 dotenv.config();
 
@@ -31,6 +33,7 @@ const typeDefs = mergeTypeDefs([
   permissionsTypeDefs,
   plansTypeDefs,
   organizationsTypeDefs,
+  rolesTypeDefs,
 ]);
 const resolvers = mergeResolvers([
   usersResolvers,
@@ -41,6 +44,7 @@ const resolvers = mergeResolvers([
   permissionsResolvers,
   plansResolvers,
   organizationsResolvers,
+  rolesResolvers,
 ]);
 
 interface MyContext {

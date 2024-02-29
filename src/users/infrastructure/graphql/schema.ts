@@ -8,6 +8,8 @@ const typeDefs = gql`
     email: String!
     password: String!
     language: String
+    roleId: String!
+    organizationId: String!
   }
 
   input LoginInput {
@@ -46,6 +48,18 @@ const typeDefs = gql`
     token: String!
   }
 
+  type Permission {
+    id: ID
+    name: String!
+    description: String!
+    action: String!
+    entity: String!
+    max: Int
+    min: Int
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
+
   type User {
     id: ID
     email: String!
@@ -58,6 +72,9 @@ const typeDefs = gql`
     name: String
     photo: String
     hasPassword: Boolean
+    roleId: String
+    organizationId: String
+    permissions: [Permission!]
   }
 
   type Mutation {
@@ -71,11 +88,12 @@ const typeDefs = gql`
     updatePasswordWithoutOld(
       updatePasswordWithoutOldInput: UpdatePasswordWithoutOldInput!
     ): String
+    createNonExpiringToken(loginInput: LoginInput!): User
   }
 
   type Query {
     user: User
-    verifyToken: Boolean
+    verifyToken(token: String): Boolean
   }
 `;
 export default typeDefs;

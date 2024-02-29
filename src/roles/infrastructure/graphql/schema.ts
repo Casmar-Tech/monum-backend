@@ -1,31 +1,29 @@
 import gql from "graphql-tag";
 
 const typeDefs = gql`
-  input PlanInput {
+  input RoleInput {
     name: String!
     description: String!
-    price: Float!
   }
 
-  input CreatePlanInput {
-    plan: PlanInput!
+  input CreateRoleInput {
+    role: RoleInput!
     permissionsIds: [String!]!
   }
 
-  type Plan {
+  type Role {
     id: ID!
     name: String!
     description: String!
-    price: Float!
     permissions: [Permission!]!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
 
   type Mutation {
-    createPlan(createPlanInput: CreatePlanInput!): Plan!
-    addPermissionsToPlan(planId: ID!, permissionsIds: [String!]!): Plan!
-    removePermissionsFromPlan(planId: ID!, permissionsIds: [String!]!): Plan!
+    createRole(createRoleInput: CreateRoleInput!): Role!
+    addPermissionsToRole(roleId: ID!, permissionsIds: [String!]!): Role!
+    removePermissionsFromRole(roleId: ID!, permissionsIds: [String!]!): Role!
   }
 `;
 

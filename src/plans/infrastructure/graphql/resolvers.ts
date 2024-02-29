@@ -1,5 +1,7 @@
 import CreatePlan from "../../application/CreatePlan.js";
 import IPlan from "../../domain/interfaces/IPlan.js";
+import AddPermissionsToPlan from "../../application/AddPermissionsToPlan.js";
+import RemovePermissionsFromPlan from "../../application/RemovePermissionsFromPlan.js";
 
 interface CreatePlanInput {
   createPlanInput: {
@@ -15,6 +17,22 @@ const resolvers = {
       const { plan, permissionsIds } = createPlanInput;
       const createdPlan = await CreatePlan(plan, permissionsIds);
       return createdPlan;
+    },
+    addPermissionsToPlan: async (
+      parent: any,
+      args: { planId: string; permissionsIds: string[] },
+      context: any
+    ) => {
+      const { planId, permissionsIds } = args;
+      return AddPermissionsToPlan(planId, permissionsIds);
+    },
+    removePermissionsFromPlan: async (
+      parent: any,
+      args: { planId: string; permissionsIds: string[] },
+      context: any
+    ) => {
+      const { planId, permissionsIds } = args;
+      return RemovePermissionsFromPlan(planId, permissionsIds);
     },
   },
 };

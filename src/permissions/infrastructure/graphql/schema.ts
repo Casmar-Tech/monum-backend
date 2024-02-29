@@ -8,7 +8,6 @@ const typeDefs = gql`
     entity: String!
     max: Int
     min: Int
-    allowed: Boolean!
   }
 
   input CreatePermissionInput {
@@ -16,20 +15,19 @@ const typeDefs = gql`
   }
 
   type Permission {
-    id: ID!
+    id: ID
     name: String!
     description: String!
     action: String!
     entity: String!
     max: Int
     min: Int
-    allowed: Boolean
     createdAt: DateTime!
     updatedAt: DateTime!
   }
 
   type Mutation {
-    createPermission(CreatePermissionInput: CreatePermissionInput!): Permission!
+    createPermission(createPermissionInput: CreatePermissionInput!): Permission!
   }
 `;
 

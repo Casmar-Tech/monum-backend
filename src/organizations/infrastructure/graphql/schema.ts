@@ -20,11 +20,20 @@ const typeDefs = gql`
     planId: String!
   }
 
+  enum Language {
+    en_US
+    es_ES
+    fr_FR
+    ca_ES
+  }
+
   input OrganizationInput {
     name: String!
     description: String!
     address: AddressInput!
     contacts: [ContactInput!]!
+    availableLanguages: [Language!]!
+    defaultLanguage: Language!
   }
 
   type Contact {
@@ -50,6 +59,8 @@ const typeDefs = gql`
     plan: Plan!
     createdAt: DateTime!
     updatedAt: DateTime!
+    availableLanguages: [Language!]!
+    defaultLanguage: Language!
   }
 
   type Mutation {

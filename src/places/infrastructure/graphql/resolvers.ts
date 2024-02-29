@@ -10,6 +10,7 @@ import { MongoPlaceSearchesModel } from "../../infrastructure/mongoModel/MongoPl
 import { ImageSize } from "../../domain/types/ImageTypes.js";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { Languages } from "../../../shared/Types.js";
 
 const client = new S3Client({
   region: "eu-west-1",
@@ -48,12 +49,17 @@ const resolvers = {
   Query: {
     place: (
       _: any,
-      args: { id: string; imageSize: ImageSize },
+      args: { id: string; imageSize: ImageSize; language?: Languages },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return GetPlaceByIdUseCase(userId, args.id, args.imageSize);
+      return GetPlaceByIdUseCase(
+        userId,
+        args.id,
+        args.imageSize,
+        args.language
+      );
     },
     places: (
       _: any,
@@ -62,6 +68,8 @@ const resolvers = {
         centerCoordinates?: [number, number];
         sortField?: SortField;
         sortOrder?: SortOrder;
+        language?: Languages;
+        imageSize: ImageSize;
       },
       { token }: { token: string }
     ) => {
@@ -77,7 +85,9 @@ const resolvers = {
         args.textSearch,
         args.centerCoordinates,
         args.sortField,
-        args.sortOrder
+        args.sortOrder,
+        args.imageSize,
+        args.language
       );
     },
     placeSearcherSuggestions: async (

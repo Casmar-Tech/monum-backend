@@ -7,6 +7,7 @@ import { IMedia, IMediaTranslated } from "../../domain/interfaces/IMedia.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Languages } from "../../../shared/Types.js";
 
 const client = new S3Client({
   region: "eu-west-1",
@@ -54,21 +55,21 @@ const resolvers = {
   Query: {
     media: (
       parent: any,
-      { id }: { id: string },
+      { id, language }: { id: string; language?: Languages },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new Error("User not found");
-      return GetMediaByIdUseCase(id, userId);
+      return GetMediaByIdUseCase(id, userId, language);
     },
     medias: async (
       parent: any,
-      args: { placeId: string },
+      args: { placeId: string; language?: Languages },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new Error("User not found");
-      return GetMediasByPlaceIdUseCase(userId, args.placeId);
+      return GetMediasByPlaceIdUseCase(userId, args.placeId, args.language);
     },
   },
 };

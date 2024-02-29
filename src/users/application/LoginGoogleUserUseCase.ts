@@ -9,6 +9,8 @@ import {
 import axios from "axios";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import sharp from "sharp";
+import { MongoRoleModel } from "../../roles/infrastructure/mongoModel/MongoRoleModel.js";
+import { ApolloError } from "apollo-server-errors";
 
 interface LoginGoogleUserDTO {
   email: string;

@@ -5,6 +5,8 @@ import { SortField, SortOrder } from "../domain/types/SortTypes.js";
 import { getTranslatedPlace } from "../domain/functions/Place.js";
 import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 import { ImageSize } from "../domain/types/ImageTypes.js";
+import { ApolloError } from "apollo-server-errors";
+import { Languages } from "../../shared/Types.js";
 
 export default async function GetPlacesUseCase(
   userId: string,
@@ -12,10 +14,14 @@ export default async function GetPlacesUseCase(
   centerCoordinates?: [number, number],
   sortField?: SortField,
   sortOrder?: SortOrder,
-  imageSize?: ImageSize
+  imageSize?: ImageSize,
+  language?: Languages
 ): Promise<IPlaceTranslated[]> {
-  const user = await GetUserByIdUseCase(userId);
-  const language = user.language;
+  let userLanguage = language;
+  if (!userLanguage) {
+    const user = await GetUserByIdUseCase(userId);
+    userLanguage = user.language;
+  }
   if (centerCoordinates && textSearch && textSearch !== "") {
     await MongoPlaceSearchesModel.create({
       centerCoordinates: {
@@ -96,7 +102,8 @@ export default async function GetPlacesUseCase(
   }
   return await Promise.all(
     places.map(
-      async (place) => await getTranslatedPlace(place, language, imageSize)
+      async (place) =>
+        await getTranslatedPlace(place, userLanguage || "en_US", imageSize)
     )
   );
 }

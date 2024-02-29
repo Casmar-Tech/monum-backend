@@ -1,16 +1,23 @@
-import { GraphQLError } from 'graphql';
-import IUser from '../domain/IUser.js';
-import { MongoUserModel } from '../infrastructure/mongoModel/MongoUserModel.js';
+import { GraphQLError } from "graphql";
+import { MongoUserModel } from "../infrastructure/mongoModel/MongoUserModel.js";
+import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
+import IUserWithPermissions from "../domain/IUserWithPermissions.js";
 
-export default async function GetUserByIdUseCase(id: string): Promise<IUser> {
-	const user = await MongoUserModel.findById(id);
-	if (!user) {
-		throw new GraphQLError('User not found', {
-			extensions: {
-				code: 'USER_NOT_FOUND',
-				http: { status: 404 },
-			},
-		});
-	}
-	return user;
+export default async function GetUserByIdUseCase(
+  id: string
+): Promise<IUserWithPermissions> {
+  const user = (await MongoUserModel.findById(
+    id
+  ).lean()) as IUserWithPermissions;
+  if (!user || !user._id) {
+    throw new GraphQLError("User not found", {
+      extensions: {
+        code: "USER_NOT_FOUND",
+        http: { status: 404 },
+      },
+    });
+  }
+  const realPermissions = await GetRealPermissionsOfUser(user._id.toString());
+  user.permissions = realPermissions;
+  return user;
 }

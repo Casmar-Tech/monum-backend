@@ -43,6 +43,15 @@ const userSchema = new Schema<IUser>(
     recoveryPasswordCodeValidity: {
       type: Date,
     },
+    roleId: {
+      type: Schema.Types.ObjectId,
+      ref: "roles",
+      required: true,
+    },
+    organizationId: {
+      type: Schema.Types.ObjectId,
+      ref: "organizations",
+    },
   },
   { timestamps: true }
 );

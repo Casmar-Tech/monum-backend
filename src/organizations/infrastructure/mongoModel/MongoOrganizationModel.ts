@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 import { IOrganization } from "../../domain/interfaces/IOrganization.js";
 import { IAddress } from "../../domain/interfaces/IAddress.js";
 import IContact from "../../domain/interfaces/IContact.js";
+import { Languages } from "../../../shared/Types.js";
 import { PlanSchema } from "../../../plans/infrastructure/mongoModel/MongoPlanModel.js";
 
 export const Contact = new Schema<IContact>({
@@ -52,6 +53,14 @@ export const MongoOrganizationSchema = new Schema<IOrganization>(
     },
     name: { type: String, required: true },
     description: { type: String, required: true },
+    availableLanguages: {
+      type: [String],
+      required: true,
+    },
+    defaultLanguage: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

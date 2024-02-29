@@ -9,7 +9,6 @@ export const PermissionSchema = new Schema<IPermission>(
     entity: { type: String, required: true },
     max: { type: Number },
     min: { type: Number },
-    allowed: { type: Boolean, required: true },
   },
   { timestamps: true }
 );

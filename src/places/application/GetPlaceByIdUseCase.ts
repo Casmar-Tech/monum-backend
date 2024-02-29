@@ -8,12 +8,21 @@ import { getTranslatedPlace } from "../domain/functions/Place.js";
 export default async function GetPlaceByIdUseCase(
   userId: string,
   placeId: string,
-  imageSize: ImageSize
+  imageSize: ImageSize,
+  language?: string
 ): Promise<IPlaceTranslated> {
-  const user = await GetUserByIdUseCase(userId);
+  let userLanguage = language;
+  if (!userLanguage) {
+    const user = await GetUserByIdUseCase(userId);
+    userLanguage = user.language;
+  }
   const place = await MongoPlaceModel.findById(placeId);
   if (!place) {
     throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
   }
-  return getTranslatedPlace(place.toObject(), user.language, imageSize);
+  return getTranslatedPlace(
+    place.toObject(),
+    userLanguage || "en_US",
+    imageSize
+  );
 }

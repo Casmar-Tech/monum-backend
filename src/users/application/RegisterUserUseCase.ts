@@ -9,6 +9,8 @@ interface RegisterUserDTO {
   password: string;
   username?: string;
   language?: string;
+  roleId: string;
+  organizationId?: string;
 }
 
 export default async function RegisterUserUseCase({
@@ -16,6 +18,8 @@ export default async function RegisterUserUseCase({
   password,
   username,
   language,
+  roleId,
+  organizationId,
 }: RegisterUserDTO) {
   // See if an old user exists with email attempting to register
   if (await MongoUserModel.findOne({ email })) {
@@ -51,6 +55,8 @@ export default async function RegisterUserUseCase({
     hashedPassword: encryptedPassword,
     createdAt: new Date(),
     language: language || "en_US",
+    roleId,
+    organizationId,
   });
   // Create JWT
   const token = jwt.sign(

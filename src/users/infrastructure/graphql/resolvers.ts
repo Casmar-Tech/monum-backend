@@ -7,6 +7,7 @@ import GetUserByIdUseCase from "../../application/GetUserByIdUseCase.js";
 import ResetPasswordUseCase from "../../application/ResetPasswordUseCase.js";
 import VerificateCodeUseCase from "../../application/VerificateCodeUseCase.js";
 import UpdatePasswordWithoutOldUseCase from "../../application/UpdatePasswordWithoutOldUseCase.js";
+import CreateNonExpiringToken from "../../application/CreateNonExpiringToken.js";
 import { GraphQLScalarType, Kind } from "graphql";
 import { checkToken } from "../../../middleware/auth.js";
 import IUser from "../../domain/IUser.js";
@@ -21,6 +22,8 @@ interface RegisterInput {
     email: string;
     password: string;
     language?: string;
+    roleId: string;
+    organizationId: string;
   };
 }
 
@@ -76,29 +79,42 @@ const resolvers = {
   User: {
     hasPassword: (parent: IUser) => parent.hashedPassword !== undefined,
     photo: async (parent: IUser) => {
-      if (parent.photo) {
-        const client = new S3Client({
-          region: "eu-west-1",
-        });
+      const client = new S3Client({
+        region: "eu-west-1",
+      });
 
-        const commandToGet = new GetObjectCommand({
-          Bucket: process.env.S3_BUCKET_IMAGES!,
-          Key: parent.id,
-        });
-        const url = await getSignedUrl(client, commandToGet, {
-          expiresIn: 3600 * 24,
-        });
-        return url;
-      }
-      return null;
+      const commandToGet = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_IMAGES!,
+        Key: parent.id || parent._id?.toString() || "",
+      });
+      const url = await getSignedUrl(client, commandToGet, {
+        expiresIn: 3600 * 24,
+      });
+      return url;
     },
   },
   Mutation: {
     registerUser: async (
       parent: any,
-      { registerInput: { username, email, password, language } }: RegisterInput
+      {
+        registerInput: {
+          username,
+          email,
+          password,
+          language,
+          roleId,
+          organizationId,
+        },
+      }: RegisterInput
     ) => {
-      return RegisterUserUseCase({ username, email, password, language });
+      return RegisterUserUseCase({
+        username,
+        email,
+        password,
+        language,
+        roleId,
+        organizationId,
+      });
     },
     loginUser: async (
       parent: any,
@@ -170,6 +186,12 @@ const resolvers = {
       return (
         (await UpdatePasswordWithoutOldUseCase(userId, newPassword)) && true
       );
+    },
+    createNonExpiringToken: async (
+      parent: any,
+      { loginInput: { emailOrUsername, password } }: LoginInput
+    ) => {
+      return CreateNonExpiringToken({ emailOrUsername, password });
     },
   },
   Query: {
