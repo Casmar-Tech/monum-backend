@@ -9,6 +9,13 @@ export const PlaceSearchSchema = new Schema<IPlaceSearches>({
   },
 });
 
+PlaceSearchSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+PlaceSearchSchema.set("toJSON", { virtuals: true });
+PlaceSearchSchema.set("toObject", { virtuals: true });
+
 export const MongoPlaceSearchesModel = model(
   "place-searches",
   PlaceSearchSchema

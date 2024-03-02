@@ -1,3 +1,4 @@
+import { Languages } from "../../shared/Types.js";
 import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 import { getTranslatedRoute } from "../domain/functions/Route.js";
 import { IRouteTranslated } from "../domain/interfaces/IRoute.js";
@@ -6,7 +7,8 @@ import { ApolloError } from "apollo-server-errors";
 
 export default async function GetRouteByIdUseCase(
   userId: string,
-  id: string
+  id: string,
+  language?: Languages
 ): Promise<IRouteTranslated> {
   const route = await MongoRouteModel.findById(id);
   const user = await GetUserByIdUseCase(userId);

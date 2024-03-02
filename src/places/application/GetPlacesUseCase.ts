@@ -3,10 +3,11 @@ import { MongoPlaceSearchesModel } from "../infrastructure/mongoModel/MongoPlace
 import { IPlaceTranslated } from "../domain/interfaces/IPlace.js";
 import { SortField, SortOrder } from "../domain/types/SortTypes.js";
 import { getTranslatedPlace } from "../domain/functions/Place.js";
-import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 import { ImageSize } from "../domain/types/ImageTypes.js";
-import { ApolloError } from "apollo-server-errors";
 import { Languages } from "../../shared/Types.js";
+import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
+import { MongoUserModel } from "../../users/infrastructure/mongoModel/MongoUserModel.js";
+import { ApolloError } from "apollo-server-errors";
 
 export default async function GetPlacesUseCase(
   userId: string,
@@ -17,11 +18,11 @@ export default async function GetPlacesUseCase(
   imageSize?: ImageSize,
   language?: Languages
 ): Promise<IPlaceTranslated[]> {
-  let userLanguage = language;
-  if (!userLanguage) {
-    const user = await GetUserByIdUseCase(userId);
-    userLanguage = user.language;
+  const user = await MongoUserModel.findById(userId);
+  if (!user) {
+    throw new ApolloError("User not found", "USER_NOT_FOUND");
   }
+  const userLanguage = language || user.language;
   if (centerCoordinates && textSearch && textSearch !== "") {
     await MongoPlaceSearchesModel.create({
       centerCoordinates: {
@@ -58,12 +59,29 @@ export default async function GetPlacesUseCase(
         },
       },
     ],
-    [`description.${language}`]: { $exists: true },
-    [`address.city.${language}`]: { $exists: true },
-    [`address.country.${language}`]: { $exists: true },
-    [`address.province.${language}`]: { $exists: true },
-    [`address.street.${language}`]: { $exists: true },
+    [`description.${userLanguage}`]: { $exists: true },
+    [`address.city.${userLanguage}`]: { $exists: true },
+    [`address.country.${userLanguage}`]: { $exists: true },
+    [`address.province.${userLanguage}`]: { $exists: true },
+    [`address.street.${userLanguage}`]: { $exists: true },
   };
+  const permissions = await GetRealPermissionsOfUser(userId, "place", "read");
+  const actionPermission = permissions.map((p) => p.action);
+  if (actionPermission.includes("read:any:any")) {
+    query = {
+      ...query,
+    };
+  } else if (actionPermission.includes("read:any:own") && user.organizationId) {
+    Object.assign(query, {
+      organizationId: user.organizationId,
+    });
+  } else if (actionPermission.includes("read:own")) {
+    Object.assign(query, {
+      userId,
+    });
+  } else {
+    return [];
+  }
   const aggregation = [
     {
       $match: query,

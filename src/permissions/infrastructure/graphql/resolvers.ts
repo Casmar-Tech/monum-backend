@@ -1,4 +1,5 @@
 import CreatePermission from "../../application/CreatePermission.js";
+import DeletePermissionAndRemoveFromPlansAndRoles from "../../application/DeletePermissionAndRemoveFromPlansAndRoles.js";
 import IPermission from "../../domain/interfaces/IPermission.js";
 
 interface CreatePermissionInput {
@@ -6,6 +7,7 @@ interface CreatePermissionInput {
     permission: IPermission;
   };
 }
+
 const resolvers = {
   Mutation: {
     createPermission: async (
@@ -17,6 +19,14 @@ const resolvers = {
       const { permission } = createPermissionInput;
       const createdPermission = await CreatePermission(permission);
       return createdPermission;
+    },
+    deletePermission: async (
+      parent: any,
+      args: { id: string },
+      context: any
+    ) => {
+      await DeletePermissionAndRemoveFromPlansAndRoles(args.id);
+      return true;
     },
   },
 };

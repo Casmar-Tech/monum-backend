@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import {
   IPlace,
   IPlaceTranslated,
-} from "../../../places/domain/interfaces/IPlace";
+} from "../../../places/domain/interfaces/IPlace.js";
 export interface IMedia {
   _id?: Types.ObjectId;
   id?: String;

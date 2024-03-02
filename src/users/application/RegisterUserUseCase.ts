@@ -3,6 +3,9 @@ import jwt from "jsonwebtoken";
 import { MongoUserModel } from "../infrastructure/mongoModel/MongoUserModel.js";
 import { ApolloError } from "apollo-server-errors";
 import { isStrongPassword } from "./utils/utils.js";
+import { MongoRoleModel } from "../../roles/infrastructure/mongoModel/MongoRoleModel.js";
+import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
+import IUserWithPermissions from "../domain/IUserWithPermissions.js";
 
 interface RegisterUserDTO {
   email: string;
@@ -20,7 +23,16 @@ export default async function RegisterUserUseCase({
   language,
   roleId,
   organizationId,
-}: RegisterUserDTO) {
+}: RegisterUserDTO): Promise<IUserWithPermissions> {
+  let roleIdToRegister;
+  if (roleId) {
+    roleIdToRegister = roleId;
+  } else {
+    const defaultRole = await MongoRoleModel.findOne({ name: "client" });
+    if (!defaultRole)
+      throw new ApolloError("Default role not found", "DEFAULT_ROLE_NOT_FOUND");
+    roleIdToRegister = defaultRole.id;
+  }
   // See if an old user exists with email attempting to register
   if (await MongoUserModel.findOne({ email })) {
     throw new ApolloError(
@@ -40,6 +52,7 @@ export default async function RegisterUserUseCase({
       }
     }
   }
+
   if (isStrongPassword(password) === false) {
     throw new ApolloError(
       "The password must match the requirements",
@@ -55,7 +68,7 @@ export default async function RegisterUserUseCase({
     hashedPassword: encryptedPassword,
     createdAt: new Date(),
     language: language || "en_US",
-    roleId,
+    roleId: roleIdToRegister,
     organizationId,
   });
   // Create JWT
@@ -65,5 +78,11 @@ export default async function RegisterUserUseCase({
     { expiresIn: "1d" }
   );
   newUser.token = token;
-  return newUser.save();
+  await newUser.save();
+  const userWithPermissions = newUser.toObject() as IUserWithPermissions;
+  const realPermissions = await GetRealPermissionsOfUser(
+    newUser._id.toString()
+  );
+  userWithPermissions.permissions = realPermissions;
+  return userWithPermissions;
 }

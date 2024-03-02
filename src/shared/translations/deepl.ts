@@ -1,5 +1,5 @@
 import deepl, { LanguageCode as LanguageCodeDeepl } from "deepl-node";
-import { Languages } from "../Types";
+import { Languages } from "../Types.js";
 
 const translator = new deepl.Translator(process.env.DEEPL_AUTH_KEY!);
 

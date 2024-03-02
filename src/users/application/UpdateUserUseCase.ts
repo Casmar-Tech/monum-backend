@@ -1,6 +1,5 @@
 import { GraphQLError } from "graphql";
 import { MongoUserModel } from "../infrastructure/mongoModel/MongoUserModel.js";
-import axios from "axios";
 import sharp from "sharp";
 import {
   GetObjectCommand,

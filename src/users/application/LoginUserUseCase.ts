@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import IUser from "../domain/IUser.js";
 import { MongoUserModel } from "../infrastructure/mongoModel/MongoUserModel.js";
 import { ApolloError } from "apollo-server-errors";
+import IUserWithPermissions from "../domain/IUserWithPermissions.js";
+import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
 
 interface LoginUserDTO {
   emailOrUsername: string;
@@ -12,7 +13,7 @@ interface LoginUserDTO {
 export default async function LoginUserUseCase({
   emailOrUsername,
   password,
-}: LoginUserDTO): Promise<IUser> {
+}: LoginUserDTO): Promise<IUserWithPermissions> {
   const user = await MongoUserModel.findOne({
     $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
   });
@@ -35,7 +36,10 @@ export default async function LoginUserUseCase({
     );
 
     user.token = token;
-    return user;
+    const userWithPermissions = user.toObject() as IUserWithPermissions;
+    const realPermissions = await GetRealPermissionsOfUser(user._id.toString());
+    userWithPermissions.permissions = realPermissions;
+    return userWithPermissions;
   } else {
     // If user doesn't exist or it was created by google (without password) or password is incorrect throw error
     throw new ApolloError("Incorrect password", "INCORRECT_PASSWORD");

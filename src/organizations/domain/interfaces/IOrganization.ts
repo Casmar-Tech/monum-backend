@@ -14,6 +14,7 @@ export interface IOrganization {
   plan: IPlan;
   name: string;
   description: string;
+  citiesIds: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }

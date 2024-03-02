@@ -7,4 +7,11 @@ export const MediaTopicSchema = new Schema<IMediaTopic>({
   updatedAt: { type: Date, default: Date.now },
 });
 
+MediaTopicSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+MediaTopicSchema.set("toJSON", { virtuals: true });
+MediaTopicSchema.set("toObject", { virtuals: true });
+
 export const MongoMediaTopicModel = model("media-topics", MediaTopicSchema);

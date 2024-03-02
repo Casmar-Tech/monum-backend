@@ -1,16 +1,10 @@
 import jwt from "jsonwebtoken";
 import { MongoUserModel } from "../infrastructure/mongoModel/MongoUserModel.js";
-import IUser from "../domain/IUser.js";
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import axios from "axios";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import sharp from "sharp";
-import { MongoRoleModel } from "../../roles/infrastructure/mongoModel/MongoRoleModel.js";
-import { ApolloError } from "apollo-server-errors";
+import IUserWithPermissions from "../domain/IUserWithPermissions.js";
+import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
 
 interface LoginGoogleUserDTO {
   email: string;
@@ -26,7 +20,7 @@ export default async function LoginGoogleUserUseCase({
   googleId,
   photo,
   language,
-}: LoginGoogleUserDTO): Promise<IUser> {
+}: LoginGoogleUserDTO): Promise<IUserWithPermissions> {
   try {
     let user = await MongoUserModel.findOne({ email });
     if (!user) {
@@ -78,7 +72,10 @@ export default async function LoginGoogleUserUseCase({
       await client.send(commandToPut);
       user.photo = `https://${process.env.S3_BUCKET_IMAGES}.s3.amazonaws.com/${user.id}`;
     }
-    return user.save();
+    const userWithPermissions = user.toObject() as IUserWithPermissions;
+    const realPermissions = await GetRealPermissionsOfUser(user._id.toString());
+    userWithPermissions.permissions = realPermissions;
+    return userWithPermissions;
   } catch (error) {
     console.log("error", error);
     throw error;

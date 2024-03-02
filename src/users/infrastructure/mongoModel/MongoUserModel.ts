@@ -56,4 +56,11 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
+userSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+userSchema.set("toJSON", { virtuals: true });
+userSchema.set("toObject", { virtuals: true });
+
 export const MongoUserModel = model("users", userSchema);

@@ -25,6 +25,7 @@ export interface IPlace {
   primaryType?: string;
   userRatingCount?: number;
   websiteUri?: string;
+  organizationId: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

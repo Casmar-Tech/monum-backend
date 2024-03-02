@@ -1,5 +1,5 @@
 import { Photo as PexelsPhoto, createClient } from "pexels";
-import ICity from "../domain/interfaces/ICity.js";
+import { ICity } from "../domain/interfaces/ICity.js";
 import { MongoCityModel } from "../infrastructure/mongoModel/MongoCityModel.js";
 import * as deepl from "deepl-node";
 import Photo from "../domain/valueObjects/Photo.js";
@@ -22,15 +22,15 @@ export default async function CreateCityByEnglishNameUseCase(
       { language: "es_ES", deeplLanguage: "es" },
       { language: "fr_FR", deeplLanguage: "fr" },
     ];
-    let translations: Translations = { en_US: englishName };
+    let name: Translations = { en_US: englishName };
     const translator = new deepl.Translator(process.env.DEEPL_AUTH_KEY!);
     for (const language of languagesToTranslate) {
-      const { text: name } = await translator.translateText(
+      const { text: translation } = await translator.translateText(
         englishName,
         null,
         language.deeplLanguage
       );
-      translations[language.language] = name;
+      name[language.language] = translation;
     }
     const pexelsClient = createClient(process.env.PEXELS_API_KEY!);
     let cityPhoto: Photo;
@@ -54,7 +54,7 @@ export default async function CreateCityByEnglishNameUseCase(
       });
     }
     return await MongoCityModel.create({
-      translations,
+      name,
       photo: cityPhoto,
     });
   } catch (error) {

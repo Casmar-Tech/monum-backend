@@ -4,7 +4,7 @@ import {
   LanguageCode as LanguageCodePolly,
   DescribeVoicesCommand,
 } from "@aws-sdk/client-polly"; // ES Modules import
-import { Languages } from "../Types";
+import { Languages } from "../Types.js";
 
 const client = new PollyClient({
   region: "eu-west-1",

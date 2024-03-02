@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { Languages } from "../../shared/Types";
+import { Languages } from "../../shared/Types.js";
 
 export default interface IUser {
   _id?: Types.ObjectId;

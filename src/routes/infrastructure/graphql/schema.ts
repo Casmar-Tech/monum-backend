@@ -1,6 +1,13 @@
 import gql from "graphql-tag";
 
 const typeDefs = gql`
+  enum Language {
+    en_US
+    es_ES
+    fr_FR
+    ca_ES
+  }
+
   type Media {
     id: ID
     place: Place
@@ -52,8 +59,8 @@ const typeDefs = gql`
   }
 
   type Query {
-    route(id: ID!): Route
-    routes(cityId: ID!, textSearch: String): [Route]
+    route(id: ID!, language: Language): Route
+    routes(cityId: ID!, textSearch: String, language: Language): [Route]
   }
 `;
 export default typeDefs;

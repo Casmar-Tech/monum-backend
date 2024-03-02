@@ -22,7 +22,7 @@ async function NewPopulateRoutes(
       {
         $match: {
           deleted: { $ne: true },
-          "address.city.en_US": city.translations.en_US,
+          "address.city.en_US": city.name.en_US,
         },
       },
       {
@@ -66,7 +66,7 @@ async function NewPopulateRoutes(
           content: `I want you to make me a route of ${
             stopsNumber || "10"
           } stops in the city of ${
-            city.translations.en_US
+            city.name.en_US
           } related to the topic ${topic}.
         To make this route you have available the following monuments or places of interest, none more.
         ${places.map((place) => place.name).join(", ")}
@@ -98,7 +98,7 @@ async function NewPopulateRoutes(
             role: "user",
             content: `I have all these text titles related to ${
               place.name
-            } in the city of ${city.translations.en_US}: ${mediasOfPlace
+            } in the city of ${city.name.en_US}: ${mediasOfPlace
               .map((media) => media.title.en_US)
               .join(", ")}.
             I want you to choose the 2 or 3 titles that best represent the topic and return them to me as an array with the property "choosenTitles".

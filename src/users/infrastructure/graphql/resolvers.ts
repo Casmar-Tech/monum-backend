@@ -8,6 +8,7 @@ import ResetPasswordUseCase from "../../application/ResetPasswordUseCase.js";
 import VerificateCodeUseCase from "../../application/VerificateCodeUseCase.js";
 import UpdatePasswordWithoutOldUseCase from "../../application/UpdatePasswordWithoutOldUseCase.js";
 import CreateNonExpiringToken from "../../application/CreateNonExpiringToken.js";
+import GetTouristUserOfOrganization from "../../application/GetTouristUserOfOrganization.js";
 import { GraphQLScalarType, Kind } from "graphql";
 import { checkToken } from "../../../middleware/auth.js";
 import IUser from "../../domain/IUser.js";
@@ -206,6 +207,12 @@ const resolvers = {
       { token }: { token: string }
     ) => {
       return checkToken(token) ? true : false;
+    },
+    getTouristUserOfOrganization: async (
+      parent: any,
+      { organizationId }: { organizationId: string }
+    ) => {
+      return GetTouristUserOfOrganization(organizationId);
     },
   },
 

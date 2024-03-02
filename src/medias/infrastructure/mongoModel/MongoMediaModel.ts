@@ -1,4 +1,4 @@
-import { model, Schema, Types } from "mongoose";
+import { model, Schema } from "mongoose";
 import { IMedia, IMediaTranslated } from "../../domain/interfaces/IMedia.js";
 export const MediaSchema = new Schema<IMedia>(
   {
@@ -63,5 +63,12 @@ export async function createMediaFromSimpleMedia(
     placeId: media.placeId,
   });
 }
+
+MediaSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+MediaSchema.set("toJSON", { virtuals: true });
+MediaSchema.set("toObject", { virtuals: true });
 
 export const MongoMediaModel = model("medias", MediaSchema);

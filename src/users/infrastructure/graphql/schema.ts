@@ -8,8 +8,8 @@ const typeDefs = gql`
     email: String!
     password: String!
     language: String
-    roleId: String!
-    organizationId: String!
+    roleId: String
+    organizationId: String
   }
 
   input LoginInput {
@@ -94,6 +94,7 @@ const typeDefs = gql`
   type Query {
     user: User
     verifyToken(token: String): Boolean
+    getTouristUserOfOrganization(organizationId: String): User
   }
 `;
 export default typeDefs;

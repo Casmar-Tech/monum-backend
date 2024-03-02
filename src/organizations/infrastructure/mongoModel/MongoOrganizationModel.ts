@@ -2,7 +2,6 @@ import { Schema, model } from "mongoose";
 import { IOrganization } from "../../domain/interfaces/IOrganization.js";
 import { IAddress } from "../../domain/interfaces/IAddress.js";
 import IContact from "../../domain/interfaces/IContact.js";
-import { Languages } from "../../../shared/Types.js";
 import { PlanSchema } from "../../../plans/infrastructure/mongoModel/MongoPlanModel.js";
 
 export const Contact = new Schema<IContact>({
@@ -37,7 +36,7 @@ export const Address = new Schema<IAddress>({
   },
 });
 
-export const MongoOrganizationSchema = new Schema<IOrganization>(
+export const OrganizationSchema = new Schema<IOrganization>(
   {
     address: {
       type: Address,
@@ -57,6 +56,10 @@ export const MongoOrganizationSchema = new Schema<IOrganization>(
       type: [String],
       required: true,
     },
+    citiesIds: {
+      type: [Schema.Types.ObjectId],
+      required: true,
+    },
     defaultLanguage: {
       type: String,
       required: true,
@@ -65,7 +68,11 @@ export const MongoOrganizationSchema = new Schema<IOrganization>(
   { timestamps: true }
 );
 
-export const MongoOrganizationModel = model(
-  "organization",
-  MongoOrganizationSchema
-);
+OrganizationSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+OrganizationSchema.set("toJSON", { virtuals: true });
+OrganizationSchema.set("toObject", { virtuals: true });
+
+export const MongoOrganizationModel = model("organization", OrganizationSchema);

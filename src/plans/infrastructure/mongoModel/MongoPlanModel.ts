@@ -12,4 +12,11 @@ export const PlanSchema = new Schema<IPlan>(
   { timestamps: true }
 );
 
+PlanSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+PlanSchema.set("toJSON", { virtuals: true });
+PlanSchema.set("toObject", { virtuals: true });
+
 export const MongoPlanModel = model("plan", PlanSchema);

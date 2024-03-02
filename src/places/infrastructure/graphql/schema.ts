@@ -67,6 +67,7 @@ const typeDefs = gql`
       language: Language
     ): [Place]
     placeSearcherSuggestions(textSearch: String!): [String]
+    getOrganizationIdOfAPlace(placeId: ID!): ID
   }
 
   type Mutation {

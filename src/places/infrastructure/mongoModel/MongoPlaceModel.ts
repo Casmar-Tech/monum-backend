@@ -63,6 +63,7 @@ export const PlaceSchema = new Schema<IPlace>(
     primaryType: { type: String },
     userRatingCount: { type: Number },
     websiteUri: { type: String },
+    organizationId: { type: Schema.Types.ObjectId, ref: "organizations" },
   },
   { timestamps: true }
 );
@@ -108,5 +109,12 @@ export async function createPlaceFromTranslatedPlace(
     },
   });
 }
+
+PlaceSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+PlaceSchema.set("toJSON", { virtuals: true });
+PlaceSchema.set("toObject", { virtuals: true });
 
 export const MongoPlaceModel = model("places", PlaceSchema);

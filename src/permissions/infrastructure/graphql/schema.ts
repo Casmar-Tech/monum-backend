@@ -28,6 +28,7 @@ const typeDefs = gql`
 
   type Mutation {
     createPermission(createPermissionInput: CreatePermissionInput!): Permission!
+    deletePermission(id: ID!): Boolean!
   }
 `;
 

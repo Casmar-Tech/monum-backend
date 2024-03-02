@@ -1,5 +1,5 @@
 import { TranslationServiceClient } from "@google-cloud/translate";
-import { Languages } from "../Types";
+import { Languages } from "../Types.js";
 import dotenv from "dotenv";
 dotenv.config();
 

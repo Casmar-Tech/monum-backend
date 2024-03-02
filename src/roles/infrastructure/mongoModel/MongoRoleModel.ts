@@ -11,4 +11,11 @@ export const RoleSchema = new Schema<IRole>(
   { timestamps: true }
 );
 
+RoleSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+RoleSchema.set("toJSON", { virtuals: true });
+RoleSchema.set("toObject", { virtuals: true });
+
 export const MongoRoleModel = model("role", RoleSchema);

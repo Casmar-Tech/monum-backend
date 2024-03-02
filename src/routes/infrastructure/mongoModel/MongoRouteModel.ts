@@ -30,6 +30,13 @@ export const RouteSchema = new Schema<IRoute>(
   { timestamps: true }
 );
 
+RouteSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+RouteSchema.set("toJSON", { virtuals: true });
+RouteSchema.set("toObject", { virtuals: true });
+
 export async function createRouteFromSimpleRoute(
   route: IRouteTranslated,
   language: string
