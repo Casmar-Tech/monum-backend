@@ -1,5 +1,5 @@
 import { MongoOrganizationModel } from "../../organizations/infrastructure/mongoModel/MongoOrganizationModel.js";
-import { MongoRoleModel } from "../../roles/infrastructure/mongoModel/MongoRoleModel";
+import { MongoRoleModel } from "../../roles/infrastructure/mongoModel/MongoRoleModel.js";
 import IPermission from "../domain/interfaces/IPermission.js";
 import { MongoUserModel } from "../../users/infrastructure/mongoModel/MongoUserModel.js";
 import { ApolloError } from "apollo-server-errors";
