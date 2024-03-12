@@ -71,6 +71,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
+    createPlace(place: CreatePlaceInput!): Place
     updatePlace(id: ID!, placeUpdate: UpdatePlaceInput!): Place
     deletePlace(id: ID!): Boolean
   }
@@ -78,6 +79,13 @@ const typeDefs = gql`
   input CoordinatesInput {
     lat: Float!
     lng: Float!
+  }
+
+  input NameTranslationsInput {
+    en_US: String
+    es_ES: String
+    fr_FR: String
+    ca_ES: String
   }
 
   input AddressInput {
@@ -95,6 +103,13 @@ const typeDefs = gql`
     description: String
     importance: Int
     rating: Float
+  }
+
+  input CreatePlaceInput {
+    name: String!
+    address: AddressInput!
+    description: String!
+    importance: Int!
   }
 `;
 export default typeDefs;
