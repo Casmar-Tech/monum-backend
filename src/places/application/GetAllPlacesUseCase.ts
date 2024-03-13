@@ -23,10 +23,43 @@ export default async function GetAllPlacesUseCase(
       { [`address.city.${userLanguage}`]: { $exists: true } },
     ],
   };
+  // const aggregation = [
+  //   {
+  //     $match: query,
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "medias",
+  //       localField: "_id",
+  //       foreignField: "placeId",
+  //       as: "mediaDocs",
+  //     },
+  //   },
+  //   {
+  //     $addFields: {
+  //       mediaCount: { $size: "$mediaDocs" },
+  //     },
+  //   },
+  //   {
+  //     $match: {
+  //       mediaCount: { $gt: 0 },
+  //     },
+  //   },
+  //   {
+  //     $project: {
+  //       mediaCount: 0,
+  //       mediaDocs: 0,
+  //     },
+  //   },
+  // ];
+  // places = await MongoPlaceModel.aggregate(aggregation);
   places = await MongoPlaceModel.find(query);
   return await Promise.all(
-    places.map(
-      async (place) => await getTranslatedPlace(place, userLanguage || "en_US")
-    )
+    places.map(async (place) => {
+      return await getTranslatedPlace(
+        place.toObject(),
+        userLanguage || "en_US"
+      );
+    })
   );
 }

@@ -124,15 +124,15 @@ const resolvers = {
     ) => {
       return GetOrganizationIdOfAPlace(args.placeId);
     },
-    // getAllPlaces: async (
-    //   parent: any,
-    //   args: {},
-    //   { token }: { token: string }
-    // ) => {
-    //   const { id: userId } = checkToken(token);
-    //   if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-    //   return GetAllPlacesUseCase(userId);
-    // },
+    getAllPlaces: async (
+      parent: any,
+      args: any,
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return GetAllPlacesUseCase(userId);
+    },
   },
   Mutation: {
     createPlace: (
