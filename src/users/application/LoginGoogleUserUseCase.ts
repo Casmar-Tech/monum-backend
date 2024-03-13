@@ -5,6 +5,8 @@ import axios from "axios";
 import sharp from "sharp";
 import IUserWithPermissions from "../domain/IUserWithPermissions.js";
 import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
+import { MongoRoleModel } from "../../roles/infrastructure/mongoModel/MongoRoleModel.js";
+import { ApolloError } from "apollo-server-errors";
 
 interface LoginGoogleUserDTO {
   email: string;
@@ -24,6 +26,16 @@ export default async function LoginGoogleUserUseCase({
   try {
     let user = await MongoUserModel.findOne({ email });
     if (!user) {
+      let defaultRoleId;
+      const defaultRole = await MongoRoleModel.findOne({ name: "tourist" });
+      if (!defaultRole) {
+        throw new ApolloError(
+          "Default role not found",
+          "DEFAULT_ROLE_NOT_FOUND"
+        );
+      }
+      defaultRoleId = defaultRole.id;
+
       let userIsAlreadyTaken = true;
       let username = email.split("@")[0];
       while (userIsAlreadyTaken) {
@@ -40,8 +52,10 @@ export default async function LoginGoogleUserUseCase({
         googleId,
         createdAt: new Date(),
         language: language || "en_US",
+        roleId: defaultRoleId,
       });
     }
+
     const token = jwt.sign(
       { id: user.id, email: user.email.toLowerCase(), username: user.username },
       process.env.SECRET_KEY!,
@@ -72,6 +86,7 @@ export default async function LoginGoogleUserUseCase({
       await client.send(commandToPut);
       user.photo = `https://${process.env.S3_BUCKET_IMAGES}.s3.amazonaws.com/${user.id}`;
     }
+    await user.save();
     const userWithPermissions = user.toObject() as IUserWithPermissions;
     const realPermissions = await GetRealPermissionsOfUser(user._id.toString());
     userWithPermissions.permissions = realPermissions;

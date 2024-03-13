@@ -28,7 +28,7 @@ export default async function RegisterUserUseCase({
   if (roleId) {
     roleIdToRegister = roleId;
   } else {
-    const defaultRole = await MongoRoleModel.findOne({ name: "client" });
+    const defaultRole = await MongoRoleModel.findOne({ name: "tourist" });
     if (!defaultRole)
       throw new ApolloError("Default role not found", "DEFAULT_ROLE_NOT_FOUND");
     roleIdToRegister = defaultRole.id;
