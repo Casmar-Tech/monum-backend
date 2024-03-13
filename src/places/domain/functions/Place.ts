@@ -36,11 +36,13 @@ export async function getTranslatedPlace(
     },
     description: place.description
       ? getTranslation(place.description, language)
-      : undefined,
-    photos: await listAllPhotos(
-      `places/${place.googleId || place._id?.toString()}`,
-      imageSize
-    ),
+      : "",
+    photos: place.mainPhoto
+      ? await listAllPhotos(
+          `places/${place.googleId || place._id?.toString()}`,
+          imageSize
+        )
+      : [],
     mainPhoto: place.mainPhoto?.sizes[imageSize],
   };
 }

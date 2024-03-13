@@ -1,6 +1,7 @@
 import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
 import GetPlaceByIdUseCase from "../../application/GetPlaceByIdUseCase.js";
 import GetPlacesUseCase from "../../application/GetPlacesUseCase.js";
+import GetAllPlacesUseCase from "../../application/GetAllPlacesUseCase.js";
 import DeletePlaceAndAssociatedMediaUseCase from "../../application/DeletePlaceAndAssociatedMediaUseCase.js";
 import UpdatePlaceUseCase from "../../application/UpdatePlaceUseCase.js";
 import CreatePlaceUseCase from "../../application/CreatePlaceUseCase.js";
@@ -123,11 +124,20 @@ const resolvers = {
     ) => {
       return GetOrganizationIdOfAPlace(args.placeId);
     },
+    // getAllPlaces: async (
+    //   parent: any,
+    //   args: {},
+    //   { token }: { token: string }
+    // ) => {
+    //   const { id: userId } = checkToken(token);
+    //   if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+    //   return GetAllPlacesUseCase(userId);
+    // },
   },
   Mutation: {
     createPlace: (
       parent: any,
-      args: { place: IPlace },
+      args: { place: IPlaceTranslated },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
