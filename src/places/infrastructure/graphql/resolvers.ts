@@ -124,7 +124,7 @@ const resolvers = {
     ) => {
       return GetOrganizationIdOfAPlace(args.placeId);
     },
-    getPlaceBySearchAndPaginationUseCase: async (
+    getPlaceBySearchAndPagination: async (
       _: any,
       args: {
         textSearch: string;

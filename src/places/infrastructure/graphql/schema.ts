@@ -79,7 +79,7 @@ const typeDefs = gql`
     ): [Place]
     placeSearcherSuggestions(textSearch: String!): [String]
     getOrganizationIdOfAPlace(placeId: ID!): ID
-    getPlaceBySearchAndPaginationUseCase(
+    getPlaceBySearchAndPagination(
       textSearch: String!
       pageNumber: Int!
       resultsPerPage: Int!
