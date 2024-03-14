@@ -1,7 +1,6 @@
 import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
 import GetPlaceByIdUseCase from "../../application/GetPlaceByIdUseCase.js";
 import GetPlacesUseCase from "../../application/GetPlacesUseCase.js";
-import GetAllPlacesUseCase from "../../application/GetAllPlacesUseCase.js";
 import DeletePlaceAndAssociatedMediaUseCase from "../../application/DeletePlaceAndAssociatedMediaUseCase.js";
 import UpdatePlaceUseCase from "../../application/UpdatePlaceUseCase.js";
 import CreatePlaceUseCase from "../../application/CreatePlaceUseCase.js";
@@ -14,6 +13,7 @@ import { ImageSize } from "../../domain/types/ImageTypes.js";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Languages } from "../../../shared/Types.js";
+import GetPlaceBySearchAndPaginationUseCase from "../../application/GetPlacesBySearchAndPaginationUseCase.js";
 
 const client = new S3Client({
   region: "eu-west-1",
@@ -124,14 +124,23 @@ const resolvers = {
     ) => {
       return GetOrganizationIdOfAPlace(args.placeId);
     },
-    getAllPlaces: async (
-      parent: any,
-      args: any,
+    getPlaceBySearchAndPaginationUseCase: async (
+      _: any,
+      args: {
+        textSearch: string;
+        pageNumber: number;
+        resultsPerPage: number;
+      },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return GetAllPlacesUseCase(userId);
+      return GetPlaceBySearchAndPaginationUseCase(
+        userId,
+        args.textSearch,
+        args.pageNumber,
+        args.resultsPerPage
+      );
     },
   },
   Mutation: {
