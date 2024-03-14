@@ -56,6 +56,17 @@ const typeDefs = gql`
     websiteUri: String
   }
 
+  type PageInfo {
+    totalPages: Int
+    currentPage: Int
+    totalResults: Int
+  }
+
+  type PlaceSearchResults {
+    places: [Place]
+    pageInfo: PageInfo
+  }
+
   type Query {
     place(id: ID!, imageSize: ImageSize, language: Language): Place
     places(
@@ -72,7 +83,7 @@ const typeDefs = gql`
       textSearch: String!
       pageNumber: Int!
       resultsPerPage: Int!
-    ): [Place]
+    ): PlaceSearchResults
   }
 
   type Mutation {

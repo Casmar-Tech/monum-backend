@@ -37,3 +37,12 @@ export interface IPlaceTranslated
   photos?: string[];
   mainPhoto?: string;
 }
+
+export interface IPlacesSearchResults {
+  places: IPlaceTranslated[];
+  pageInfo: {
+    totalPages: number;
+    currentPage: number;
+    totalResults: number;
+  };
+}

@@ -1,5 +1,8 @@
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
-import { IPlaceTranslated } from "../domain/interfaces/IPlace.js";
+import {
+  IPlaceTranslated,
+  IPlacesSearchResults,
+} from "../domain/interfaces/IPlace.js";
 import { getTranslatedPlace } from "../domain/functions/Place.js";
 import { MongoUserModel } from "../../users/infrastructure/mongoModel/MongoUserModel.js";
 import { ApolloError } from "apollo-server-errors";
@@ -9,7 +12,7 @@ export default async function GetPlaceBySearchAndPaginationUseCase(
   searchText: string,
   pageNumber: number,
   resultsPerPage: number
-): Promise<IPlaceTranslated[]> {
+): Promise<IPlacesSearchResults> {
   const skip = (pageNumber - 1) * resultsPerPage;
   const user = await MongoUserModel.findById(userId);
   if (!user) {
@@ -42,5 +45,12 @@ export default async function GetPlaceBySearchAndPaginationUseCase(
       );
     })
   );
-  return placesToReturn;
+  return {
+    places: placesToReturn,
+    pageInfo: {
+      totalPages: totalPages,
+      currentPage: pageNumber,
+      totalResults: totalResults,
+    },
+  };
 }
