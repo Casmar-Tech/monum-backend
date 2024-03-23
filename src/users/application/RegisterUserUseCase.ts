@@ -74,8 +74,7 @@ export default async function RegisterUserUseCase({
   // Create JWT
   const token = jwt.sign(
     { id: newUser.id, email: email.toLowerCase(), username },
-    process.env.SECRET_KEY!,
-    { expiresIn: "1d" }
+    process.env.SECRET_KEY!
   );
   newUser.token = token;
   await newUser.save();

@@ -31,8 +31,7 @@ export default async function VerificateCodeUseCase(
           email: user.email.toLowerCase(),
           username: user.username,
         },
-        process.env.SECRET_KEY!,
-        { expiresIn: "1d" }
+        process.env.SECRET_KEY!
       );
 
       user.token = token;

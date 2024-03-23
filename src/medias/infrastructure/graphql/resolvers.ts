@@ -16,6 +16,7 @@ const client = new S3Client({
 const resolvers = {
   Media: {
     url: async (parent: IMediaTranslated) => {
+      if (!parent.url) return null;
       const commandToGet = new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_AUDIOS!,
         Key: parent.url,
