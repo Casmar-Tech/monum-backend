@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { IMedia, IMediaTranslated } from "../../domain/interfaces/IMedia.js";
+import { MediaTypeValues } from "../../domain/types/MediaType.js";
 export const MediaSchema = new Schema<IMedia>(
   {
     placeId: {
@@ -23,7 +24,7 @@ export const MediaSchema = new Schema<IMedia>(
       required: true,
     },
     rating: { type: Number, required: true },
-    audioUrl: {
+    url: {
       type: Object,
       of: String,
       required: true,
@@ -37,32 +38,16 @@ export const MediaSchema = new Schema<IMedia>(
       type: Object,
       of: Number,
     },
+    type: {
+      type: String,
+      required: true,
+    },
+    format: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
-
-export async function createMediaFromSimpleMedia(
-  media: IMediaTranslated,
-  language: string
-) {
-  return await MongoMediaModel.create({
-    title: {
-      [language]: media.title,
-    },
-    text: {
-      [language]: media.text,
-    },
-    rating: media.rating,
-    audioUrl: {
-      [language]: media.audioUrl,
-    },
-    voiceId: {
-      [language]: media.voiceId,
-    },
-    duration: media.duration,
-    placeId: media.placeId,
-  });
-}
 
 MediaSchema.virtual("id").get(function () {
   return this._id.toHexString();

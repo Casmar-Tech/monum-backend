@@ -13,10 +13,10 @@ const client = new S3Client({
 
 const resolvers = {
   Media: {
-    audioUrl: async (parent: IMediaTranslated) => {
+    url: async (parent: IMediaTranslated) => {
       const commandToGet = new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_AUDIOS!,
-        Key: parent.audioUrl,
+        Key: parent.url,
       });
       const url = await getSignedUrl(client, commandToGet, {
         expiresIn: 3600,

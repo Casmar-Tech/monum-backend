@@ -13,8 +13,9 @@ async function CalculateMediasDuration() {
   let index = 0;
   for (const media of medias) {
     console.log(`Calculating media ${index++} of ${medias.length}`);
+    if (!media.url) continue;
     await Promise.all(
-      Object.entries(media.audioUrl).map(async (audio) => {
+      Object.entries(media.url).map(async (audio) => {
         const { Body } = await client.send(
           new GetObjectCommand({
             Bucket: process.env.S3_BUCKET_AUDIOS!,

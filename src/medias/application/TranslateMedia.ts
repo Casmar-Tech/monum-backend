@@ -5,6 +5,7 @@ import { textToAudio } from "../../shared/textToAudio/polly.js";
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
 import { ApolloError } from "apollo-server-errors";
 import { Languages } from "../../shared/Types.js";
+import { IMedia } from "../domain/interfaces/IMedia.js";
 
 export default async function TranslateMedia(
   id: string,
@@ -14,6 +15,12 @@ export default async function TranslateMedia(
   const media = await MongoMediaModel.findById(id);
   if (!media) {
     throw new ApolloError("Media not found", "MEDIA_NOT_FOUND");
+  }
+  if (media.type === "video") {
+    throw new ApolloError("Video media cannot be translated", "VIDEO_MEDIA");
+  }
+  if (!media.text || !media.text["en_US"]) {
+    throw new ApolloError("Media text not found", "MEDIA_TEXT_NOT_FOUND");
   }
   try {
     const translateFunction =
@@ -28,9 +35,7 @@ export default async function TranslateMedia(
       media.text["en_US"],
       outputLanguage
     );
-    const s3Key = `${media.placeId}/${outputLanguage}/${media._id.toString()}`;
-    const { key, voiceId } = await textToAudio(newText, outputLanguage, s3Key);
-    const mediaTranslated = await MongoMediaModel.findByIdAndUpdate(id, {
+    let mediaToUpdate: Partial<IMedia> = {
       title: {
         ...media.title,
         [outputLanguage]: newTitle,
@@ -39,15 +44,33 @@ export default async function TranslateMedia(
         ...media.text,
         [outputLanguage]: newText,
       },
-      audioUrl: {
-        ...media.audioUrl,
-        [outputLanguage]: key,
-      },
-      voiceId: {
-        ...media.voiceId,
-        [outputLanguage]: voiceId,
-      },
-    });
+    };
+    if (media.type === "audio") {
+      const s3Key = `${
+        media.placeId
+      }/${outputLanguage}/${media._id.toString()}`;
+      const { key, voiceId } = await textToAudio(
+        newText,
+        outputLanguage,
+        s3Key
+      );
+      mediaToUpdate = {
+        ...mediaToUpdate,
+        url: {
+          ...media.url,
+          [outputLanguage]: key,
+        },
+        voiceId: {
+          ...media.voiceId,
+          [outputLanguage]: voiceId,
+        },
+      };
+    }
+    const mediaTranslated = await MongoMediaModel.findByIdAndUpdate(
+      id,
+      mediaToUpdate,
+      { new: true }
+    );
     console.log(`Media ${id} translated to ${outputLanguage}`);
     return mediaTranslated;
   } catch (error) {
@@ -64,7 +87,7 @@ async function TranslateAllMedias(
     $or: [
       { [`title.${outputLanguage}`]: { $exists: false } },
       { [`text.${outputLanguage}`]: { $exists: false } },
-      { [`audioUrl.${outputLanguage}`]: { $exists: false } },
+      { [`url.${outputLanguage}`]: { $exists: false } },
       { [`voiceId.${outputLanguage}`]: { $exists: false } },
     ],
   };

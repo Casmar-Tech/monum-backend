@@ -76,7 +76,7 @@ export default async function PopulateMediaByTopic(
         voiceId: {
           en_US: voiceId,
         },
-        audioUrl: {},
+        url: {},
         topicId: topic._id,
       });
       const s3Key = `${placeId}/en_US/${mediaModel._id.toString()}`;
@@ -93,8 +93,8 @@ export default async function PopulateMediaByTopic(
       const key = response?.SynthesisTask?.OutputUri?.split(
         `${process.env.S3_BUCKET_AUDIOS!}/`
       )[1];
-      if (key) {
-        mediaModel.audioUrl["en_US"] = key;
+      if (key && mediaModel.url) {
+        mediaModel.url["en_US"] = key;
         return mediaModel.save();
       } else {
         throw new ApolloError(

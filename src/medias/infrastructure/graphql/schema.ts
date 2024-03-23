@@ -15,11 +15,18 @@ const typeDefs = gql`
     id: ID
     place: Place
     title: String!
-    text: String!
+    text: String
     rating: Float!
-    audioUrl: String!
-    voiceId: String!
-    duration: Float
+    url: String
+    voiceId: String
+    duration: Float!
+    type: MediaType!
+  }
+
+  enum MediaType {
+    audio
+    video
+    text
   }
 
   enum Language {
@@ -44,7 +51,7 @@ const typeDefs = gql`
     title: String
     text: String
     rating: Float
-    audioUrl: String
+    url: String
     voiceId: String
   }
 `;

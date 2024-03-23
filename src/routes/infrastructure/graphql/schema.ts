@@ -8,17 +8,6 @@ const typeDefs = gql`
     ca_ES
   }
 
-  type Media {
-    id: ID
-    place: Place
-    title: String!
-    text: String!
-    rating: Float!
-    audioUrl: String!
-    voiceId: String!
-    duration: Float
-  }
-
   type Place {
     id: ID
     name: String!

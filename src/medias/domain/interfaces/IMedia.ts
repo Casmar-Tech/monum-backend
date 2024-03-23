@@ -3,6 +3,7 @@ import {
   IPlace,
   IPlaceTranslated,
 } from "../../../places/domain/interfaces/IPlace.js";
+import { MediaType } from "../types/MediaType.js";
 export interface IMedia {
   _id?: Types.ObjectId;
   id?: String;
@@ -11,14 +12,14 @@ export interface IMedia {
   title: {
     [key: string]: string;
   };
-  text: {
+  text?: {
     [key: string]: string;
   };
   rating: number;
-  audioUrl: {
+  url?: {
     [key: string]: string;
   };
-  voiceId: {
+  voiceId?: {
     [key: string]: string;
   };
   duration: {
@@ -27,17 +28,22 @@ export interface IMedia {
   createdAt: Date;
   updatedAt: Date;
   place?: IPlace;
+  type: MediaType;
+  format?: {
+    [key: string]: string;
+  };
 }
 
 export interface IMediaTranslated
   extends Omit<
     IMedia,
-    "title" | "text" | "audioUrl" | "voiceId" | "place" | "duration"
+    "title" | "text" | "url" | "voiceId" | "place" | "duration" | "format"
   > {
   title: string;
-  text: string;
-  audioUrl: string;
-  voiceId: string;
+  text?: string;
+  url?: string;
+  voiceId?: string;
   place?: IPlaceTranslated;
   duration?: number;
+  format?: string;
 }
