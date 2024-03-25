@@ -93,6 +93,7 @@ const typeDefs = gql`
 
   type Query {
     user: User
+    users: [User]
     verifyToken(token: String): Boolean
     getTouristUserOfOrganization(organizationId: String): User
   }

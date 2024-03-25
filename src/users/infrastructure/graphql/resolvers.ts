@@ -4,6 +4,7 @@ import RegisterUserUseCase from "../../application/RegisterUserUseCase.js";
 import UpdateUserUseCase from "../../application/UpdateUserUseCase.js";
 import UpdatePasswordUseCase from "../../application/UpdatePasswordUseCase.js";
 import GetUserByIdUseCase from "../../application/GetUserByIdUseCase.js";
+import GetAllUsersUseCase from "../../application/GetAllUsersUseCase.js";
 import ResetPasswordUseCase from "../../application/ResetPasswordUseCase.js";
 import VerificateCodeUseCase from "../../application/VerificateCodeUseCase.js";
 import UpdatePasswordWithoutOldUseCase from "../../application/UpdatePasswordWithoutOldUseCase.js";
@@ -200,6 +201,11 @@ const resolvers = {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
       return GetUserByIdUseCase(userId);
+    },
+    users: async (parent: any, args: any, { token }: { token: string }) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return GetAllUsersUseCase();
     },
     verifyToken: async (
       parent: any,

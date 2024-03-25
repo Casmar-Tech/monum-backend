@@ -33,7 +33,7 @@ export default async function GetPlaceBySearchAndPaginationUseCase(
   const totalResults = await MongoPlaceModel.countDocuments(query);
   const totalPages = Math.ceil(totalResults / resultsPerPage);
   const places = await MongoPlaceModel.find(query)
-    .sort({ updatedAt: 1 })
+    .sort({ updatedAt: -1 })
     .skip(skip)
     .limit(resultsPerPage);
 
