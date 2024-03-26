@@ -2,12 +2,17 @@ import DeleteMediaAndUpdatedAssociatedRoutesUseCase from "../../application/Dele
 import GetMediaByIdUseCase from "../../application/GetMediaByIdUseCase.js";
 import GetMediasByPlaceIdUseCase from "../../application/GetMediasByPlaceIdUseCase.js";
 import TranslateMedia from "../../application/TranslateMedia.js";
+import CreateMediaUseCase from "../../application/CreateMediaUseCase.js";
 import UpdateMediaAndAssociatedRoutesUseCase from "../../application/UpdateMediaAndAssociatedRoutesUseCase.js";
 import { IMedia, IMediaTranslated } from "../../domain/interfaces/IMedia.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Languages } from "../../../shared/Types.js";
+import { Types } from "mongoose";
+import { IMediaTopic } from "../../domain/interfaces/IMediaTopic.js";
+import GetUserByIdUseCase from "../../../users/application/GetUserByIdUseCase.js";
+import { MediaType } from "../../domain/types/MediaType.js";
 
 const client = new S3Client({
   region: "eu-west-1",
@@ -28,6 +33,29 @@ const resolvers = {
     },
   },
   Mutation: {
+    createMedia: async (
+      parent: any,
+      args: {
+        placeId: string;
+        title: string;
+        text: string;
+        type: MediaType;
+        rating: number;
+      },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      const user = await GetUserByIdUseCase(userId);
+      return CreateMediaUseCase(
+        args.placeId,
+        user.language,
+        args.title,
+        args.text,
+        args.type,
+        args.rating
+      );
+    },
     translateMedia: async (
       parent: any,
       args: { id: string; outputLanguage: any },

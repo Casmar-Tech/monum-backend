@@ -37,6 +37,13 @@ const typeDefs = gql`
   }
 
   type Mutation {
+    createMedia(
+      placeId: ID!
+      title: String!
+      text: String!
+      type: MediaType!
+      rating: Float!
+    ): Media
     translateMedia(mediaId: ID!, outputLanguage: Language!): Media
     updateMedia(id: ID!, mediaUpdate: UpdateMediaInput!): Media
     deleteMedia(id: ID!): Boolean

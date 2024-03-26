@@ -11,7 +11,7 @@ export const MediaSchema = new Schema<IMedia>(
     topicId: {
       type: Schema.Types.ObjectId,
       ref: "media-topics",
-      required: true,
+      required: false,
     },
     title: {
       type: Object,
