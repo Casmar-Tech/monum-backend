@@ -43,7 +43,6 @@ export async function getMediaDuration(mediaId: string, language: Languages) {
     size: buffer.length,
   });
 
-  console.log("duration", metadata.format.duration);
   return metadata.format.duration;
 }
 
