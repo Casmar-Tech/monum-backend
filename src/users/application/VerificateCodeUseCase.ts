@@ -28,7 +28,7 @@ export default async function VerificateCodeUseCase(
       const token = jwt.sign(
         {
           id: user.id,
-          email: user.email.toLowerCase(),
+          email: user.email?.toLowerCase(),
           username: user.username,
         },
         process.env.SECRET_KEY!

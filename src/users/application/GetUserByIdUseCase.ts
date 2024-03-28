@@ -17,7 +17,8 @@ export default async function GetUserByIdUseCase(
       },
     });
   }
-  const realPermissions = await GetRealPermissionsOfUser(user._id.toString());
+  user.id = user._id.toString();
+  const realPermissions = await GetRealPermissionsOfUser(user.id);
   user.permissions = realPermissions;
   return user;
 }

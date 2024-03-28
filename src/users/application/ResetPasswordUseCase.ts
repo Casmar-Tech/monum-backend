@@ -29,7 +29,7 @@ export default async function ResetPasswordUseCase(
   const user = await MongoUserModel.findOne({
     email,
   });
-  if (!user) {
+  if (!user || !user.email || !user.username) {
     return true;
   }
 

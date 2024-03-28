@@ -55,6 +55,12 @@ export default async function LoginGoogleUserUseCase({
         roleId: defaultRoleId,
       });
     }
+    if (!user.email || !user.username) {
+      throw new ApolloError(
+        "User email and username is required",
+        "USER_EMAIL_AND_USERNAME_REQUIRED"
+      );
+    }
 
     const token = jwt.sign(
       { id: user.id, email: user.email.toLowerCase(), username: user.username },

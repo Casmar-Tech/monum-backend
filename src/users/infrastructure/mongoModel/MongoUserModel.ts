@@ -3,8 +3,8 @@ import IUser from "../../domain/IUser.js";
 
 const userSchema = new Schema<IUser>(
   {
-    email: { type: String, required: true, unique: true },
-    username: { type: String, required: true, unique: true },
+    email: { type: String, unique: true, sparse: true },
+    username: { type: String, unique: true, sparse: true },
     hashedPassword: { type: String },
     createdAt: { type: Date, required: true },
     photo: {
@@ -51,6 +51,11 @@ const userSchema = new Schema<IUser>(
     organizationId: {
       type: Schema.Types.ObjectId,
       ref: "organizations",
+    },
+    deviceId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
   },
   { timestamps: true }

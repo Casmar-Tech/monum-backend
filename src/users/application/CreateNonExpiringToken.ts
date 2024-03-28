@@ -20,6 +20,7 @@ export default async function CreateNonExpiringToken({
   // Check if the entered password equals the encrypted password
   if (
     user &&
+    user.email &&
     user.hashedPassword &&
     (await bcrypt.compare(password, user.hashedPassword))
   ) {

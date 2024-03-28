@@ -9,11 +9,15 @@ import ResetPasswordUseCase from "../../application/ResetPasswordUseCase.js";
 import VerificateCodeUseCase from "../../application/VerificateCodeUseCase.js";
 import UpdatePasswordWithoutOldUseCase from "../../application/UpdatePasswordWithoutOldUseCase.js";
 import CreateNonExpiringToken from "../../application/CreateNonExpiringToken.js";
-import GetTouristUserOfOrganization from "../../application/GetTouristUserOfOrganization.js";
+import LoginUserAsGuest from "../../application/LoginUserAsGuest.js";
 import { GraphQLScalarType, Kind } from "graphql";
 import { checkToken } from "../../../middleware/auth.js";
 import IUser from "../../domain/IUser.js";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  HeadObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ApolloError } from "apollo-server-errors";
 import { Languages } from "../../../shared/Types.js";
@@ -77,6 +81,11 @@ interface UpdatePasswordWithoutOldInput {
   };
 }
 
+interface LoginAsGuestInput {
+  deviceId: string;
+  language: string;
+}
+
 const resolvers = {
   User: {
     hasPassword: (parent: IUser) => parent.hashedPassword !== undefined,
@@ -85,14 +94,26 @@ const resolvers = {
         region: "eu-west-1",
       });
 
-      const commandToGet = new GetObjectCommand({
+      const commandToCheck = new HeadObjectCommand({
         Bucket: process.env.S3_BUCKET_IMAGES!,
         Key: parent.id || parent._id?.toString() || "",
       });
-      const url = await getSignedUrl(client, commandToGet, {
-        expiresIn: 3600 * 24,
-      });
-      return url;
+
+      try {
+        await client.send(commandToCheck);
+
+        const commandToGet = new GetObjectCommand({
+          Bucket: process.env.S3_BUCKET_IMAGES!,
+          Key: parent.id || parent._id?.toString() || "",
+        });
+
+        const url = await getSignedUrl(client, commandToGet, {
+          expiresIn: 3600 * 24,
+        });
+        return url;
+      } catch (error) {
+        return null;
+      }
     },
   },
   Mutation: {
@@ -131,6 +152,12 @@ const resolvers = {
       }: LoginGoogleInput
     ) => {
       return LoginGoogleUserUseCase({ email, googleId, name, photo, language });
+    },
+    loginUserAsGuest: async (
+      parent: any,
+      { deviceId, language }: LoginAsGuestInput
+    ) => {
+      return LoginUserAsGuest(deviceId, language);
     },
     updateUser: async (
       parent: any,
@@ -213,12 +240,6 @@ const resolvers = {
       { token }: { token: string }
     ) => {
       return checkToken(token) ? true : false;
-    },
-    getTouristUserOfOrganization: async (
-      parent: any,
-      { organizationId }: { organizationId: string }
-    ) => {
-      return GetTouristUserOfOrganization(organizationId);
     },
   },
 

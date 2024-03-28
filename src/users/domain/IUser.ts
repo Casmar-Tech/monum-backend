@@ -4,8 +4,8 @@ import { Languages } from "../../shared/Types.js";
 export default interface IUser {
   _id?: Types.ObjectId;
   id?: string;
-  email: string;
-  username: string;
+  email?: string;
+  username?: string;
   roleId: Types.ObjectId;
   organizationId?: Types.ObjectId;
   createdAt?: Date;
@@ -19,4 +19,5 @@ export default interface IUser {
   lastRecoveryPasswordEmailSent?: Date;
   lastRecoveryPasswordEmailResent?: Date;
   recoveryPasswordCodeValidity?: Date;
+  deviceId?: string;
 }

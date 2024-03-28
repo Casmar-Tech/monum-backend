@@ -62,9 +62,8 @@ const typeDefs = gql`
 
   type User {
     id: ID
-    email: String!
-    username: String!
-    isTemporalPassword: Boolean
+    email: String
+    username: String
     createdAt: DateTime!
     googleId: String
     token: String
@@ -72,9 +71,10 @@ const typeDefs = gql`
     name: String
     photo: String
     hasPassword: Boolean
-    roleId: String
+    roleId: String!
     organizationId: String
     permissions: [Permission!]
+    deviceId: String
   }
 
   type Mutation {
@@ -89,13 +89,13 @@ const typeDefs = gql`
       updatePasswordWithoutOldInput: UpdatePasswordWithoutOldInput!
     ): String
     createNonExpiringToken(loginInput: LoginInput!): User
+    loginUserAsGuest(deviceId: String!, language: String!): User
   }
 
   type Query {
     user: User
     users: [User]
     verifyToken(token: String): Boolean
-    getTouristUserOfOrganization(organizationId: String): User
   }
 `;
 export default typeDefs;

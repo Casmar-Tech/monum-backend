@@ -28,16 +28,15 @@ export default async function LoginUserUseCase({
     const token = jwt.sign(
       {
         id: user.id,
-        email: user.email.toLowerCase(),
+        email: user.email?.toLowerCase(),
         username: user.username,
       },
       process.env.SECRET_KEY!
     );
 
     user.token = token;
-    const userWithPermissions = user.toObject() as IUserWithPermissions;
     const realPermissions = await GetRealPermissionsOfUser(user._id.toString());
-    userWithPermissions.permissions = realPermissions;
+    const userWithPermissions = { ...user, permissions: realPermissions };
     return userWithPermissions;
   } else {
     // If user doesn't exist or it was created by google (without password) or password is incorrect throw error

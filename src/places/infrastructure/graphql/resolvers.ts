@@ -4,7 +4,6 @@ import GetPlacesUseCase from "../../application/GetPlacesUseCase.js";
 import DeletePlaceAndAssociatedMediaUseCase from "../../application/DeletePlaceAndAssociatedMediaUseCase.js";
 import UpdatePlaceUseCase from "../../application/UpdatePlaceUseCase.js";
 import CreatePlaceUseCase from "../../application/CreatePlaceUseCase.js";
-import GetOrganizationIdOfAPlace from "../../application/GetOrganizationIdOfAPlace.js";
 import { SortField, SortOrder } from "../../domain/types/SortTypes.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { ApolloError } from "apollo-server-errors";
@@ -116,13 +115,6 @@ const resolvers = {
       return Object.keys(placeSuggestionsCounted).sort(
         (a, b) => placeSuggestionsCounted[b] - placeSuggestionsCounted[a]
       );
-    },
-    getOrganizationIdOfAPlace: async (
-      _: any,
-      args: { placeId: string },
-      { token }: { token: string }
-    ) => {
-      return GetOrganizationIdOfAPlace(args.placeId);
     },
     getPlaceBySearchAndPagination: async (
       _: any,
