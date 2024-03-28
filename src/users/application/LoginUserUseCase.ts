@@ -36,7 +36,10 @@ export default async function LoginUserUseCase({
 
     user.token = token;
     const realPermissions = await GetRealPermissionsOfUser(user._id.toString());
-    const userWithPermissions = { ...user, permissions: realPermissions };
+    const userWithPermissions = {
+      ...user.toObject(),
+      permissions: realPermissions,
+    };
     return userWithPermissions;
   } else {
     // If user doesn't exist or it was created by google (without password) or password is incorrect throw error
