@@ -9,19 +9,50 @@ import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js
 import { ApolloError } from "apollo-server-errors";
 import { Languages } from "../../shared/Types";
 import { MediaType } from "../domain/types/MediaType.js";
-import { ObjectId } from "mongoose";
 import {
   getMediaDuration,
   getTranslatedMedia,
 } from "../domain/functions/Media.js";
 import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
 
-export default async function CreateMediaUseCase(
+async function createTextMedia(
   placeId: string,
   language: Languages,
   title: string,
   text: string,
-  type: MediaType,
+  rating: number
+) {
+  const place = await MongoPlaceModel.findById(placeId);
+  if (!place) {
+    throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
+  }
+
+  const titleObj = {
+    [language]: title,
+  };
+  const textObj = {
+    [language]: text,
+  };
+
+  const mediaModel = new MongoMediaModel({
+    placeId,
+    rating,
+    title: titleObj,
+    text: textObj,
+    voiceId: {},
+    url: {},
+    duration: {},
+    type: "text",
+  });
+  await mediaModel.save();
+  return await getTranslatedMedia(mediaModel.toObject(), language);
+}
+
+async function createAudioMedia(
+  placeId: string,
+  language: Languages,
+  title: string,
+  text: string,
   rating: number
 ) {
   const place = await MongoPlaceModel.findById(placeId);
@@ -63,7 +94,7 @@ export default async function CreateMediaUseCase(
         voiceId: voiceIdObj,
         url: {},
         duration: {},
-        type,
+        type: "audio",
         format: "mp3",
       });
       const s3Key = `${placeId}/en_US/${mediaModel._id.toString()}`;
@@ -130,5 +161,23 @@ export default async function CreateMediaUseCase(
   } catch (error) {
     console.log("Error", error);
     throw error;
+  }
+}
+
+export default async function CreateMediaUseCase(
+  placeId: string,
+  language: Languages,
+  title: string,
+  text: string,
+  type: MediaType,
+  rating: number
+) {
+  switch (type) {
+    case "text":
+      return await createTextMedia(placeId, language, title, text, rating);
+    case "audio":
+      return await createAudioMedia(placeId, language, title, text, rating);
+    default:
+      throw new ApolloError("Invalid media type", "INVALID_MEDIA_TYPE");
   }
 }
