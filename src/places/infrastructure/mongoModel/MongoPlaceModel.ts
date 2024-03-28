@@ -64,7 +64,13 @@ export const PlaceSchema = new Schema<IPlace>(
     userRatingCount: { type: Number },
     websiteUri: { type: String },
     organizationId: { type: Schema.Types.ObjectId, ref: "organizations" },
+    deleted: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
+
   { timestamps: true }
 );
 

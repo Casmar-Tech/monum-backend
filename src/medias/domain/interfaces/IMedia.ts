@@ -32,6 +32,7 @@ export interface IMedia {
   format?: {
     [key: string]: string;
   };
+  deleted?: boolean;
 }
 
 export interface IMediaTranslated
@@ -46,4 +47,5 @@ export interface IMediaTranslated
   place?: IPlaceTranslated;
   duration?: number;
   format?: string;
+  deleted?: boolean;
 }

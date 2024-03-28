@@ -45,6 +45,11 @@ export const MediaSchema = new Schema<IMedia>(
     format: {
       type: String,
     },
+    deleted: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   { timestamps: true }
 );
