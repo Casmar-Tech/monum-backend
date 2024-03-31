@@ -29,7 +29,7 @@ export default async function ResetPasswordUseCase(
   const user = await MongoUserModel.findOne({
     email,
   });
-  if (!user || !user.email || !user.username) {
+  if (!user || !user.email || !user.name) {
     return true;
   }
 
@@ -64,7 +64,7 @@ export default async function ResetPasswordUseCase(
   const recoveryPasswordHashedCode = await bcrypt.hash(randomCode, 10);
   user.recoveryPasswordHashedCode = recoveryPasswordHashedCode;
   await user.save();
-  const body = generateEmailHtml(user.username, randomCode, user.language);
+  const body = generateEmailHtml(user.name, randomCode, user.language);
   await sesClient.send(
     new SendEmailCommand({
       Destination: {

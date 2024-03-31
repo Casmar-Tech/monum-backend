@@ -8,7 +8,7 @@ import { ImageSize } from "../../domain/types/ImageTypes.js";
 
 // Define constants for photo sizes
 export const SMALL_PHOTO_MAX_WIDTH_PX = 400;
-export const MEDIUM_PHOTO_MAX_WIDTH_PX = 1200;
+export const MEDIUM_PHOTO_MAX_WIDTH_PX = 1440;
 export const LARGE_PHOTO_MAX_WIDTH_PX = 2400;
 export const ORIGINAL_PHOTO_MAX_WIDTH_PX = 4800;
 

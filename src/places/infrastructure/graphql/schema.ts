@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 const typeDefs = gql`
   enum SortField {
-    rating
     importance
     name
   }
@@ -44,16 +43,8 @@ const typeDefs = gql`
     address: Address!
     description: String!
     importance: Int!
-    rating: Float
     imagesUrl: [String]
-    googleId: String
-    googleMapsUri: String
-    internationalPhoneNumber: String
-    nationalPhoneNumber: String
-    types: [String]
-    primaryType: String
-    userRatingCount: Float
-    websiteUri: String
+    createdBy: User
   }
 
   type PageInfo {
@@ -117,7 +108,6 @@ const typeDefs = gql`
     address: AddressInput
     description: String
     importance: Int
-    rating: Float
   }
 
   input CreatePlaceInput {

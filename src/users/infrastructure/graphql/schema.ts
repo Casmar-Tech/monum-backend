@@ -5,6 +5,7 @@ const typeDefs = gql`
 
   input RegisterInput {
     username: String
+    name: String
     email: String!
     password: String!
     language: String
@@ -64,15 +65,15 @@ const typeDefs = gql`
     id: ID
     email: String
     username: String
+    name: String
     createdAt: DateTime!
     googleId: String
     token: String
     language: String
-    name: String
     photo: String
     hasPassword: Boolean
     roleId: String!
-    organizationId: String
+    organization: Organization
     permissions: [Permission!]
     deviceId: String
   }

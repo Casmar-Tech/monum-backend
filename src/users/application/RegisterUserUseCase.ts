@@ -11,6 +11,7 @@ interface RegisterUserDTO {
   email: string;
   password: string;
   username?: string;
+  name?: string;
   language?: string;
   roleId: string;
   organizationId?: string;
@@ -20,6 +21,7 @@ export default async function RegisterUserUseCase({
   email,
   password,
   username,
+  name,
   language,
   roleId,
   organizationId,
@@ -64,6 +66,7 @@ export default async function RegisterUserUseCase({
   // Build out mongoose model (User)
   const newUser = new MongoUserModel({
     username,
+    name: name || username,
     email: email.toLowerCase(),
     hashedPassword: encryptedPassword,
     createdAt: new Date(),

@@ -54,21 +54,12 @@ export const PlaceSchema = new Schema<IPlace>(
     importance: { type: Number, required: true },
     photos: { type: [Photo] },
     mainPhoto: { type: Photo },
-    rating: { type: Number },
-    googleId: { type: String, unique: true },
-    googleMapsUri: { type: String },
-    internationalPhoneNumber: { type: String },
-    nationalPhoneNumber: { type: String },
-    types: { type: [String], required: true },
-    primaryType: { type: String },
-    userRatingCount: { type: Number },
-    websiteUri: { type: String },
-    organizationId: { type: Schema.Types.ObjectId, ref: "organizations" },
     deleted: {
       type: Boolean,
       required: false,
       default: false,
     },
+    createdBy: { type: Schema.Types.ObjectId, ref: "users", required: true },
   },
 
   { timestamps: true }
@@ -123,4 +114,4 @@ PlaceSchema.virtual("id").get(function () {
 PlaceSchema.set("toJSON", { virtuals: true });
 PlaceSchema.set("toObject", { virtuals: true });
 
-export const MongoPlaceModel = model("places", PlaceSchema);
+export const MongoPlaceModel = model("places-news", PlaceSchema);

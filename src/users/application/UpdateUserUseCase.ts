@@ -21,6 +21,7 @@ export default async function UpdateUserUserCase({
   tokenUserId,
   id,
   username,
+  name,
   photoBase64,
   language,
 }: UpdateUserUseCaseDTO) {
@@ -64,6 +65,7 @@ export default async function UpdateUserUserCase({
     id,
     {
       username,
+      name,
       photo,
       language,
     },

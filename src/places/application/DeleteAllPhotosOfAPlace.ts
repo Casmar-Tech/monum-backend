@@ -18,7 +18,7 @@ export async function DeleteAllPhotosOfAPlace(placeId: string): Promise<void> {
     if (!place) {
       throw new Error("Place not found");
     }
-    const commonKey = `places/${place.googleId || placeId}/`;
+    const commonKey = `places/${placeId}/`;
     // Listar todos los objetos bajo el prefijo commonKey
     const listedObjects = await s3.send(
       new ListObjectsV2Command({

@@ -38,10 +38,7 @@ export async function getTranslatedPlace(
       ? getTranslation(place.description, language)
       : "",
     photos: place.mainPhoto
-      ? await listAllPhotos(
-          `places/${place.googleId || place._id?.toString()}`,
-          imageSize
-        )
+      ? await listAllPhotos(`places/${place._id?.toString()}`, imageSize)
       : [],
     mainPhoto: place.mainPhoto?.sizes[imageSize],
   };

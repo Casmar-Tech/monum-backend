@@ -71,10 +71,6 @@ export default async function GetPlacesUseCase(
     query = {
       ...query,
     };
-  } else if (actionPermission.includes("read:any:own") && user.organizationId) {
-    Object.assign(query, {
-      organizationId: user.organizationId,
-    });
   } else if (actionPermission.includes("read:own")) {
     Object.assign(query, {
       userId,

@@ -21,10 +21,12 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ApolloError } from "apollo-server-errors";
 import { Languages } from "../../../shared/Types.js";
+import { MongoOrganizationModel } from "../../../organizations/infrastructure/mongoModel/MongoOrganizationModel.js";
 
 interface RegisterInput {
   registerInput: {
     username?: string;
+    name: string;
     email: string;
     password: string;
     language?: string;
@@ -115,6 +117,9 @@ const resolvers = {
         return null;
       }
     },
+    organization: async (parent: IUser) => {
+      return MongoOrganizationModel.findById(parent.organizationId);
+    },
   },
   Mutation: {
     registerUser: async (
@@ -122,6 +127,7 @@ const resolvers = {
       {
         registerInput: {
           username,
+          name,
           email,
           password,
           language,
@@ -132,6 +138,7 @@ const resolvers = {
     ) => {
       return RegisterUserUseCase({
         username,
+        name,
         email,
         password,
         language,
@@ -162,7 +169,7 @@ const resolvers = {
     updateUser: async (
       parent: any,
       {
-        updateUserInput: { id, username, photoBase64, language },
+        updateUserInput: { id, username, name, photoBase64, language },
       }: UpdateUserInput,
       { token }: { token: string }
     ) => {
@@ -171,6 +178,7 @@ const resolvers = {
         tokenUserId: user.id || "",
         id,
         username,
+        name,
         photoBase64,
         language,
       });

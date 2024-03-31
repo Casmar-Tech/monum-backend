@@ -31,7 +31,7 @@ async function AddImageToPlace(
 
   const id = new Types.ObjectId();
 
-  const commonKey = `places/${place.googleId || placeId}/${id}`;
+  const commonKey = `places/${placeId}/${id}`;
 
   const metadata = await sharp(photoBuffer).metadata();
   if (!metadata || !metadata.width || !metadata.height) {
@@ -62,10 +62,10 @@ async function AddImageToPlace(
         break;
     }
 
-    const imageResized = sharp(photoBuffer).resize(width).jpeg();
+    const imageResized = sharp(photoBuffer).resize(width).webp();
     const buffer = await imageResized.toBuffer();
 
-    const objectKey = `${commonKey}/${size}.jpeg`;
+    const objectKey = `${commonKey}/${size}.webp`;
 
     const bucketParams = {
       Bucket: bucketName,

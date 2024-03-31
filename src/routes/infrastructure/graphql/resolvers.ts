@@ -7,9 +7,11 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { IMediaTranslated } from "../../../medias/domain/interfaces/IMedia.js";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IPlaceTranslated } from "../../../places/domain/interfaces/IPlace.js";
+
 const client = new S3Client({
   region: "eu-west-1",
 });
+const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
 
 const resolvers = {
   Media: {
@@ -33,27 +35,11 @@ const resolvers = {
       if (Array.isArray(parent.photos)) allPhotos.push(...parent.photos);
 
       const allPhotosUnique = Array.from(new Set(allPhotos)).slice(0, 5);
-
-      return await Promise.all(
-        allPhotosUnique?.map(async (photo) => {
-          const commandToGet = new GetObjectCommand({
-            Bucket: process.env.S3_BUCKET_PLACES_IMAGES!,
-            Key: photo,
-          });
-          const url = await getSignedUrl(client, commandToGet, {
-            expiresIn: 3600 * 24,
-          });
-          return url;
-        })
-      );
+      const cloudFrontUrls = allPhotosUnique.map((photo) => {
+        return `${mediaCloudFrontUrl}/${photo}`;
+      });
+      return cloudFrontUrls;
     },
-    importance: (parent: IPlaceTranslated) =>
-      parent.importance
-        ? parent.importance === 10
-          ? 6
-          : Math.ceil(parent.importance / 2)
-        : 0,
-    rating: (parent: IPlaceTranslated) => parent.rating || 0,
   },
 
   Route: {

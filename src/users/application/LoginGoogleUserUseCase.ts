@@ -46,7 +46,7 @@ export default async function LoginGoogleUserUseCase({
         }
       }
       user = new MongoUserModel({
-        name,
+        name: name || username,
         username,
         email,
         googleId,

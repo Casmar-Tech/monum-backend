@@ -9,14 +9,19 @@ import { checkToken } from "../../../middleware/auth.js";
 import { ApolloError } from "apollo-server-errors";
 import { MongoPlaceSearchesModel } from "../../infrastructure/mongoModel/MongoPlaceSearchesModel.js";
 import { ImageSize } from "../../domain/types/ImageTypes.js";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Languages } from "../../../shared/Types.js";
 import GetPlaceBySearchAndPaginationUseCase from "../../application/GetPlacesBySearchAndPaginationUseCase.js";
+import { MongoUserModel } from "../../../users/infrastructure/mongoModel/MongoUserModel.js";
+import { MongoOrganizationModel } from "../../../organizations/infrastructure/mongoModel/MongoOrganizationModel.js";
+import { getTranslatedOrganization } from "../../../organizations/domain/functions/Organization.js";
+import {
+  GetObjectCommand,
+  HeadObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const client = new S3Client({
-  region: "eu-west-1",
-});
+const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
 
 const resolvers = {
   Place: {
@@ -26,28 +31,50 @@ const resolvers = {
       if (Array.isArray(parent.photos)) allPhotos.push(...parent.photos);
 
       const allPhotosUnique = Array.from(new Set(allPhotos)).slice(0, 5);
-
-      return await Promise.all(
-        allPhotosUnique?.map(async (photo) => {
-          const commandToGet = new GetObjectCommand({
-            Bucket: process.env.S3_BUCKET_PLACES_IMAGES!,
-            Key: photo,
-          });
-          const url = await getSignedUrl(client, commandToGet, {
-            expiresIn: 3600 * 24,
-          });
-          return url;
-        })
-      );
+      const cloudFrontUrls = allPhotosUnique.map((photo) => {
+        return `${mediaCloudFrontUrl}/${photo}`;
+      });
+      return cloudFrontUrls;
     },
-    importance: (parent: IPlaceTranslated) =>
-      parent.importance
-        ? parent.importance === 10
-          ? 6
-          : Math.ceil(parent.importance / 2)
-        : 0,
-    rating: (parent: IPlaceTranslated) => parent.rating || 0,
+    createdBy: async (parent: IPlaceTranslated) => {
+      const createdBy = await MongoUserModel.findById(parent.createdBy);
+      if (!createdBy) return null;
+      const organization = await MongoOrganizationModel.findById(
+        createdBy.organizationId
+      );
+      if (organization) {
+        createdBy.organization = getTranslatedOrganization(
+          organization.toObject(),
+          createdBy.language
+        );
+      }
+      const client = new S3Client({
+        region: "eu-west-1",
+      });
+      const commandToCheck = new HeadObjectCommand({
+        Bucket: process.env.S3_BUCKET_IMAGES!,
+        Key: createdBy.id || createdBy._id?.toString() || "",
+      });
+
+      try {
+        await client.send(commandToCheck);
+
+        const commandToGet = new GetObjectCommand({
+          Bucket: process.env.S3_BUCKET_IMAGES!,
+          Key: createdBy.id || createdBy._id?.toString() || "",
+        });
+
+        const url = await getSignedUrl(client, commandToGet, {
+          expiresIn: 3600 * 24,
+        });
+        createdBy.photo = url;
+      } catch (error) {
+        console.log(error);
+      }
+      return createdBy;
+    },
   },
+
   Query: {
     place: (
       _: any,

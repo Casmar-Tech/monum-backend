@@ -1,5 +1,5 @@
 export default function generateEmailHtml(
-  username: string,
+  name: string,
   verificationCode: string,
   language: string
 ) {
@@ -111,7 +111,7 @@ export default function generateEmailHtml(
       </div>
       <div class="content">
         <h1>${t.title}</h1>
-        <p>${t.greeting} ${username},</p>
+        <p>${t.greeting} ${name},</p>
         <p>${t.intro}</p>
         <h2>${verificationCode}</h2>
         <p>${t.codeValidity}</p>

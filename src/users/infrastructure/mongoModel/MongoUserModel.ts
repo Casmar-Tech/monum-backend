@@ -5,6 +5,7 @@ const userSchema = new Schema<IUser>(
   {
     email: { type: String, unique: true, sparse: true },
     username: { type: String, unique: true, sparse: true },
+    name: { type: String },
     hashedPassword: { type: String },
     createdAt: { type: Date, required: true },
     photo: {

@@ -16,16 +16,7 @@ export interface IPlace {
   importance: number;
   photos?: IPhoto[];
   mainPhoto?: IPhoto;
-  rating?: number;
-  googleId?: string;
-  googleMapsUri?: string;
-  internationalPhoneNumber: string;
-  nationalPhoneNumber: string;
-  types: string[];
-  primaryType?: string;
-  userRatingCount?: number;
-  websiteUri?: string;
-  organizationId: Types.ObjectId;
+  createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
   deleted?: boolean;
