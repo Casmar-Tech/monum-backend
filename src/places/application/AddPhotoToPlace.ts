@@ -109,13 +109,13 @@ async function AddMultipleImagesToPlace(
 }
 
 // AddMultipleImagesToPlace(
-//   "65bc06e0073d78313963e72a",
+//   "65b26b45d1565e2a20b046ce",
 //   [
-//     "https://images.pexels.com/photos/819764/pexels-photo-819764.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-//     "https://images.pexels.com/photos/11328998/pexels-photo-11328998.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-//     "https://images.pexels.com/photos/14576258/pexels-photo-14576258.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-//     "https://images.pexels.com/photos/18506409/pexels-photo-18506409/free-photo-of-punto-de-referencia-iglesia-monumento-espana.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-//     "https://images.pexels.com/photos/11920332/pexels-photo-11920332.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+//     "https://catedraldegirona.cat/wp-content/uploads/2023/08/catedral-de-girona_principal.jpg",
+//     "https://images.pexels.com/photos/11623757/pexels-photo-11623757.jpeg?auto=compress&cs=tinysrgb&w=3024&h=4032&dpr=2",
+//     "https://images.pexels.com/photos/7647910/pexels-photo-7647910.jpeg?auto=compress&cs=tinysrgb&w=3311&h=5523&dpr=2",
+//     "https://img.europapress.es/fotoweb/fotonoticia_20200416172452_1200.jpg",
+//     "https://cf.bstatic.com/xdata/images/hotel/max1024x768/263117963.jpg?k=138e2e7a9fec16cc97adb7dd9f8cc2663186235570ced69ccafdd551902f6888&o=&hp=1",
 //   ],
 //   true
 // );

@@ -4,8 +4,11 @@ import { IPlaceSearches } from "../../domain/interfaces/IPlaceSearches.js";
 export const PlaceSearchSchema = new Schema<IPlaceSearches>({
   textSearch: { type: String, required: true },
   centerCoordinates: {
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
+    type: { type: String, enum: ["Point"], required: true },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
   },
 });
 
@@ -15,6 +18,7 @@ PlaceSearchSchema.virtual("id").get(function () {
 
 PlaceSearchSchema.set("toJSON", { virtuals: true });
 PlaceSearchSchema.set("toObject", { virtuals: true });
+PlaceSearchSchema.index({ centerCoordinates: "2dsphere" });
 
 export const MongoPlaceSearchesModel = model(
   "place-searches",

@@ -4,10 +4,15 @@ import { IOrganizationTranslated } from "../domain/interfaces/IOrganization.js";
 import { MongoOrganizationModel } from "../infrastructure/mongoModel/MongoOrganizationModel.js";
 import { getTranslatedOrganization } from "../domain/functions/Organization.js";
 
-export default async function CreateOrganization(
-  organization: IOrganizationTranslated,
-  planId: string
-): Promise<IOrganizationTranslated> {
+interface CreateOrganizationInput {
+  organization: IOrganizationTranslated;
+  planId: string;
+}
+
+export default async function CreateOrganization({
+  organization,
+  planId,
+}: CreateOrganizationInput): Promise<IOrganizationTranslated> {
   const plan = await MongoPlanModel.findOne({ _id: planId });
   if (!plan) {
     throw new Error("Plan not found");
@@ -18,10 +23,7 @@ export default async function CreateOrganization(
   };
   const address = organization.address;
   const addressComplete: IAddress = {
-    coordinates: {
-      lat: address.coordinates.lat,
-      lng: address.coordinates.lng,
-    },
+    coordinates: address.coordinates,
     street: {
       en_US: address.street || "",
     },

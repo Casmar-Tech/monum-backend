@@ -68,7 +68,6 @@ const typeDefs = gql`
       imageSize: ImageSize
       language: Language
     ): [Place]
-    placeSearcherSuggestions(textSearch: String!): [String]
     getPlaceBySearchAndPagination(
       textSearch: String!
       pageNumber: Int!
@@ -80,11 +79,6 @@ const typeDefs = gql`
     createPlace(place: CreatePlaceInput!): Place
     updatePlace(id: ID!, placeUpdate: UpdatePlaceInput!): Place
     deletePlace(id: ID!): Boolean
-  }
-
-  input CoordinatesInput {
-    lat: Float!
-    lng: Float!
   }
 
   input NameTranslationsInput {

@@ -26,7 +26,7 @@ export async function addPhotosToS3(
   try {
     const buffer = Buffer.from(photo);
 
-    const objectKey = `${photoName}/${size}.jpg`;
+    const objectKey = `${photoName}/${size}.webp`;
 
     // Optional: Check if the object already exists in S3
     const objectExists = await checkIfObjectExists(bucketName, objectKey);

@@ -23,8 +23,11 @@ export const PlaceSchema = new Schema<IPlace>(
     },
     address: {
       coordinates: {
-        lat: { type: Number, required: true },
-        lng: { type: Number, required: true },
+        type: { type: String, enum: ["Point"], required: true },
+        coordinates: {
+          type: [Number],
+          required: true,
+        },
       },
       street: {
         type: Object,
@@ -83,10 +86,7 @@ export async function createPlaceFromTranslatedPlace(
       [language]: place.name,
     },
     address: {
-      coordinates: {
-        lat: place.address.coordinates.lat,
-        lng: place.address.coordinates.lng,
-      },
+      coordinates: place.address.coordinates,
       street: {
         [language]: place.address.street,
       },
@@ -113,5 +113,6 @@ PlaceSchema.virtual("id").get(function () {
 
 PlaceSchema.set("toJSON", { virtuals: true });
 PlaceSchema.set("toObject", { virtuals: true });
+PlaceSchema.index({ "address.coordinates": "2dsphere" });
 
 export const MongoPlaceModel = model("places-news", PlaceSchema);

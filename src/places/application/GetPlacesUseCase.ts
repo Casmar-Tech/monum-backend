@@ -26,10 +26,10 @@ export default async function GetPlacesUseCase(
   if (centerCoordinates && textSearch && textSearch !== "") {
     await MongoPlaceSearchesModel.create({
       centerCoordinates: {
-        lat: centerCoordinates[1],
-        lng: centerCoordinates[0],
+        type: "Point",
+        coordinates: centerCoordinates,
       },
-      textSearch,
+      textSearch: textSearch,
     });
   }
   let places = [];

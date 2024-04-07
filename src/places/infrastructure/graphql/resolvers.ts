@@ -7,7 +7,6 @@ import CreatePlaceUseCase from "../../application/CreatePlaceUseCase.js";
 import { SortField, SortOrder } from "../../domain/types/SortTypes.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { ApolloError } from "apollo-server-errors";
-import { MongoPlaceSearchesModel } from "../../infrastructure/mongoModel/MongoPlaceSearchesModel.js";
 import { ImageSize } from "../../domain/types/ImageTypes.js";
 import { Languages } from "../../../shared/Types.js";
 import GetPlaceBySearchAndPaginationUseCase from "../../application/GetPlacesBySearchAndPaginationUseCase.js";
@@ -20,8 +19,20 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { IAddressTranslated } from "../../domain/interfaces/IAddress.js";
 
 const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
+
+interface IAddressInput extends Omit<IAddressTranslated, "coordinates"> {
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
+interface IPlaceInput extends Omit<IPlaceTranslated, "address"> {
+  address: IAddressInput;
+}
 
 const resolvers = {
   Place: {
@@ -73,6 +84,15 @@ const resolvers = {
       }
       return createdBy;
     },
+    address: (parent: IPlaceTranslated) => {
+      return {
+        ...parent.address,
+        coordinates: {
+          lat: parent.address.coordinates.coordinates[1],
+          lng: parent.address.coordinates.coordinates[0],
+        },
+      };
+    },
   },
 
   Query: {
@@ -119,30 +139,6 @@ const resolvers = {
         args.language
       );
     },
-    placeSearcherSuggestions: async (
-      _: any,
-      args: { textSearch: string },
-      { token }: { token: string }
-    ) => {
-      checkToken(token);
-      const placeSearcherSuggestions = await MongoPlaceSearchesModel.find({
-        textSearch: { $regex: args.textSearch, $options: "i" },
-      });
-      const placeSuggestionsCounted = placeSearcherSuggestions.reduce(
-        (acc, curr) => {
-          if (acc[curr.textSearch]) {
-            acc[curr.textSearch]++;
-          } else {
-            acc[curr.textSearch] = 1;
-          }
-          return acc;
-        },
-        {} as { [key: string]: number }
-      );
-      return Object.keys(placeSuggestionsCounted).sort(
-        (a, b) => placeSuggestionsCounted[b] - placeSuggestionsCounted[a]
-      );
-    },
     getPlaceBySearchAndPagination: async (
       _: any,
       args: {
@@ -165,12 +161,24 @@ const resolvers = {
   Mutation: {
     createPlace: (
       parent: any,
-      args: { place: IPlaceTranslated },
+      args: { place: IPlaceInput },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return CreatePlaceUseCase(userId, args.place);
+      return CreatePlaceUseCase(userId, {
+        ...args.place,
+        address: {
+          ...args.place.address,
+          coordinates: {
+            type: "Point",
+            coordinates: [
+              args.place.address.coordinates.lng,
+              args.place.address.coordinates.lat,
+            ],
+          },
+        },
+      });
     },
     updatePlace: (
       parent: any,

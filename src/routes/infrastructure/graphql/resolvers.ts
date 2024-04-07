@@ -40,6 +40,15 @@ const resolvers = {
       });
       return cloudFrontUrls;
     },
+    address: (parent: IPlaceTranslated) => {
+      return {
+        ...parent.address,
+        coordinates: {
+          lat: parent.address.coordinates.coordinates[1],
+          lng: parent.address.coordinates.coordinates[0],
+        },
+      };
+    },
   },
 
   Route: {

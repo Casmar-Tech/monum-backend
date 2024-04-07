@@ -12,8 +12,11 @@ export const Contact = new Schema<IContact>({
 
 export const Address = new Schema<IAddress>({
   coordinates: {
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
+    type: { type: String, enum: ["Point"], required: true },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
   },
   street: {
     type: Object,
@@ -74,5 +77,6 @@ OrganizationSchema.virtual("id").get(function () {
 
 OrganizationSchema.set("toJSON", { virtuals: true });
 OrganizationSchema.set("toObject", { virtuals: true });
+OrganizationSchema.index({ "address.coordinates": "2dsphere" });
 
 export const MongoOrganizationModel = model("organization", OrganizationSchema);

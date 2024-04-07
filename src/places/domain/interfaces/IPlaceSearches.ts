@@ -4,7 +4,7 @@ export interface IPlaceSearches {
   _id?: Types.ObjectId;
   textSearch: string;
   centerCoordinates: {
-    lat: number;
-    lng: number;
+    type: string;
+    coordinates: number[];
   };
 }

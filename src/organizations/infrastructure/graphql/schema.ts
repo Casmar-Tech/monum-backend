@@ -1,12 +1,18 @@
 import gql from "graphql-tag";
 
 const typeDefs = gql`
+  input CoordinatesInput {
+    lng: Float!
+    lat: Float!
+  }
+
   input AddressInput {
     street: String!
     city: String!
     postalCode: String!
     province: String!
     country: String!
+    coordinates: CoordinatesInput!
   }
 
   input ContactInput {
