@@ -4,6 +4,7 @@ import {
   DescribeVoicesCommand,
   LanguageCode,
 } from "@aws-sdk/client-polly";
+import { Buffer } from "buffer";
 import { MongoPlaceModel } from "../../places/infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
 import { ApolloError } from "apollo-server-errors";
@@ -13,7 +14,11 @@ import {
   getMediaDuration,
   getTranslatedMedia,
 } from "../domain/functions/Media.js";
-import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  HeadObjectCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 
 async function createTextMedia(
   placeId: string,
@@ -164,19 +169,116 @@ async function createAudioMedia(
   }
 }
 
+async function createVideoMedia(
+  placeId: string,
+  language: Languages,
+  title: string,
+  rating: number,
+  videoBase64: string
+) {
+  const place = await MongoPlaceModel.findById(placeId);
+  if (!place) {
+    throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
+  }
+  const s3Client = new S3Client({ region: "eu-west-1" });
+
+  // Decode base64 data
+  const binaryData = Buffer.from(videoBase64, "base64");
+
+  try {
+    const titleObj = {
+      [language]: title,
+    };
+
+    const mediaModel = new MongoMediaModel({
+      placeId,
+      rating,
+      title: titleObj,
+      text: {},
+      voiceId: {},
+      url: {},
+      duration: {},
+      type: "video",
+      format: "mp4",
+    });
+
+    const s3Key = `${placeId}/en_US/${mediaModel._id.toString()}`;
+
+    // Upload the decoded binary data to S3
+    const params = {
+      Bucket: process.env.S3_BUCKET_AUDIOS!,
+      Key: s3Key,
+      Body: binaryData,
+      ContentType: "video/mp4",
+    };
+
+    try {
+      const response = await s3Client.send(new PutObjectCommand(params));
+      if (
+        response.$metadata.httpStatusCode === 200 &&
+        s3Key &&
+        mediaModel.url
+      ) {
+        mediaModel.url[language] = s3Key;
+        await mediaModel.save();
+        // const duration = await getMediaDuration(
+        //   mediaModel._id.toString(),
+        //   language
+        // );
+        // console.log("Duration", duration);
+        // if (duration === 0 || !duration) {
+        //   throw new ApolloError(
+        //     "Something went wrong calculating the duration of the video",
+        //     "VIDEO_DURATION_CALCULATION_ERROR"
+        //   );
+        // }
+        mediaModel.duration[language] = 10;
+        await mediaModel.save();
+        return await getTranslatedMedia(mediaModel.toObject(), language);
+      } else {
+        throw new ApolloError(
+          "Something went wrong while video was being created",
+          "ERROR_WHILE_VIDEO_WAS_BEING_CREATED"
+        );
+      }
+    } catch (error) {
+      console.error("Error uploading to S3:", error);
+      throw new Error("Failed to upload to S3");
+    }
+  } catch (error) {
+    console.log("Error", error);
+    throw error;
+  }
+}
+
 export default async function CreateMediaUseCase(
   placeId: string,
   language: Languages,
   title: string,
-  text: string,
   type: MediaType,
-  rating: number
+  rating: number,
+  text?: string,
+  videoBase64?: string
 ) {
   switch (type) {
     case "text":
+      if (!text) {
+        throw new ApolloError("Text is required", "TEXT_REQUIRED");
+      }
       return await createTextMedia(placeId, language, title, text, rating);
     case "audio":
+      if (!text) {
+        throw new ApolloError("Text is required", "TEXT_REQUIRED");
+      }
       return await createAudioMedia(placeId, language, title, text, rating);
+    case "video":
+      return await createVideoMedia(
+        placeId,
+        language,
+        title,
+        rating,
+        videoBase64!
+      );
     default:
       throw new ApolloError("Invalid media type", "INVALID_MEDIA_TYPE");
   }

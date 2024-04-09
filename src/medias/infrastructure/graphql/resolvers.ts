@@ -41,19 +41,28 @@ const resolvers = {
         text: string;
         type: MediaType;
         rating: number;
+        videoBase64?: string;
       },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new Error("User not found");
       const user = await GetUserByIdUseCase(userId);
+      let videoBase64: string | undefined;
+
+      // Check if type is 'video' and if videoBase64 is provided
+      if (args.type === "video" && args.videoBase64) {
+        videoBase64 = args.videoBase64;
+      }
+
       return CreateMediaUseCase(
         args.placeId,
         user.language,
         args.title,
-        args.text,
         args.type,
-        args.rating
+        args.rating,
+        args.text,
+        videoBase64
       );
     },
     translateMedia: async (

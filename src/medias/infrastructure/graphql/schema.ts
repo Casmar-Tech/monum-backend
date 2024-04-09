@@ -40,9 +40,10 @@ const typeDefs = gql`
     createMedia(
       placeId: ID!
       title: String!
-      text: String!
       type: MediaType!
       rating: Float!
+      text: String
+      videoBase64: String
     ): Media
     translateMedia(mediaId: ID!, outputLanguage: Language!): Media
     updateMedia(id: ID!, mediaUpdate: UpdateMediaInput!): Media
