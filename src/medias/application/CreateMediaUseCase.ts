@@ -49,6 +49,7 @@ async function createTextMedia(
     duration: {},
     type: "text",
   });
+  mediaModel.duration[language] = 0;
   await mediaModel.save();
   return await getTranslatedMedia(mediaModel.toObject(), language);
 }
@@ -91,7 +92,7 @@ async function createAudioMedia(
         [language]: voiceId,
       };
 
-      const mediaModel = new MongoMediaModel({
+      let mediaModel = new MongoMediaModel({
         placeId,
         rating,
         title: titleObj,
@@ -121,7 +122,8 @@ async function createAudioMedia(
         mediaModel.url[language] = key;
         // Polling mechanism to check if the file is available in S3
         let fileExists = false;
-        const checkFileExists = async () => {
+        while (!fileExists) {
+          await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds
           try {
             // Use S3 SDK to check if the object exists in the bucket
             const headObjectCommand = new HeadObjectCommand({
@@ -130,29 +132,41 @@ async function createAudioMedia(
             });
             await s3Client.send(headObjectCommand); // If object exists, no error will be thrown
             fileExists = true;
+            mediaModel.duration[language] = 1100;
+            await mediaModel.save();
+
+            const duration = await getMediaDuration(
+              mediaModel._id.toString(),
+              language
+            );
+            console.log("The duration of the audio uploaded is ", duration);
+            if (duration === 0 || !duration) {
+              throw new ApolloError(
+                "Something went wrong calculating the duration of the audio",
+                "AWS_POLLY_ERROR_AUDIO_WAS_BEEN_CREATED"
+              );
+            }
+            const filter = { _id: mediaModel._id };
+            const update = { [`duration.${language}`]: Math.floor(duration) };
+
+            const doc = await MongoMediaModel.findOneAndUpdate(filter, update, {
+              new: true, // return the updated document
+              useFindAndModify: false, // to use MongoDB driver's findOneAndUpdate() instead of findAndModify()
+            });
+
+            if (doc) {
+              return await getTranslatedMedia(doc.toObject(), language);
+            } else {
+              throw new ApolloError(
+                "Failed to update media duration",
+                "MONGO_UPDATE_ERROR"
+              );
+            }
           } catch (error) {
             fileExists = false;
+            console.log("Audio not created yet, checking again...");
           }
-        };
-
-        while (!fileExists) {
-          await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds
-          await checkFileExists();
         }
-        await mediaModel.save();
-        const duration = await getMediaDuration(
-          mediaModel._id.toString(),
-          language
-        );
-        if (duration === 0 || !duration) {
-          throw new ApolloError(
-            "Something went wrong calculating the duration of the audio",
-            "AWS_POLLY_ERROR_AUDIO_WAS_BEEN_CREATED"
-          );
-        }
-        mediaModel.duration[language] = duration;
-        await mediaModel.save();
-        return await getTranslatedMedia(mediaModel.toObject(), language);
       } else {
         throw new ApolloError(
           "Something went wrong while audio was being created",
@@ -174,7 +188,8 @@ async function createVideoMedia(
   language: Languages,
   title: string,
   rating: number,
-  videoBase64: string
+  videoBase64: string,
+  videoDurationInSeconds: number
 ) {
   const place = await MongoPlaceModel.findById(placeId);
   if (!place) {
@@ -220,19 +235,7 @@ async function createVideoMedia(
         mediaModel.url
       ) {
         mediaModel.url[language] = s3Key;
-        await mediaModel.save();
-        // const duration = await getMediaDuration(
-        //   mediaModel._id.toString(),
-        //   language
-        // );
-        // console.log("Duration", duration);
-        // if (duration === 0 || !duration) {
-        //   throw new ApolloError(
-        //     "Something went wrong calculating the duration of the video",
-        //     "VIDEO_DURATION_CALCULATION_ERROR"
-        //   );
-        // }
-        mediaModel.duration[language] = 10;
+        mediaModel.duration[language] = videoDurationInSeconds;
         await mediaModel.save();
         return await getTranslatedMedia(mediaModel.toObject(), language);
       } else {
@@ -258,7 +261,8 @@ export default async function CreateMediaUseCase(
   type: MediaType,
   rating: number,
   text?: string,
-  videoBase64?: string
+  videoBase64?: string,
+  videoDurationInSeconds?: number
 ) {
   switch (type) {
     case "text":
@@ -272,12 +276,19 @@ export default async function CreateMediaUseCase(
       }
       return await createAudioMedia(placeId, language, title, text, rating);
     case "video":
+      if (!videoBase64 || !videoDurationInSeconds) {
+        throw new ApolloError(
+          "Video base64 and video duration are required for 'video' type",
+          "VIDEO_BASE64_AND_DURATION_REQUIRED"
+        );
+      }
       return await createVideoMedia(
         placeId,
         language,
         title,
         rating,
-        videoBase64!
+        videoBase64!,
+        videoDurationInSeconds!
       );
     default:
       throw new ApolloError("Invalid media type", "INVALID_MEDIA_TYPE");

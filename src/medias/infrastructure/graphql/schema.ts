@@ -44,6 +44,7 @@ const typeDefs = gql`
       rating: Float!
       text: String
       videoBase64: String
+      videoDurationInSeconds: Int
     ): Media
     translateMedia(mediaId: ID!, outputLanguage: Language!): Media
     updateMedia(id: ID!, mediaUpdate: UpdateMediaInput!): Media

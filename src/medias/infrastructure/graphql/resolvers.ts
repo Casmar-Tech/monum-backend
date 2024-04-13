@@ -42,6 +42,7 @@ const resolvers = {
         type: MediaType;
         rating: number;
         videoBase64?: string;
+        videoDurationInSeconds?: number;
       },
       { token }: { token: string }
     ) => {
@@ -62,7 +63,8 @@ const resolvers = {
         args.type,
         args.rating,
         args.text,
-        videoBase64
+        videoBase64,
+        args.videoDurationInSeconds
       );
     },
     translateMedia: async (
