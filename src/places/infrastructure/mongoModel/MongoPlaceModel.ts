@@ -115,4 +115,4 @@ PlaceSchema.set("toJSON", { virtuals: true });
 PlaceSchema.set("toObject", { virtuals: true });
 PlaceSchema.index({ "address.coordinates": "2dsphere" });
 
-export const MongoPlaceModel = model("places-news", PlaceSchema);
+export const MongoPlaceModel = model("places", PlaceSchema);

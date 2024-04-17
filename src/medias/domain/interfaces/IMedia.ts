@@ -8,7 +8,6 @@ export interface IMedia {
   _id?: Types.ObjectId;
   id?: String;
   placeId: Types.ObjectId;
-  topicId?: Types.ObjectId;
   title: {
     [key: string]: string;
   };

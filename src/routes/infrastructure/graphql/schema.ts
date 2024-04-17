@@ -1,22 +1,6 @@
 import gql from "graphql-tag";
 
 const typeDefs = gql`
-  enum Language {
-    en_US
-    es_ES
-    fr_FR
-    ca_ES
-  }
-
-  type Place {
-    id: ID
-    name: String!
-    address: Address!
-    description: String!
-    importance: Int!
-    imagesUrl: [String]
-  }
-
   type Stop {
     place: Place!
     medias: [Media]!

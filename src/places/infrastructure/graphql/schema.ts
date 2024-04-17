@@ -4,6 +4,7 @@ const typeDefs = gql`
     importance
     name
   }
+
   enum SortOrder {
     asc
     desc
@@ -89,12 +90,12 @@ const typeDefs = gql`
   }
 
   input AddressInput {
-    coordinates: CoordinatesInput!
-    street: String
+    street: String!
     city: String!
-    postalCode: String
-    province: String
+    postalCode: String!
+    province: String!
     country: String!
+    coordinates: CoordinatesInput!
   }
 
   input UpdatePlaceInput {

@@ -14,13 +14,6 @@ const typeDefs = gql`
     imageUrl: String
   }
 
-  enum Language {
-    en_US
-    es_ES
-    fr_FR
-    ca_ES
-  }
-
   type Mutation {
     createCityByEnglishName(englishName: String): City
   }

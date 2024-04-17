@@ -1,8 +1,6 @@
-import { Photo as PexelsPhoto, createClient } from "pexels";
 import { ICity } from "../domain/interfaces/ICity.js";
 import { MongoCityModel } from "../infrastructure/mongoModel/MongoCityModel.js";
 import * as deepl from "deepl-node";
-import Photo from "../domain/valueObjects/Photo.js";
 
 interface LanguagesToTranslate {
   language: string;
@@ -32,30 +30,8 @@ export default async function CreateCityByEnglishNameUseCase(
       );
       name[language.language] = translation;
     }
-    const pexelsClient = createClient(process.env.PEXELS_API_KEY!);
-    let cityPhoto: Photo;
-    const photosPexels: any = await pexelsClient.photos.search({
-      query: englishName,
-      per_page: 1,
-    });
-    if (Array.isArray(photosPexels.photos)) {
-      cityPhoto = new Photo({
-        pexelsId: photosPexels.photos[0].id.toString(),
-        width: photosPexels.photos[0].width,
-        height: photosPexels.photos[0].height,
-        url: photosPexels.photos[0].src.original,
-      });
-    } else {
-      cityPhoto = new Photo({
-        pexelsId: "",
-        width: 0,
-        height: 0,
-        url: "",
-      });
-    }
     return await MongoCityModel.create({
       name,
-      photo: cityPhoto,
     });
   } catch (error) {
     console.log(error);

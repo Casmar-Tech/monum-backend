@@ -49,18 +49,6 @@ const typeDefs = gql`
     token: String!
   }
 
-  type Permission {
-    id: ID
-    name: String!
-    description: String!
-    action: String!
-    entity: String!
-    max: Int
-    min: Int
-    createdAt: DateTime!
-    updatedAt: DateTime!
-  }
-
   type User {
     id: ID
     email: String

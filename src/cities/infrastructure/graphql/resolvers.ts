@@ -7,7 +7,6 @@ import { Languages } from "../../../shared/Types.js";
 
 const resolvers = {
   City: {
-    // Resolver para el campo imageUrl
     imageUrl: (parent: ICity) => parent.photo.url,
   },
   Mutation: {

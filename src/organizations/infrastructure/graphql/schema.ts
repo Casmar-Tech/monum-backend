@@ -6,15 +6,6 @@ const typeDefs = gql`
     lat: Float!
   }
 
-  input AddressInput {
-    street: String!
-    city: String!
-    postalCode: String!
-    province: String!
-    country: String!
-    coordinates: CoordinatesInput!
-  }
-
   input ContactInput {
     name: String!
     email: String!
@@ -24,13 +15,6 @@ const typeDefs = gql`
   input CreateOrganizationInput {
     organization: OrganizationInput!
     planId: String!
-  }
-
-  enum Language {
-    en_US
-    es_ES
-    fr_FR
-    ca_ES
   }
 
   input OrganizationInput {
@@ -46,14 +30,6 @@ const typeDefs = gql`
     name: String!
     email: String!
     phoneNumber: String!
-  }
-
-  type Address {
-    street: String!
-    city: String!
-    postalCode: String!
-    province: String!
-    country: String!
   }
 
   type Organization {

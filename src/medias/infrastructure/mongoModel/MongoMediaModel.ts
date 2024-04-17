@@ -1,17 +1,12 @@
 import { model, Schema } from "mongoose";
-import { IMedia, IMediaTranslated } from "../../domain/interfaces/IMedia.js";
-import { MediaTypeValues } from "../../domain/types/MediaType.js";
+import { IMedia } from "../../domain/interfaces/IMedia.js";
+
 export const MediaSchema = new Schema<IMedia>(
   {
     placeId: {
       type: Schema.Types.ObjectId,
       ref: "places",
       required: true,
-    },
-    topicId: {
-      type: Schema.Types.ObjectId,
-      ref: "media-topics",
-      required: false,
     },
     title: {
       type: Object,
