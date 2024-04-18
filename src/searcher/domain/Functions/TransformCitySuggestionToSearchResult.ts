@@ -1,10 +1,10 @@
 import { ISearchResult } from "../interfaces/ISearchResult.js";
-import ICitySuggestion from "../interfaces/ICitySuggestion.js";
 import { MongoPlaceModel } from "../../../places/infrastructure/mongoModel/MongoPlaceModel.js";
 import { Languages } from "../../../shared/Types.js";
+import { ICityWithDistance } from "../../../cities/domain/interfaces/ICity.js";
 
 export default async function TransformCitySuggestionToSearchResult(
-  citySuggestion: ICitySuggestion,
+  citySuggestion: ICityWithDistance,
   language: Languages
 ): Promise<ISearchResult> {
   const places = await MongoPlaceModel.find({
@@ -62,16 +62,16 @@ export default async function TransformCitySuggestionToSearchResult(
         {
           $or: [
             {
-              "address.province.ca_ES": citySuggestion.region,
+              "address.province.ca_ES": citySuggestion.province,
             },
             {
-              "address.province.es_ES": citySuggestion.region,
+              "address.province.es_ES": citySuggestion.province,
             },
             {
-              "address.province.en_US": citySuggestion.region,
+              "address.province.en_US": citySuggestion.province,
             },
             {
-              "address.province.fr_FR": citySuggestion.region,
+              "address.province.fr_FR": citySuggestion.province,
             },
           ],
         },
@@ -88,17 +88,17 @@ export default async function TransformCitySuggestionToSearchResult(
   const region =
     places[0] && places[0].address?.province
       ? places[0].address?.province[language]
-      : placeRegion || citySuggestion.region;
+      : placeRegion || citySuggestion.province;
   const name = places[0]
     ? places[0].address.city[language]
-    : citySuggestion.namePreferred || citySuggestion.name;
+    : citySuggestion.name;
   return {
     id: citySuggestion.id,
     name,
     country,
     region,
     coordinates: {
-      coordinates: citySuggestion.coordinates,
+      coordinates: citySuggestion.coordinates.coordinates,
       type: "Point",
     },
     city: name,

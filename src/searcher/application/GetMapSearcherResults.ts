@@ -3,12 +3,12 @@ import { transformPlaceToSearchResult } from "../domain/Functions/TransformPlace
 import { MongoUserModel } from "../../users/infrastructure/mongoModel/MongoUserModel.js";
 import { ApolloError } from "apollo-server-errors";
 import { ISearchResult } from "../domain/interfaces/ISearchResult.js";
-import GetCities from "../infrastructure/mapbox/GetCities.js";
+import GetCitiesByTextSearchAndSortedByDistance from "../../cities/application/GetCitiesByTextSearchAndSortedByDistance.js";
 import TransformCitySuggestionToSearchResult from "../domain/Functions/TransformCitySuggestionToSearchResult.js";
 
 interface GetMapSearcherResultsInput {
   textSearch?: string;
-  coordinates: number[];
+  coordinates: [number, number];
   userId: string;
 }
 
@@ -72,7 +72,11 @@ export default async function GetMapSearcherResults({
   );
   const cities =
     textSearch && textSearch.length > 0
-      ? await GetCities({ textSearch, coordinates, language })
+      ? await GetCitiesByTextSearchAndSortedByDistance(
+          textSearch,
+          coordinates,
+          language
+        )
       : [];
   const citiesSearchResult = await Promise.all(
     cities.map(
@@ -80,11 +84,8 @@ export default async function GetMapSearcherResults({
         await TransformCitySuggestionToSearchResult(city, language)
     )
   );
-  const citiesOrdered = citiesSearchResult.sort((a, b) => {
-    if ((a.hasMonums ?? false) && !(b.hasMonums ?? false)) return -1;
-    if (!(a.hasMonums ?? false) && (b.hasMonums ?? false)) return 1;
-    return a.distance - b.distance;
-  });
-  const searchResult = [...placesSearchResult, ...citiesOrdered].slice(0, 15);
+  const searchResult = [...placesSearchResult, ...citiesSearchResult]
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 10);
   return searchResult;
 }

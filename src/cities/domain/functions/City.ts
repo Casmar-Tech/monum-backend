@@ -13,6 +13,10 @@ export function getTranslatedCity(
 ): ICityTranslated {
   return {
     ...city,
+    id: city._id.toString(),
     name: getTranslation(city.name, language),
+    province: getTranslation(city.province, language),
+    county: getTranslation(city.county, language),
+    country: getTranslation(city.country, language),
   };
 }

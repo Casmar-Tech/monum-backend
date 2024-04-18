@@ -11,15 +11,21 @@ const typeDefs = gql`
   type City {
     id: ID!
     name: String!
+    province: String!
+    county: String!
+    country: String!
+    coordinates: Coordinates!
+    population: Int
+    hasRoutes: Boolean
     imageUrl: String
   }
 
   type Mutation {
-    createCityByEnglishName(englishName: String): City
+    createCity(englishName: String): City
   }
 
   type Query {
-    cities(textSearch: String, language: Language): [City]
+    cities(textSearch: String, language: Language, hasRoutes: Boolean): [City]
   }
 `;
 export default typeDefs;

@@ -7,10 +7,17 @@ import { Languages } from "../../../shared/Types.js";
 
 const resolvers = {
   City: {
-    imageUrl: (parent: ICity) => parent.photo.url,
+    imageUrl: (parent: ICity) => parent.photo?.url,
+    coordinates: (parent: ICity) => {
+      return {
+        lat: parent.coordinates.coordinates[1],
+        lng: parent.coordinates.coordinates[0],
+      };
+    },
   },
+
   Mutation: {
-    createCityByEnglishName: async (
+    createCity: async (
       parent: any,
       args: {
         englishName: string;
@@ -25,7 +32,7 @@ const resolvers = {
   Query: {
     cities: async (
       parent: any,
-      args: { textSearch: string; language?: Languages },
+      args: { textSearch: string; language?: Languages; hasRoutes?: boolean },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
@@ -33,7 +40,8 @@ const resolvers = {
       const cities = await GetCitiesByTextSearchUseCase(
         args.textSearch,
         userId,
-        args.language
+        args.language,
+        args.hasRoutes
       );
       return cities;
     },

@@ -9,7 +9,9 @@ import { getTranslatedCity } from "../domain/functions/City.js";
 export default async function GetCitiesByTextSearchUseCase(
   textSearch: string,
   userId: string,
-  language?: string
+  language?: string,
+  hasRoutes?: boolean,
+  limit?: number
 ): Promise<ICityTranslated[]> {
   const user = await MongoUserModel.findById(userId);
   if (!user) {
@@ -40,6 +42,38 @@ export default async function GetCitiesByTextSearchUseCase(
   } else {
     return [];
   }
-  const cities = await MongoCityModel.find(query);
-  return cities.map((city) => getTranslatedCity(city.toObject(), userLanguage));
+  if (hasRoutes) {
+    Object.assign(query, { hasRoutes: true });
+  }
+  const cities = await MongoCityModel.aggregate([
+    {
+      $lookup: {
+        from: "routes",
+        localField: "_id",
+        foreignField: "cityId",
+        as: "hasRoutes",
+      },
+    },
+    {
+      $addFields: {
+        hasRoutes: {
+          $cond: {
+            if: {
+              $gt: [
+                {
+                  $size: "$hasRoutes",
+                },
+                0,
+              ],
+            },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+  ]).match(query);
+  return cities
+    .map((city) => getTranslatedCity(city, userLanguage))
+    .slice(0, limit || 10);
 }
