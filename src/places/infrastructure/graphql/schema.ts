@@ -1,5 +1,14 @@
 import gql from "graphql-tag";
 const typeDefs = gql`
+  enum FromSupport {
+    outsideQRAppRunning
+    outsideQRAppClosed
+    insideQRScanned
+    insideQRTexted
+    mapTextSearch
+    map
+  }
+
   enum SortField {
     importance
     name
@@ -60,7 +69,13 @@ const typeDefs = gql`
   }
 
   type Query {
-    place(id: ID!, imageSize: ImageSize, language: Language): Place
+    place(
+      id: ID!
+      imageSize: ImageSize
+      language: Language
+      isMobile: Boolean
+      fromSupport: FromSupport
+    ): Place
     places(
       textSearch: String
       centerCoordinates: [Float]

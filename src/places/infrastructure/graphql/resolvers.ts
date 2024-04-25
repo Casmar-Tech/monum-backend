@@ -20,6 +20,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IAddressTranslated } from "../../domain/interfaces/IAddress.js";
+import { FromSupport } from "../../domain/types/FromSupportTypes.js";
 
 const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
 
@@ -98,7 +99,13 @@ const resolvers = {
   Query: {
     place: (
       _: any,
-      args: { id: string; imageSize: ImageSize; language?: Languages },
+      args: {
+        id: string;
+        imageSize: ImageSize;
+        language?: Languages;
+        isMobile?: boolean;
+        fromSupport?: FromSupport;
+      },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
@@ -107,7 +114,9 @@ const resolvers = {
         userId,
         args.id,
         args.imageSize,
-        args.language
+        args.language,
+        args.isMobile,
+        args.fromSupport
       );
     },
     places: (
