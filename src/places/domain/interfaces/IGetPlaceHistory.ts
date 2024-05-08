@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { FromSupport } from "../types/FromSupportTypes";
+import { FromSupport } from "../types/FromSupportTypes.js";
 
 export interface IGetPlaceHistory {
   _id?: Types.ObjectId;

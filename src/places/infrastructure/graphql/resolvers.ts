@@ -91,7 +91,7 @@ const resolvers = {
   Place: {
     imagesUrl: async (parent: IPlaceTranslated) => {
       if (!parent.imagesUrl) return [];
-      return parent.imagesUrl.slice(0, 5).map((photo) => {
+      return parent.imagesUrl.map((photo) => {
         return `${mediaCloudFrontUrl}/${photo}`;
       });
     },
