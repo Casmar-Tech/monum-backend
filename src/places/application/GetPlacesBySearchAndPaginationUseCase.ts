@@ -9,7 +9,7 @@ import { ApolloError } from "apollo-server-errors";
 
 export default async function GetPlaceBySearchAndPaginationUseCase(
   userId: string,
-  searchText: string,
+  textSearch: string,
   pageNumber: number,
   resultsPerPage: number
 ): Promise<IPlacesSearchResults> {
@@ -18,16 +18,32 @@ export default async function GetPlaceBySearchAndPaginationUseCase(
   if (!user) {
     throw new ApolloError("User not found", "USER_NOT_FOUND");
   }
-  const userLanguage = user.language;
-  let query = {
+  const userLanguage = user.language || "en_US";
+  const query = {
     deleted: { $ne: true },
-    $and: [
-      { [`description.${userLanguage}`]: { $exists: true } },
-      { [`address.street.${userLanguage}`]: { $exists: true } },
-      { [`address.country.${userLanguage}`]: { $exists: true } },
-      { [`address.province.${userLanguage}`]: { $exists: true } },
-      { [`address.city.${userLanguage}`]: { $exists: true } },
-      { name: { $regex: `.*${searchText}.*`, $options: "i" } },
+    $or: [
+      { name: { $regex: textSearch || "", $options: "i" } },
+      {
+        $expr: {
+          $gt: [
+            {
+              $size: {
+                $filter: {
+                  input: { $objectToArray: "$nameTranslations" },
+                  cond: {
+                    $regexMatch: {
+                      input: "$$this.v",
+                      regex: textSearch || "",
+                      options: "i",
+                    },
+                  },
+                },
+              },
+            },
+            0,
+          ],
+        },
+      },
     ],
   };
   const totalResults = await MongoPlaceModel.countDocuments(query);
@@ -39,10 +55,7 @@ export default async function GetPlaceBySearchAndPaginationUseCase(
 
   const placesToReturn = await Promise.all(
     places.map(async (place) => {
-      return await getTranslatedPlace(
-        place.toObject(),
-        userLanguage || "en_US"
-      );
+      return getTranslatedPlace(place.toObject(), userLanguage || "en_US");
     })
   );
   return {

@@ -27,7 +27,7 @@ export async function getTranslatedRoute(
             async (media) => await getTranslatedMedia(media, language)
           )
         ),
-        place: await getTranslatedPlace(stop.place, language),
+        place: getTranslatedPlace(stop.place, language),
       }))
     ),
   };

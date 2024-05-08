@@ -2,16 +2,22 @@ import { model, Schema } from "mongoose";
 import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
 import IPhoto from "../../domain/interfaces/IPhoto.js";
 
-export const Photo = new Schema<IPhoto>({
-  url: { type: String, required: true },
-  width: { type: Number, required: true },
-  height: { type: Number, required: true },
-  sizes: {
-    type: Object,
-    of: String,
-    required: true,
+export const Photo = new Schema<IPhoto>(
+  {
+    url: { type: String, required: true },
+    sizes: {
+      type: Object,
+      of: String,
+      required: true,
+    },
+    createdBy: { type: Schema.Types.ObjectId, ref: "users", required: true },
+    order: { type: Number },
+    deleteBy: { type: Schema.Types.ObjectId, ref: "users" },
+    deletedAt: { type: Date },
+    name: { type: String },
   },
-});
+  { timestamps: true }
+);
 
 export const PlaceSchema = new Schema<IPlace>(
   {
@@ -56,7 +62,6 @@ export const PlaceSchema = new Schema<IPlace>(
     },
     importance: { type: Number, required: true },
     photos: { type: [Photo] },
-    mainPhoto: { type: Photo },
     deleted: {
       type: Boolean,
       required: false,

@@ -1,9 +1,10 @@
-import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
+import { IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
 import GetPlaceByIdUseCase from "../../application/GetPlaceByIdUseCase.js";
 import GetPlacesUseCase from "../../application/GetPlacesUseCase.js";
 import DeletePlaceAndAssociatedMediaUseCase from "../../application/DeletePlaceAndAssociatedMediaUseCase.js";
 import UpdatePlaceUseCase from "../../application/UpdatePlaceUseCase.js";
 import CreatePlaceUseCase from "../../application/CreatePlaceUseCase.js";
+import UpdatePlacePhotos from "../../application/UpdatePlacePhotos.js";
 import { SortField, SortOrder } from "../../domain/types/SortTypes.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { ApolloError } from "apollo-server-errors";
@@ -21,6 +22,8 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IAddressTranslated } from "../../domain/interfaces/IAddress.js";
 import { FromSupport } from "../../domain/types/FromSupportTypes.js";
+import { Types } from "mongoose";
+import IPhoto from "../../domain/interfaces/IPhoto.js";
 
 const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
 
@@ -31,59 +34,69 @@ interface IAddressInput extends Omit<IAddressTranslated, "coordinates"> {
   };
 }
 
-interface IPlaceInput extends Omit<IPlaceTranslated, "address"> {
+export interface IPlaceInput extends Omit<IPlaceTranslated, "address"> {
   address: IAddressInput;
 }
+
+export interface OldPhotosUpdateInput {
+  id: string;
+  order: number;
+}
+
+export interface NewPhotosUpdateInput {
+  photoBase64: string;
+  order: number;
+  name: string;
+}
+
+const getCreatedBy = async (createdById: Types.ObjectId) => {
+  const createdBy = await MongoUserModel.findById(createdById);
+  if (!createdBy) return null;
+  const organization = await MongoOrganizationModel.findById(
+    createdBy.organizationId
+  );
+  if (organization) {
+    createdBy.organization = getTranslatedOrganization(
+      organization.toObject(),
+      createdBy.language
+    );
+  }
+  const client = new S3Client({
+    region: "eu-west-1",
+  });
+  const commandToCheck = new HeadObjectCommand({
+    Bucket: process.env.S3_BUCKET_IMAGES!,
+    Key: createdBy.id || createdBy._id?.toString() || "",
+  });
+
+  try {
+    await client.send(commandToCheck);
+
+    const commandToGet = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_IMAGES!,
+      Key: createdBy.id || createdBy._id?.toString() || "",
+    });
+
+    const url = await getSignedUrl(client, commandToGet, {
+      expiresIn: 3600 * 24,
+    });
+    createdBy.photo = url;
+  } catch (error) {
+    console.log(error);
+  }
+  return createdBy;
+};
 
 const resolvers = {
   Place: {
     imagesUrl: async (parent: IPlaceTranslated) => {
-      const allPhotos: string[] = [];
-      if (parent.mainPhoto) allPhotos.push(parent.mainPhoto);
-      if (Array.isArray(parent.photos)) allPhotos.push(...parent.photos);
-
-      const allPhotosUnique = Array.from(new Set(allPhotos)).slice(0, 5);
-      const cloudFrontUrls = allPhotosUnique.map((photo) => {
+      if (!parent.imagesUrl) return [];
+      return parent.imagesUrl.slice(0, 5).map((photo) => {
         return `${mediaCloudFrontUrl}/${photo}`;
       });
-      return cloudFrontUrls;
     },
     createdBy: async (parent: IPlaceTranslated) => {
-      const createdBy = await MongoUserModel.findById(parent.createdBy);
-      if (!createdBy) return null;
-      const organization = await MongoOrganizationModel.findById(
-        createdBy.organizationId
-      );
-      if (organization) {
-        createdBy.organization = getTranslatedOrganization(
-          organization.toObject(),
-          createdBy.language
-        );
-      }
-      const client = new S3Client({
-        region: "eu-west-1",
-      });
-      const commandToCheck = new HeadObjectCommand({
-        Bucket: process.env.S3_BUCKET_IMAGES!,
-        Key: createdBy.id || createdBy._id?.toString() || "",
-      });
-
-      try {
-        await client.send(commandToCheck);
-
-        const commandToGet = new GetObjectCommand({
-          Bucket: process.env.S3_BUCKET_IMAGES!,
-          Key: createdBy.id || createdBy._id?.toString() || "",
-        });
-
-        const url = await getSignedUrl(client, commandToGet, {
-          expiresIn: 3600 * 24,
-        });
-        createdBy.photo = url;
-      } catch (error) {
-        console.log(error);
-      }
-      return createdBy;
+      return getCreatedBy(parent.createdBy);
     },
     address: (parent: IPlaceTranslated) => {
       return {
@@ -93,6 +106,34 @@ const resolvers = {
           lng: parent.address.coordinates.coordinates[0],
         },
       };
+    },
+    photos: async (parent: IPlaceTranslated) => {
+      if (!parent.photos) return [];
+      return await Promise.all(
+        parent.photos
+          .sort((a, b) => a.order - b.order)
+          .map(async (photo: IPhoto) => {
+            try {
+              return {
+                id: photo._id?.toString(),
+                url: `${mediaCloudFrontUrl}/${photo.sizes.medium}`,
+                sizes: {
+                  small: `${mediaCloudFrontUrl}/${photo.sizes.small}`,
+                  medium: `${mediaCloudFrontUrl}/${photo.sizes.medium}`,
+                  large: `${mediaCloudFrontUrl}/${photo.sizes.large}`,
+                  original: `${mediaCloudFrontUrl}/${photo.url}`,
+                },
+                createdBy: await getCreatedBy(photo.createdBy),
+                order: photo.order || 0,
+                createdAt: photo.createdAt,
+                updatedAt: photo.updatedAt,
+                name: photo.name,
+              };
+            } catch (e) {
+              console.log(e);
+            }
+          })
+      );
     },
   },
 
@@ -189,14 +230,34 @@ const resolvers = {
         },
       });
     },
-    updatePlace: (
+    updatePlace: async (
       parent: any,
-      args: { id: string; placeUpdate: Partial<IPlace> },
+      args: { id: string; placeUpdate: Partial<IPlaceInput> },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return UpdatePlaceUseCase(userId, args.id, args.placeUpdate);
+      const placeUpdated = await UpdatePlaceUseCase(
+        userId,
+        args.id,
+        args.placeUpdate
+      );
+      return placeUpdated;
+    },
+    updatePlacePhotos: async (
+      parent: any,
+      args: {
+        id: string;
+        oldPhotos: OldPhotosUpdateInput[];
+        newPhotos: NewPhotosUpdateInput[];
+      },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      const { id, oldPhotos, newPhotos } = args;
+      await UpdatePlacePhotos(userId, id, oldPhotos, newPhotos);
+      return true;
     },
     deletePlace: (
       parent: any,

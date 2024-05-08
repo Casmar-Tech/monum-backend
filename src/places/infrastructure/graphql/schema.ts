@@ -40,6 +40,24 @@ const typeDefs = gql`
     country: String!
   }
 
+  type PlacePhotoSizes {
+    small: String!
+    medium: String!
+    large: String!
+    original: String!
+  }
+
+  type PlacePhoto {
+    url: String!
+    sizes: PlacePhotoSizes!
+    createdBy: User
+    order: Int!
+    createdAt: Float
+    updatedAt: Float
+    id: ID!
+    name: String
+  }
+
   enum Language {
     en_US
     es_ES
@@ -54,7 +72,10 @@ const typeDefs = gql`
     description: String!
     importance: Int!
     imagesUrl: [String]
+    photos: [PlacePhoto!]!
     createdBy: User
+    createdAt: Float
+    updatedAt: Float
   }
 
   type PageInfo {
@@ -91,9 +112,25 @@ const typeDefs = gql`
     ): PlaceSearchResults
   }
 
+  input OldPhotosUpdateInput {
+    id: String
+    order: Int
+  }
+
+  input NewPhotosUpdateInput {
+    photoBase64: String
+    order: Int
+    name: String
+  }
+
   type Mutation {
     createPlace(place: CreatePlaceInput!): Place
     updatePlace(id: ID!, placeUpdate: UpdatePlaceInput!): Place
+    updatePlacePhotos(
+      id: ID!
+      oldPhotos: [OldPhotosUpdateInput!]!
+      newPhotos: [NewPhotosUpdateInput]
+    ): Boolean
     deletePlace(id: ID!): Boolean
   }
 

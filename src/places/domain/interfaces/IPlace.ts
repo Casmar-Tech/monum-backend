@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import IPhoto from "./IPhoto.js";
+import IPhoto, { IPhotoExisting } from "./IPhoto.js";
 import { IAddress, IAddressTranslated } from "./IAddress.js";
 
 export interface IPlace {
@@ -15,7 +15,6 @@ export interface IPlace {
   };
   importance: number;
   photos?: IPhoto[];
-  mainPhoto?: IPhoto;
   createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -23,11 +22,11 @@ export interface IPlace {
 }
 
 export interface IPlaceTranslated
-  extends Omit<IPlace, "address" | "description" | "photos" | "mainPhoto"> {
+  extends Omit<IPlace, "address" | "description"> {
   address: IAddressTranslated;
   description?: string;
-  photos?: string[];
-  mainPhoto?: string;
+  imagesUrl?: string[];
+  photos?: IPhotoExisting[];
 }
 
 export interface IPlacesSearchResults {

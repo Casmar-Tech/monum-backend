@@ -3,11 +3,12 @@ import { IPlace, IPlaceTranslated } from "../domain/interfaces/IPlace.js";
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 import { getTranslatedPlace } from "../domain/functions/Place.js";
+import { IPlaceInput } from "../infrastructure/graphql/resolvers.js";
 
 export default async function UpdatePlaceUseCase(
   userId: string,
   placeId: string,
-  placeUpdate: Partial<IPlace>
+  placeUpdate: Partial<IPlaceInput>
 ): Promise<IPlaceTranslated> {
   const user = await GetUserByIdUseCase(userId);
   const originalPlace = await MongoPlaceModel.findById(placeId);
@@ -15,6 +16,7 @@ export default async function UpdatePlaceUseCase(
     throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
   }
   const language = user.language;
+  const newCoordinates = placeUpdate.address?.coordinates;
   const placeUpdateWithTranslations = {
     ...placeUpdate,
     nameTranslations: {
@@ -42,6 +44,13 @@ export default async function UpdatePlaceUseCase(
       province: {
         ...originalPlace.address.province,
         [language]: placeUpdate.address?.province,
+      },
+      coordinates: {
+        type: "Point",
+        coordinates:
+          newCoordinates?.lat && newCoordinates?.lng
+            ? [newCoordinates?.lng, newCoordinates.lat]
+            : originalPlace.address.coordinates,
       },
     },
   };

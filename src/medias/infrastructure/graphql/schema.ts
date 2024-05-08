@@ -11,6 +11,8 @@ const typeDefs = gql`
     voiceId: String
     duration: Float!
     type: MediaType!
+    createdAt: Float
+    updatedAt: Float
   }
 
   enum MediaType {

@@ -56,7 +56,7 @@ export async function getTranslatedMedia(
     text: media.text && getTranslation(media.text, language),
     url: media.url && getTranslation(media.url, language),
     voiceId: media.voiceId && getTranslation(media.voiceId, language),
-    place: media.place && (await getTranslatedPlace(media.place, language)),
+    place: media.place && getTranslatedPlace(media.place, language),
     duration: media.duration?.[language],
     format: media.format && getTranslation(media.format, language),
   };

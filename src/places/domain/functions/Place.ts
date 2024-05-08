@@ -1,6 +1,6 @@
-import { listAllPhotos } from "../../infrastructure/s3/photos.js";
 import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
 import { ImageSize } from "../../domain/types/ImageTypes.js";
+import { IPhotoExisting } from "../interfaces/IPhoto.js";
 
 const getTranslation = (
   translations: { [key: string]: string },
@@ -9,11 +9,23 @@ const getTranslation = (
   return translations[language] || Object.values(translations)[0] || "";
 };
 
-export async function getTranslatedPlace(
+export function getTranslatedPlace(
   place: IPlace,
   language: string,
-  imageSize: ImageSize = "original"
-): Promise<IPlaceTranslated> {
+  imageSize?: ImageSize
+): IPlaceTranslated {
+  const placePhotosFiltered = Array.isArray(place.photos)
+    ? (place.photos.filter(
+        (photo) =>
+          photo.order !== undefined &&
+          photo.order !== null &&
+          photo.order !== -1 &&
+          typeof photo.order === "number" &&
+          photo.deleteBy === undefined &&
+          photo.deletedAt === undefined
+      ) as IPhotoExisting[])
+    : ([] as IPhotoExisting[]);
+
   return {
     ...place,
     id: place?._id?.toString() || "",
@@ -37,9 +49,13 @@ export async function getTranslatedPlace(
     description: place.description
       ? getTranslation(place.description, language)
       : "",
-    photos: place.mainPhoto
-      ? await listAllPhotos(`places/${place._id?.toString()}`, imageSize)
+    photos: placePhotosFiltered,
+    imagesUrl: placePhotosFiltered
+      ? placePhotosFiltered
+          .sort((a, b) => a.order - b.order)
+          .map((photo) => {
+            return photo.sizes[imageSize || "medium"];
+          })
       : [],
-    mainPhoto: place.mainPhoto?.sizes[imageSize],
   };
 }

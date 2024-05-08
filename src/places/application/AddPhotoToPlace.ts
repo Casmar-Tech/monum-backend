@@ -2,12 +2,7 @@ import "../../connection.js";
 import { Types } from "mongoose";
 import sharp from "sharp";
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
-import {
-  LARGE_PHOTO_MAX_WIDTH_PX,
-  MEDIUM_PHOTO_MAX_WIDTH_PX,
-  ORIGINAL_PHOTO_MAX_WIDTH_PX,
-  SMALL_PHOTO_MAX_WIDTH_PX,
-} from "../infrastructure/s3/photos.js";
+import { ImageWidths } from "../domain/types/ImageTypes.js";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { DeleteAllPhotosOfAPlace } from "./DeleteAllPhotosOfAPlace.js";
 
@@ -16,6 +11,13 @@ const s3 = new S3Client({
 });
 
 const bucketName = process.env.S3_BUCKET_PLACES_IMAGES!;
+
+const {
+  LARGE_PHOTO_MAX_WIDTH_PX,
+  MEDIUM_PHOTO_MAX_WIDTH_PX,
+  ORIGINAL_PHOTO_MAX_WIDTH_PX,
+  SMALL_PHOTO_MAX_WIDTH_PX,
+} = ImageWidths;
 
 async function AddImageToPlace(
   placeId: string,
@@ -43,6 +45,10 @@ async function AddImageToPlace(
     width: metadata.width,
     height: metadata.height,
     sizes: {},
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: new Types.ObjectId("650b0ef881d58ebbb22daf04"),
+    order: 0,
   };
 
   for (const size of ["original", "small", "medium", "large"]) {
@@ -80,12 +86,8 @@ async function AddImageToPlace(
     photoDocument.sizes[size] = objectKey;
   }
 
-  if (photoDocument) {
-    if (isMainPhoto) {
-      place.mainPhoto = photoDocument;
-    } else {
-      Array.isArray(place.photos) && place.photos.push(photoDocument);
-    }
+  if (photoDocument && Array.isArray(place.photos)) {
+    place.photos.push(photoDocument);
   }
   await place.save();
 }
