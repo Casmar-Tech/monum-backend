@@ -7,6 +7,7 @@ import GetUserByIdUseCase from "../../application/GetUserByIdUseCase.js";
 import GetAllUsersUseCase from "../../application/GetAllUsersUseCase.js";
 import ResetPasswordUseCase from "../../application/ResetPasswordUseCase.js";
 import VerificateCodeUseCase from "../../application/VerificateCodeUseCase.js";
+import DeleteHardUser from "../../application/DeleteHardUser.js";
 import UpdatePasswordWithoutOldUseCase from "../../application/UpdatePasswordWithoutOldUseCase.js";
 import CreateNonExpiringToken from "../../application/CreateNonExpiringToken.js";
 import LoginUserAsGuest from "../../application/LoginUserAsGuest.js";
@@ -229,6 +230,15 @@ const resolvers = {
       { loginInput: { emailOrUsername, password } }: LoginInput
     ) => {
       return CreateNonExpiringToken({ emailOrUsername, password });
+    },
+    deleteHardMyUser: async (
+      parent: any,
+      args: any,
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return (await DeleteHardUser(userId)) && true;
     },
   },
   Query: {

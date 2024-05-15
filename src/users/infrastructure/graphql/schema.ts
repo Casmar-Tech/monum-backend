@@ -79,6 +79,7 @@ const typeDefs = gql`
     ): String
     createNonExpiringToken(loginInput: LoginInput!): User
     loginUserAsGuest(deviceId: String!, language: String!): User
+    deleteHardMyUser: Boolean
   }
 
   type Query {

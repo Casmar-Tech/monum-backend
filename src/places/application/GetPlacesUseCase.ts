@@ -114,9 +114,7 @@ export default async function GetPlacesUseCase(
   } else {
     places = await MongoPlaceModel.aggregate(aggregation);
   }
-  return await Promise.all(
-    places.map(async (place) =>
-      getTranslatedPlace(place, userLanguage || "en_US", imageSize)
-    )
+  return places.map((place) =>
+    getTranslatedPlace(place, userLanguage || "en_US", imageSize)
   );
 }
