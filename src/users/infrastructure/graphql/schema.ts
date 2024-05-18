@@ -55,6 +55,7 @@ const typeDefs = gql`
     username: String
     name: String
     createdAt: DateTime!
+    updatedAt: DateTime!
     googleId: String
     token: String
     language: String
