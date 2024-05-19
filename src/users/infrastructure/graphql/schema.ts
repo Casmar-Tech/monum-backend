@@ -32,6 +32,7 @@ const typeDefs = gql`
     name: String
     photoBase64: String
     language: String
+    email: String
   }
 
   input ResetPasswordInput {

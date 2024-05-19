@@ -15,6 +15,7 @@ interface UpdateUserUseCaseDTO {
   name?: string;
   photoBase64?: string;
   language?: string;
+  email?: string;
 }
 
 export default async function UpdateUserUserCase({
@@ -24,6 +25,7 @@ export default async function UpdateUserUserCase({
   name,
   photoBase64,
   language,
+  email,
 }: UpdateUserUseCaseDTO) {
   if (tokenUserId !== id) {
     throw new GraphQLError("You can only update your own user", {
@@ -68,6 +70,7 @@ export default async function UpdateUserUserCase({
       name,
       photo,
       language,
+      email,
     },
     { new: true }
   );

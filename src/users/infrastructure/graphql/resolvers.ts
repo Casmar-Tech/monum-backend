@@ -60,6 +60,7 @@ interface UpdateUserInput {
     name?: string;
     photoBase64?: string;
     language?: Languages;
+    email?: string;
   };
 }
 
@@ -170,18 +171,20 @@ const resolvers = {
     updateUser: async (
       parent: any,
       {
-        updateUserInput: { id, username, name, photoBase64, language },
+        updateUserInput: { id, username, name, photoBase64, language, email },
       }: UpdateUserInput,
       { token }: { token: string }
     ) => {
-      const user = checkToken(token);
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
       return UpdateUserUseCase({
-        tokenUserId: user.id || "",
+        tokenUserId: userId,
         id,
         username,
         name,
         photoBase64,
         language,
+        email,
       });
     },
     updatePassword: async (
