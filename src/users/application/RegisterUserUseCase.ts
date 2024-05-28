@@ -5,7 +5,7 @@ import { ApolloError } from "apollo-server-errors";
 import { isStrongPassword } from "./utils/utils.js";
 import { MongoRoleModel } from "../../roles/infrastructure/mongoModel/MongoRoleModel.js";
 import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
-import IUserWithPermissions from "../domain/IUserWithPermissions.js";
+import IUser from "../domain/IUser.js";
 
 interface RegisterUserDTO {
   email: string;
@@ -25,7 +25,7 @@ export default async function RegisterUserUseCase({
   language,
   roleId,
   organizationId,
-}: RegisterUserDTO): Promise<IUserWithPermissions> {
+}: RegisterUserDTO): Promise<IUser> {
   let roleIdToRegister;
   if (roleId) {
     roleIdToRegister = roleId;
@@ -81,10 +81,5 @@ export default async function RegisterUserUseCase({
   );
   newUser.token = token;
   await newUser.save();
-  const userWithPermissions = newUser.toObject() as IUserWithPermissions;
-  const realPermissions = await GetRealPermissionsOfUser(
-    newUser._id.toString()
-  );
-  userWithPermissions.permissions = realPermissions;
-  return userWithPermissions;
+  return newUser.toObject();
 }

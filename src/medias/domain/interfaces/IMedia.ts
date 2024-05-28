@@ -14,7 +14,7 @@ export interface IMedia {
   text?: {
     [key: string]: string;
   };
-  rating: number;
+  rating?: number;
   url?: {
     [key: string]: string;
   };

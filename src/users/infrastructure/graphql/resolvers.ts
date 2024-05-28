@@ -23,6 +23,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ApolloError } from "apollo-server-errors";
 import { Languages } from "../../../shared/Types.js";
 import { MongoOrganizationModel } from "../../../organizations/infrastructure/mongoModel/MongoOrganizationModel.js";
+import GetRealPermissionsOfUser from "../../../permissions/application/GetRealPermissionsOfUser.js";
+import { getTranslatedOrganization } from "../../../organizations/domain/functions/Organization.js";
 
 interface RegisterInput {
   registerInput: {
@@ -91,7 +93,47 @@ interface LoginAsGuestInput {
 }
 
 const resolvers = {
+  UserFull: {
+    id: (parent: IUser) => parent._id?.toString(),
+    hasPassword: (parent: IUser) => parent.hashedPassword !== undefined,
+    photo: async (parent: IUser) => {
+      const client = new S3Client({
+        region: "eu-west-1",
+      });
+      const commandToCheck = new HeadObjectCommand({
+        Bucket: process.env.S3_BUCKET_IMAGES!,
+        Key: parent.id || parent._id?.toString() || "",
+      });
+
+      try {
+        await client.send(commandToCheck);
+
+        const commandToGet = new GetObjectCommand({
+          Bucket: process.env.S3_BUCKET_IMAGES!,
+          Key: parent.id || parent._id?.toString() || "",
+        });
+
+        const url = await getSignedUrl(client, commandToGet, {
+          expiresIn: 3600 * 24,
+        });
+        return url;
+      } catch (error) {
+        return null;
+      }
+    },
+    organization: async (parent: IUser) => {
+      return MongoOrganizationModel.findById(parent.organizationId);
+    },
+    permissions: async (parent: IUser) => {
+      return parent.id || parent._id?.toString()
+        ? await GetRealPermissionsOfUser(
+            parent.id || parent._id?.toString() || ""
+          )
+        : [];
+    },
+  },
   User: {
+    id: (parent: IUser) => parent._id?.toString(),
     hasPassword: (parent: IUser) => parent.hashedPassword !== undefined,
     photo: async (parent: IUser) => {
       const client = new S3Client({
@@ -120,7 +162,21 @@ const resolvers = {
       }
     },
     organization: async (parent: IUser) => {
-      return MongoOrganizationModel.findById(parent.organizationId);
+      const organization = await MongoOrganizationModel.findById(
+        parent.organizationId
+      );
+      if (!organization) return null;
+      return getTranslatedOrganization(
+        organization.toObject(),
+        parent.language
+      );
+    },
+    permissions: async (parent: IUser) => {
+      return parent.id || parent._id?.toString()
+        ? await GetRealPermissionsOfUser(
+            parent.id || parent._id?.toString() || ""
+          )
+        : [];
     },
   },
   Mutation: {
@@ -250,17 +306,15 @@ const resolvers = {
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
       return GetUserByIdUseCase(userId);
     },
+    userFull: async (parent: any, args: any, { token }: { token: string }) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return GetUserByIdUseCase(userId);
+    },
     users: async (parent: any, args: any, { token }: { token: string }) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
       return GetAllUsersUseCase();
-    },
-    verifyToken: async (
-      parent: any,
-      args: any,
-      { token }: { token: string }
-    ) => {
-      return checkToken(token) ? true : false;
     },
   },
 

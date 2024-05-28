@@ -1,8 +1,6 @@
 import { MongoPlaceModel } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoMediaModel } from "../../medias/infrastructure/mongoModel/MongoMediaModel.js";
 import { ApolloError } from "apollo-server-errors";
-import DeleteMediaAndUpdatedAssociatedRoutesUseCase from "../../medias/application/DeleteMediaAndUpdatedAssociatedRoutesUseCase.js";
-import { IPlace } from "../domain/interfaces/IPlace.js";
 
 export default async function DeletePlaceAndAssociatedMediaUseCase(
   placeId: string
@@ -22,6 +20,7 @@ export default async function DeletePlaceAndAssociatedMediaUseCase(
       throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
     }
     place.deleted = true;
+    place.deletedAt = new Date();
     await place.save();
     // await MongoPlaceModel.findByIdAndRemove(placeId, { lean: true });
     return true;

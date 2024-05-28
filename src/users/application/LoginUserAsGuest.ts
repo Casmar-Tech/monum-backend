@@ -2,13 +2,13 @@ import { MongoUserModel } from "../infrastructure/mongoModel/MongoUserModel.js";
 import { MongoRoleModel } from "../../roles/infrastructure/mongoModel/MongoRoleModel.js";
 import { ApolloError } from "apollo-server-errors";
 import jwt from "jsonwebtoken";
-import IUserWithPermissions from "../domain/IUserWithPermissions.js";
 import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
+import IUser from "../domain/IUser.js";
 
 export default async function LoginUserAsGuest(
   deviceId: string,
   language: string
-): Promise<IUserWithPermissions> {
+): Promise<IUser> {
   const role = await MongoRoleModel.findOne({ name: "guest" });
   if (!role) {
     throw new ApolloError("Guest role not found", "GUEST_ROLE_NOT_FOUND");
@@ -44,10 +44,5 @@ export default async function LoginUserAsGuest(
     await newUser.save();
     user = newUser.toObject();
   }
-  const realPermissions = await GetRealPermissionsOfUser(user._id.toString());
-  const userWithPermissions = {
-    ...user.toObject(),
-    permissions: realPermissions,
-  };
-  return userWithPermissions;
+  return user;
 }

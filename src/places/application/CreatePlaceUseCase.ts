@@ -1,9 +1,6 @@
 import { ApolloError } from "apollo-server-errors";
-import { IPlace, IPlaceTranslated } from "../domain/interfaces/IPlace.js";
-import {
-  MongoPlaceModel,
-  createPlaceFromTranslatedPlace,
-} from "../infrastructure/mongoModel/MongoPlaceModel.js";
+import { IPlaceTranslated } from "../domain/interfaces/IPlace.js";
+import { createPlaceFromTranslatedPlace } from "../infrastructure/mongoModel/MongoPlaceModel.js";
 import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 import { getTranslatedPlace } from "../domain/functions/Place.js";
 

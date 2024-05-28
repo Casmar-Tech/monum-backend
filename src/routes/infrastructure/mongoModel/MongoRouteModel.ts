@@ -26,6 +26,13 @@ export const RouteSchema = new Schema<IRoute>(
     distance: { type: Number },
     optimizedDistance: { type: Number },
     cityId: { type: Schema.Types.ObjectId, ref: "cities" },
+    deleted: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    deletedAt: { type: Date },
+    createdBy: { type: Schema.Types.ObjectId, ref: "users", required: true },
   },
   { timestamps: true }
 );
@@ -55,6 +62,7 @@ export async function createRouteFromSimpleRoute(
     distance: route.distance,
     optimizedDistance: route.optimizedDistance,
     cityId: route.cityId,
+    createdBy: route.createdBy,
   });
 }
 

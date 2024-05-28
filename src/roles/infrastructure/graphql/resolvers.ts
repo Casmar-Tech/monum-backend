@@ -11,6 +11,9 @@ interface CreateRoleInput {
 }
 
 const resolvers = {
+  Role: {
+    id: (parent: IRole) => parent?._id?.toString(),
+  },
   Mutation: {
     createRole: async (parent: any, args: CreateRoleInput, context: any) => {
       const { createRoleInput } = args;

@@ -7,6 +7,7 @@ import { Languages } from "../../../shared/Types.js";
 
 const resolvers = {
   City: {
+    id: (parent: ICity) => parent?._id?.toString(),
     imageUrl: (parent: ICity) => parent.photo?.url,
     coordinates: (parent: ICity) => {
       return {

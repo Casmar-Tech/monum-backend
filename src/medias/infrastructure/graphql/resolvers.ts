@@ -18,6 +18,7 @@ const client = new S3Client({
 
 const resolvers = {
   Media: {
+    id: (parent: IMediaTranslated) => parent?._id?.toString(),
     url: async (parent: IMediaTranslated) => {
       if (!parent.url) return null;
       const commandToGet = new GetObjectCommand({
@@ -29,6 +30,9 @@ const resolvers = {
       });
       return url;
     },
+  },
+  MediaFull: {
+    id: (parent: IMedia) => parent?._id?.toString(),
   },
   Mutation: {
     createMedia: async (

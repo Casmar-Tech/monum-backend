@@ -9,6 +9,9 @@ interface CreatePermissionInput {
 }
 
 const resolvers = {
+  Permission: {
+    id: (parent: IPermission) => parent?._id?.toString(),
+  },
   Mutation: {
     createPermission: async (
       parent: any,

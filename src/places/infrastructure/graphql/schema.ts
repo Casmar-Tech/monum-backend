@@ -40,6 +40,15 @@ const typeDefs = gql`
     country: String!
   }
 
+  type AddressFull {
+    coordinates: Coordinates!
+    street: [KeyValuePair]
+    city: [KeyValuePair!]!
+    postalCode: String
+    province: [KeyValuePair]
+    country: [KeyValuePair!]!
+  }
+
   type PlacePhotoSizes {
     small: String!
     medium: String!
@@ -78,6 +87,20 @@ const typeDefs = gql`
     updatedAt: Float
   }
 
+  type PlaceFull {
+    id: ID
+    name: String!
+    nameTranslations: [KeyValuePair!]!
+    address: AddressFull!
+    description: [KeyValuePair!]!
+    importance: Int!
+    imagesUrl: [String]
+    photos: [PlacePhoto!]!
+    createdBy: UserFull
+    createdAt: Float
+    updatedAt: Float
+  }
+
   type PageInfo {
     totalPages: Int
     currentPage: Int
@@ -89,29 +112,6 @@ const typeDefs = gql`
     pageInfo: PageInfo
   }
 
-  type Query {
-    place(
-      id: ID!
-      imageSize: ImageSize
-      language: Language
-      isMobile: Boolean
-      fromSupport: FromSupport
-    ): Place
-    places(
-      textSearch: String
-      centerCoordinates: [Float]
-      sortField: SortField
-      sortOrder: SortOrder
-      imageSize: ImageSize
-      language: Language
-    ): [Place]
-    getPlaceBySearchAndPagination(
-      textSearch: String!
-      pageNumber: Int!
-      resultsPerPage: Int!
-    ): PlaceSearchResults
-  }
-
   input OldPhotosUpdateInput {
     id: String
     order: Int
@@ -121,17 +121,6 @@ const typeDefs = gql`
     photoBase64: String
     order: Int
     name: String
-  }
-
-  type Mutation {
-    createPlace(place: CreatePlaceInput!): Place
-    updatePlace(id: ID!, placeUpdate: UpdatePlaceInput!): Place
-    updatePlacePhotos(
-      id: ID!
-      oldPhotos: [OldPhotosUpdateInput!]!
-      newPhotos: [NewPhotosUpdateInput]
-    ): Boolean
-    deletePlace(id: ID!): Boolean
   }
 
   input NameTranslationsInput {
@@ -162,6 +151,46 @@ const typeDefs = gql`
     address: AddressInput!
     description: String!
     importance: Int!
+  }
+
+  type Query {
+    place(
+      id: ID!
+      imageSize: ImageSize
+      language: Language
+      isMobile: Boolean
+      fromSupport: FromSupport
+    ): Place
+    placeFull(
+      id: ID!
+      imageSize: ImageSize
+      isMobile: Boolean
+      fromSupport: FromSupport
+    ): PlaceFull
+    places(
+      textSearch: String
+      centerCoordinates: [Float]
+      sortField: SortField
+      sortOrder: SortOrder
+      imageSize: ImageSize
+      language: Language
+    ): [Place]
+    getPlaceBySearchAndPagination(
+      textSearch: String!
+      pageNumber: Int!
+      resultsPerPage: Int!
+    ): PlaceSearchResults
+  }
+
+  type Mutation {
+    createPlace(place: CreatePlaceInput!): Place
+    updatePlace(id: ID!, placeUpdate: UpdatePlaceInput!): Place
+    updatePlacePhotos(
+      id: ID!
+      oldPhotos: [OldPhotosUpdateInput!]!
+      newPhotos: [NewPhotosUpdateInput]
+    ): Boolean
+    deletePlace(id: ID!): Boolean
   }
 `;
 export default typeDefs;

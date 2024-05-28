@@ -18,7 +18,7 @@ export const MediaSchema = new Schema<IMedia>(
       of: String,
       required: true,
     },
-    rating: { type: Number, required: true },
+    rating: { type: Number },
     url: {
       type: Object,
       of: String,

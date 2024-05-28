@@ -6,10 +6,24 @@ const typeDefs = gql`
     place: Place
     title: String!
     text: String
-    rating: Float!
+    rating: Float
     url: String
     voiceId: String
     duration: Float!
+    type: MediaType!
+    createdAt: Float
+    updatedAt: Float
+  }
+
+  type MediaFull {
+    id: ID
+    place: PlaceFull
+    title: [KeyValuePair!]!
+    text: [KeyValuePair]
+    rating: Float
+    url: String
+    voiceId: [KeyValuePair]
+    duration: [KeyValuePair!]!
     type: MediaType!
     createdAt: Float
     updatedAt: Float
@@ -26,7 +40,7 @@ const typeDefs = gql`
       placeId: ID!
       title: String!
       type: MediaType!
-      rating: Float!
+      rating: Float
       text: String
       videoBase64: String
       videoDurationInSeconds: Int

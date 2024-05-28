@@ -17,8 +17,11 @@ export interface IRoute {
   distance?: number;
   optimizedDistance?: number;
   cityId: Types.ObjectId;
+  createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
+  deleted?: boolean;
+  deletedAt?: Date;
 }
 
 export interface IRouteTranslated

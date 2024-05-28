@@ -50,6 +50,24 @@ const typeDefs = gql`
     token: String!
   }
 
+  type UserFull {
+    id: ID!
+    email: String!
+    username: String
+    name: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    googleId: String
+    token: String
+    language: String
+    photo: String
+    hasPassword: Boolean
+    roleId: String!
+    organization: OrganizationFull
+    permissions: [Permission!]
+    deviceId: String
+  }
+
   type User {
     id: ID!
     email: String!
@@ -86,8 +104,8 @@ const typeDefs = gql`
 
   type Query {
     user: User
+    userFull: UserFull
     users: [User]
-    verifyToken(token: String): Boolean
   }
 `;
 export default typeDefs;

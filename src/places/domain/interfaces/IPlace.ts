@@ -19,6 +19,7 @@ export interface IPlace {
   createdAt: Date;
   updatedAt: Date;
   deleted?: boolean;
+  deletedAt?: Date;
 }
 
 export interface IPlaceTranslated

@@ -11,6 +11,9 @@ interface CreatePlanInput {
 }
 
 const resolvers = {
+  Plan: {
+    id: (parent: IPlan) => parent?._id?.toString(),
+  },
   Mutation: {
     createPlan: async (parent: any, args: CreatePlanInput, context: any) => {
       const { createPlanInput } = args;

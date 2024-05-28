@@ -32,6 +32,19 @@ const typeDefs = gql`
     phoneNumber: String!
   }
 
+  type OrganizationFull {
+    id: ID!
+    name: String!
+    description: String!
+    address: AddressFull!
+    contacts: [Contact!]!
+    plan: Plan!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    availableLanguages: [Language!]!
+    defaultLanguage: Language!
+  }
+
   type Organization {
     id: ID!
     name: String!
@@ -49,6 +62,10 @@ const typeDefs = gql`
     createOrganization(
       createOrganizationInput: CreateOrganizationInput!
     ): Organization!
+  }
+  type Query {
+    organization(id: ID!, language: Language): Organization!
+    organizationFull(id: ID!): OrganizationFull!
   }
 `;
 

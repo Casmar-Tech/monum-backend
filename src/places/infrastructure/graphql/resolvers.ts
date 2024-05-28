@@ -1,6 +1,7 @@
-import { IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
+import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
 import GetPlaceByIdUseCase from "../../application/GetPlaceByIdUseCase.js";
 import GetPlacesUseCase from "../../application/GetPlacesUseCase.js";
+import GetPlaceFullByIdUseCase from "../../application/GetPlaceFullByIdUseCase.js";
 import DeletePlaceAndAssociatedMediaUseCase from "../../application/DeletePlaceAndAssociatedMediaUseCase.js";
 import UpdatePlaceUseCase from "../../application/UpdatePlaceUseCase.js";
 import CreatePlaceUseCase from "../../application/CreatePlaceUseCase.js";
@@ -11,19 +12,13 @@ import { ApolloError } from "apollo-server-errors";
 import { ImageSize } from "../../domain/types/ImageTypes.js";
 import { Languages } from "../../../shared/Types.js";
 import GetPlaceBySearchAndPaginationUseCase from "../../application/GetPlacesBySearchAndPaginationUseCase.js";
-import { MongoUserModel } from "../../../users/infrastructure/mongoModel/MongoUserModel.js";
-import { MongoOrganizationModel } from "../../../organizations/infrastructure/mongoModel/MongoOrganizationModel.js";
-import { getTranslatedOrganization } from "../../../organizations/domain/functions/Organization.js";
 import {
-  GetObjectCommand,
-  HeadObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { IAddressTranslated } from "../../domain/interfaces/IAddress.js";
+  IAddress,
+  IAddressTranslated,
+} from "../../domain/interfaces/IAddress.js";
 import { FromSupport } from "../../domain/types/FromSupportTypes.js";
-import { Types } from "mongoose";
-import IPhoto from "../../domain/interfaces/IPhoto.js";
+import IPhoto, { IPhotoExisting } from "../../domain/interfaces/IPhoto.js";
+import GetUserByIdUseCase from "../../../users/application/GetUserByIdUseCase.js";
 
 const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
 
@@ -49,46 +44,64 @@ export interface NewPhotosUpdateInput {
   name: string;
 }
 
-const getCreatedBy = async (createdById: Types.ObjectId) => {
-  const createdBy = await MongoUserModel.findById(createdById);
-  if (!createdBy) return null;
-  const organization = await MongoOrganizationModel.findById(
-    createdBy.organizationId
-  );
-  if (organization) {
-    createdBy.organization = getTranslatedOrganization(
-      organization.toObject(),
-      createdBy.language
-    );
-  }
-  const client = new S3Client({
-    region: "eu-west-1",
-  });
-  const commandToCheck = new HeadObjectCommand({
-    Bucket: process.env.S3_BUCKET_IMAGES!,
-    Key: createdBy.id || createdBy._id?.toString() || "",
-  });
-
-  try {
-    await client.send(commandToCheck);
-
-    const commandToGet = new GetObjectCommand({
-      Bucket: process.env.S3_BUCKET_IMAGES!,
-      Key: createdBy.id || createdBy._id?.toString() || "",
-    });
-
-    const url = await getSignedUrl(client, commandToGet, {
-      expiresIn: 3600 * 24,
-    });
-    createdBy.photo = url;
-  } catch (error) {
-    console.log(error);
-  }
-  return createdBy;
-};
-
 const resolvers = {
+  PlacePhoto: {
+    id: (parent: IPhoto) => parent._id?.toString(),
+    url: (parent: IPhoto) => `${mediaCloudFrontUrl}/${parent.sizes.medium}`,
+    sizes: (parent: IPhoto) => {
+      return {
+        small: `${mediaCloudFrontUrl}/${parent.sizes.small}`,
+        medium: `${mediaCloudFrontUrl}/${parent.sizes.medium}`,
+        large: `${mediaCloudFrontUrl}/${parent.sizes.large}`,
+        original: `${mediaCloudFrontUrl}/${parent.url}`,
+      };
+    },
+    createdBy: async (parent: IPhoto) =>
+      await GetUserByIdUseCase(parent.createdBy.toString()),
+    order: (parent: IPhoto) => parent.order || 0,
+  },
+  AddressFull: {
+    city: (parent: IAddress) => {
+      return Object.entries(parent.city).map(([key, value]) => {
+        return { key, value };
+      });
+    },
+    street: (parent: IAddress) => {
+      return parent.street
+        ? Object.entries(parent.street).map(([key, value]) => {
+            return { key, value };
+          })
+        : [];
+    },
+    province: (parent: IAddress) => {
+      return parent.province
+        ? Object.entries(parent.province).map(([key, value]) => {
+            return { key, value };
+          })
+        : [];
+    },
+    country: (parent: IAddress) => {
+      return Object.entries(parent.country).map(([key, value]) => {
+        return { key, value };
+      });
+    },
+    coordinates: (parent: IAddress) => {
+      return {
+        lat: parent.coordinates.coordinates[1],
+        lng: parent.coordinates.coordinates[0],
+      };
+    },
+  },
+  Address: {
+    coordinates: (parent: IAddressTranslated) => {
+      return {
+        lat: parent.coordinates.coordinates[1],
+        lng: parent.coordinates.coordinates[0],
+      };
+    },
+  },
   Place: {
+    id: (parent: IPlaceTranslated) => parent._id?.toString(),
     imagesUrl: async (parent: IPlaceTranslated) => {
       if (!parent.imagesUrl) return [];
       return parent.imagesUrl.map((photo) => {
@@ -96,44 +109,23 @@ const resolvers = {
       });
     },
     createdBy: async (parent: IPlaceTranslated) => {
-      return getCreatedBy(parent.createdBy);
+      return await GetUserByIdUseCase(parent.createdBy.toString());
     },
-    address: (parent: IPlaceTranslated) => {
-      return {
-        ...parent.address,
-        coordinates: {
-          lat: parent.address.coordinates.coordinates[1],
-          lng: parent.address.coordinates.coordinates[0],
-        },
-      };
+  },
+  PlaceFull: {
+    id: (parent: IPlace) => parent._id?.toString(),
+    nameTranslations: (parent: IPlace) => {
+      return Object.entries(parent.nameTranslations).map(([key, value]) => {
+        return { key, value };
+      });
     },
-    photos: async (parent: IPlaceTranslated) => {
-      if (!parent.photos) return [];
-      return await Promise.all(
-        parent.photos
-          .sort((a, b) => a.order - b.order)
-          .map(async (photo: IPhoto) => {
-            try {
-              return {
-                id: photo._id?.toString(),
-                url: `${mediaCloudFrontUrl}/${photo.sizes.medium}`,
-                sizes: {
-                  small: `${mediaCloudFrontUrl}/${photo.sizes.small}`,
-                  medium: `${mediaCloudFrontUrl}/${photo.sizes.medium}`,
-                  large: `${mediaCloudFrontUrl}/${photo.sizes.large}`,
-                  original: `${mediaCloudFrontUrl}/${photo.url}`,
-                },
-                createdBy: await getCreatedBy(photo.createdBy),
-                order: photo.order || 0,
-                createdAt: photo.createdAt,
-                updatedAt: photo.updatedAt,
-                name: photo.name,
-              };
-            } catch (e) {
-              console.log(e);
-            }
-          })
-      );
+    description: (parent: IPlace) => {
+      return Object.entries(parent.description).map(([key, value]) => {
+        return { key, value };
+      });
+    },
+    createdBy: async (parent: IPlaceTranslated) => {
+      return await GetUserByIdUseCase(parent.createdBy.toString());
     },
   },
 
@@ -156,6 +148,25 @@ const resolvers = {
         args.id,
         args.imageSize,
         args.language,
+        args.isMobile,
+        args.fromSupport
+      );
+    },
+    placeFull: (
+      _: any,
+      args: {
+        id: string;
+        imageSize: ImageSize;
+        isMobile?: boolean;
+        fromSupport?: FromSupport;
+      },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return GetPlaceFullByIdUseCase(
+        userId,
+        args.id,
         args.isMobile,
         args.fromSupport
       );

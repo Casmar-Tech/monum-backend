@@ -9,7 +9,15 @@ const client = new S3Client({
 });
 
 async function CalculateMediasDuration() {
-  let medias = await MongoMediaModel.find({ deleted: { $ne: true } });
+  let medias = await MongoMediaModel.find({
+    deleted: { $ne: true },
+    $or: [
+      { "duration.en_US": { $exists: false } },
+      { "duration.es_ES": { $exists: false } },
+      { "duration.fr_FR": { $exists: false } },
+      { "duration.ca_ES": { $exists: false } },
+    ],
+  });
   let index = 0;
   for (const media of medias) {
     console.log(`Calculating media ${index++} of ${medias.length}`);

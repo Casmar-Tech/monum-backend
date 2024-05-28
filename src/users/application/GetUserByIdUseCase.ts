@@ -1,24 +1,11 @@
-import { GraphQLError } from "graphql";
 import { MongoUserModel } from "../infrastructure/mongoModel/MongoUserModel.js";
-import GetRealPermissionsOfUser from "../../permissions/application/GetRealPermissionsOfUser.js";
-import IUserWithPermissions from "../domain/IUserWithPermissions.js";
+import IUser from "../domain/IUser.js";
+import { ApolloError } from "apollo-server-errors";
 
-export default async function GetUserByIdUseCase(
-  id: string
-): Promise<IUserWithPermissions> {
-  const user = (await MongoUserModel.findById(
-    id
-  ).lean()) as IUserWithPermissions;
-  if (!user || !user._id) {
-    throw new GraphQLError("User not found", {
-      extensions: {
-        code: "USER_NOT_FOUND",
-        http: { status: 404 },
-      },
-    });
+export default async function GetUserByIdUseCase(id: string): Promise<IUser> {
+  const user = await MongoUserModel.findById(id);
+  if (!user) {
+    throw new ApolloError("User not found", "USER_NOT_FOUND");
   }
-  user.id = user._id.toString();
-  const realPermissions = await GetRealPermissionsOfUser(user.id);
-  user.permissions = realPermissions;
-  return user;
+  return user.toObject();
 }
