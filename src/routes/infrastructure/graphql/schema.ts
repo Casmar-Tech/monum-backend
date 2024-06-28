@@ -25,10 +25,10 @@ const typeDefs = gql`
     title: String!
     description: String!
     rating: Float
-    duration: Float!
-    optimizedDuration: Float!
-    distance: Float!
-    optimizedDistance: Float!
+    duration: Float
+    optimizedDuration: Float
+    distance: Float
+    optimizedDistance: Float
     stops: [Stop]!
     stopsCount: Int!
     cityId: ID!
@@ -40,10 +40,10 @@ const typeDefs = gql`
     id: ID!
     title: [KeyValuePair!]!
     description: [KeyValuePair!]!
-    duration: Float!
-    optimizedDuration: Float!
-    distance: Float!
-    optimizedDistance: Float!
+    duration: Float
+    optimizedDuration: Float
+    distance: Float
+    optimizedDistance: Float
     stops: [StopFull]!
     stopsCount: Int!
     cityId: ID!
@@ -107,8 +107,8 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    createRouteFull(routeFull: CreateRouteFullInput!): Route
-    updateRouteFull(id: ID!, routeUpdateFull: UpdateRouteFullInput!): Route
+    createRouteFull(routeFull: CreateRouteFullInput!): RouteFull
+    updateRouteFull(id: ID!, routeUpdateFull: UpdateRouteFullInput!): RouteFull
     deleteRoute(id: ID!): Boolean
   }
 `;

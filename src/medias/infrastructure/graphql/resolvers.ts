@@ -11,6 +11,10 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Languages } from "../../../shared/Types.js";
 import GetUserByIdUseCase from "../../../users/application/GetUserByIdUseCase.js";
 import { MediaType } from "../../domain/types/MediaType.js";
+import { MongoMediaModel } from "../mongoModel/MongoMediaModel.js";
+import { MongoPlaceModel } from "../../../places/infrastructure/mongoModel/MongoPlaceModel.js";
+
+const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
 
 const client = new S3Client({
   region: "eu-west-1",
@@ -33,6 +37,46 @@ const resolvers = {
   },
   MediaFull: {
     id: (parent: IMedia) => parent?._id?.toString(),
+    title: (parent: IMedia) => {
+      return Object.entries(parent.title).map(([key, value]) => {
+        return { key, value };
+      });
+    },
+    text: (parent: IMedia) => {
+      return Object.entries(parent.text || {}).map(([key, value]) => {
+        return { key, value };
+      });
+    },
+    url: async (parent: IMedia) => {
+      if (!parent.url) return null;
+      return await Promise.all(
+        Object.entries(parent.url)?.map(async ([key, value]) => {
+          const commandToGet = new GetObjectCommand({
+            Bucket: process.env.S3_BUCKET_AUDIOS!,
+            Key: value,
+          });
+          const url = await getSignedUrl(client, commandToGet, {
+            expiresIn: 3600,
+          });
+          return {
+            key,
+            value: url,
+          };
+        })
+      );
+    },
+    voiceId: (parent: IMedia) => {
+      return Object.entries(parent.voiceId || {}).map(([key, value]) => {
+        return { key, value };
+      });
+    },
+    duration: (parent: IMedia) => {
+      return Object.entries(parent.duration || {}).map(([key, value]) => {
+        return { key, value };
+      });
+    },
+    place: async (parent: IMedia) =>
+      await MongoPlaceModel.findById(parent.placeId),
   },
   Mutation: {
     createMedia: async (
@@ -112,6 +156,17 @@ const resolvers = {
       const { id: userId } = checkToken(token);
       if (!userId) throw new Error("User not found");
       return GetMediasByPlaceIdUseCase(userId, args.placeId, args.language);
+    },
+    mediaFull: async (
+      parent: any,
+      args: { id: string },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      const media = await MongoMediaModel.findById(args.id);
+      if (!media) throw new Error("Media not found");
+      return media;
     },
   },
 };

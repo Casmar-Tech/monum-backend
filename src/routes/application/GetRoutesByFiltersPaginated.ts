@@ -23,8 +23,14 @@ export default async function GetRoutesFullByFiltersUseCase(
   if (textSearch) {
     Object.assign(query, {
       $or: [
-        { title: { $regex: textSearch, $options: "i" } },
-        { description: { $regex: textSearch, $options: "i" } },
+        { "title.ca_ES": { $regex: textSearch, $options: "i" } },
+        { "title.es_ES": { $regex: textSearch, $options: "i" } },
+        { "title.en_US": { $regex: textSearch, $options: "i" } },
+        { "title.fr_FR": { $regex: textSearch, $options: "i" } },
+        { "description.ca_ES": { $regex: textSearch, $options: "i" } },
+        { "description.es_ES": { $regex: textSearch, $options: "i" } },
+        { "description.en_US": { $regex: textSearch, $options: "i" } },
+        { "description.fr_FR": { $regex: textSearch, $options: "i" } },
       ],
     });
   }

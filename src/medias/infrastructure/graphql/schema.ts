@@ -21,7 +21,7 @@ const typeDefs = gql`
     title: [KeyValuePair!]!
     text: [KeyValuePair]
     rating: Float
-    url: String
+    url: [KeyValuePair]
     voiceId: [KeyValuePair]
     duration: [KeyValuePair!]!
     type: MediaType!
@@ -53,6 +53,7 @@ const typeDefs = gql`
   type Query {
     media(id: ID!, language: Language): Media
     medias(placeId: ID, language: Language): [Media]
+    mediaFull(id: ID!): MediaFull
   }
 
   input UpdateMediaInput {

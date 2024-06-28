@@ -3,6 +3,8 @@ import GetRoutesByFiltersUseCase from "../../application/GetRoutesByFiltersUseCa
 import GetRoutesFullByFiltersPaginated from "../../application/GetRoutesFullByFiltersPaginated.js";
 import GetRoutesByFiltersPaginated from "../../application/GetRoutesByFiltersPaginated.js";
 import DeleteRoute from "../../application/DeleteRoute.js";
+import CreateRouteFull from "../../application/CreateRouteFull.js";
+import UpdateRouteFull from "../../application/UpdateRouteFull.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { IRoute, IRouteTranslated } from "../../domain/interfaces/IRoute.js";
 import { ApolloError } from "apollo-server-errors";
@@ -16,22 +18,26 @@ export interface StopInput {
 }
 export interface CreateRouteFullInput {
   title: {
-    [key: string]: string;
-  };
+    key: string;
+    value: string;
+  }[];
   description: {
-    [key: string]: string;
-  };
+    key: string;
+    value: string;
+  }[];
   cityId?: string;
   stops: StopInput[];
 }
 
 export interface UpdateRouteFullInput {
   title?: {
-    [key: string]: string;
-  };
+    key: string;
+    value: string;
+  }[];
   description?: {
-    [key: string]: string;
-  };
+    key: string;
+    value: string;
+  }[];
   cityId?: string;
   stops?: StopInput[];
 }
@@ -151,7 +157,8 @@ const resolvers = {
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return null;
+      const route = await CreateRouteFull(userId, args.routeFull);
+      return route;
     },
     updateRouteFull: async (
       parent: any,
@@ -160,7 +167,12 @@ const resolvers = {
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return null;
+      const route = await UpdateRouteFull(
+        userId,
+        args.id,
+        args.routeUpdateFull
+      );
+      return route;
     },
     deleteRoute: (
       parent: any,
