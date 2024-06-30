@@ -22,4 +22,6 @@ export default interface IUser {
   lastRecoveryPasswordEmailResent?: Date;
   recoveryPasswordCodeValidity?: Date;
   deviceId?: string;
+  thirdPartyAccount?: "google" | "apple";
+  thirdPartyEmail?: string;
 }

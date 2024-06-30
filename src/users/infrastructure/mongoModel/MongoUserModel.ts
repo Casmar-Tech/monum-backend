@@ -58,6 +58,11 @@ const userSchema = new Schema<IUser>(
       unique: true,
       sparse: true,
     },
+    thirdPartyAccount: {
+      type: String,
+      enum: ["google", "apple"],
+    },
+    thirdPartyEmail: { type: String },
   },
   { timestamps: true }
 );

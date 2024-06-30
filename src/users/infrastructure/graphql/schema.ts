@@ -26,6 +26,15 @@ const typeDefs = gql`
     language: String
   }
 
+  input LoginAppleInput {
+    nonce: String!
+    user: String!
+    name: String
+    identityToken: String
+    email: String
+    language: String!
+  }
+
   input UpdateUserInput {
     id: String!
     username: String
@@ -52,7 +61,7 @@ const typeDefs = gql`
 
   type UserFull {
     id: ID!
-    email: String!
+    email: String
     username: String
     name: String
     createdAt: DateTime!
@@ -68,9 +77,14 @@ const typeDefs = gql`
     deviceId: String
   }
 
+  enum ThirdPartyAccount {
+    google
+    apple
+  }
+
   type User {
     id: ID!
-    email: String!
+    email: String
     username: String
     name: String
     createdAt: DateTime!
@@ -84,12 +98,15 @@ const typeDefs = gql`
     organization: Organization
     permissions: [Permission!]
     deviceId: String
+    thirdPartyAccount: ThirdPartyAccount
+    thirdPartyEmail: String
   }
 
   type Mutation {
     registerUser(registerInput: RegisterInput!): User
     loginUser(loginInput: LoginInput!): User
     loginGoogleUser(loginGoogleInput: LoginGoogleInput!): User
+    loginAppleUser(loginAppleInput: LoginAppleInput!): User
     updateUser(updateUserInput: UpdateUserInput!): User
     updatePassword(oldPassword: String!, newPassword: String!): Boolean
     resetPassword(resetPasswordInput: ResetPasswordInput!): Boolean

@@ -1,4 +1,5 @@
 import LoginGoogleUserUseCase from "../../application/LoginGoogleUserUseCase.js";
+import LoginAppleUserUseCase from "../../application/LoginAppleUserUseCase.js";
 import LoginUserUseCase from "../../application/LoginUserUseCase.js";
 import RegisterUserUseCase from "../../application/RegisterUserUseCase.js";
 import UpdateUserUseCase from "../../application/UpdateUserUseCase.js";
@@ -21,7 +22,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ApolloError } from "apollo-server-errors";
-import { Languages } from "../../../shared/Types.js";
+import { Languages, languages } from "../../../shared/Types.js";
 import { MongoOrganizationModel } from "../../../organizations/infrastructure/mongoModel/MongoOrganizationModel.js";
 import GetRealPermissionsOfUser from "../../../permissions/application/GetRealPermissionsOfUser.js";
 import { getTranslatedOrganization } from "../../../organizations/domain/functions/Organization.js";
@@ -52,6 +53,17 @@ interface LoginGoogleInput {
     name: string;
     photo: string;
     language?: string;
+  };
+}
+
+interface LoginAppleInput {
+  loginAppleInput: {
+    nonce: string;
+    user: string;
+    name?: string;
+    identityToken: string;
+    email?: string;
+    language: string;
   };
 }
 
@@ -217,6 +229,30 @@ const resolvers = {
       }: LoginGoogleInput
     ) => {
       return LoginGoogleUserUseCase({ email, googleId, name, photo, language });
+    },
+    loginAppleUser: async (
+      parent: any,
+      {
+        loginAppleInput: {
+          nonce,
+          user,
+          name,
+
+          identityToken,
+          email,
+
+          language,
+        },
+      }: LoginAppleInput
+    ) => {
+      return LoginAppleUserUseCase({
+        nonce,
+        user,
+        name,
+        identityToken,
+        email,
+        language,
+      });
     },
     loginUserAsGuest: async (
       parent: any,

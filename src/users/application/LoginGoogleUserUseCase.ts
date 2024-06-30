@@ -52,6 +52,7 @@ export default async function rLoginGoogleUserUseCase({
         createdAt: new Date(),
         language: language || "en_US",
         roleId: defaultRoleId,
+        thirdPartyAccount: "google",
       });
     }
     if (!user.email || !user.username) {
