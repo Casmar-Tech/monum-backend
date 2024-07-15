@@ -8,8 +8,7 @@ import { IStop } from "../domain/interfaces/IStop.js";
 import { MongoRouteModel } from "../infrastructure/mongoModel/MongoRouteModel.js";
 import { IRoute } from "../domain/interfaces/IRoute.js";
 
-export default async function UpdateRoute(
-  userId: string,
+export default async function UpdateRouteFull(
   id: string,
   routeUpdate: UpdateRouteFullInput
 ): Promise<IRoute> {
@@ -24,36 +23,34 @@ export default async function UpdateRoute(
   }
   if (Array.isArray(routeUpdate.stops)) {
     const newStops: IStop[] = [];
-    await Promise.all(
-      routeUpdate.stops.map(async (stop) => {
-        try {
-          const place = await MongoPlaceModel.findById(stop.placeId);
-          if (!place) {
-            throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
-          }
-          const medias: IMedia[] = [];
-          for (const mediaId of stop.mediasIds) {
-            try {
-              const media = await MongoMediaModel.findById(mediaId);
-              if (!media) {
-                throw new ApolloError("Media not found", "MEDIA_NOT_FOUND");
-              }
-              medias.push(media);
-            } catch (error) {
-              throw new ApolloError("Media not found", "MEDIA_NOT_FOUND");
-            }
-          }
-          newStops.push({
-            place: place,
-            medias: medias,
-            order: stop.order,
-            optimizedOrder: stop.optimizedOrder || stop.order,
-          });
-        } catch (error) {
+    for (const stop of routeUpdate.stops) {
+      try {
+        const place = await MongoPlaceModel.findById(stop.placeId);
+        if (!place) {
           throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
         }
-      })
-    );
+        const medias: IMedia[] = [];
+        for (const mediaId of stop.mediasIds) {
+          try {
+            const media = await MongoMediaModel.findById(mediaId);
+            if (!media) {
+              throw new ApolloError("Media not found", "MEDIA_NOT_FOUND");
+            }
+            medias.push(media);
+          } catch (error) {
+            throw new ApolloError("Media not found", "MEDIA_NOT_FOUND");
+          }
+        }
+        newStops.push({
+          place: place,
+          medias: medias,
+          order: stop.order,
+          optimizedOrder: stop.optimizedOrder || stop.order,
+        });
+      } catch (error) {
+        throw new ApolloError("Place not found", "PLACE_NOT_FOUND");
+      }
+    }
     route.stops = newStops;
   }
   if (routeUpdate.title) {

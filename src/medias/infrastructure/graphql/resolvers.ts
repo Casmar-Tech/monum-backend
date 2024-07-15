@@ -1,6 +1,7 @@
 import DeleteMediaAndUpdatedAssociatedRoutesUseCase from "../../application/DeleteMediaAndUpdatedAssociatedRoutesUseCase.js";
 import GetMediaByIdUseCase from "../../application/GetMediaByIdUseCase.js";
 import GetMediasByPlaceIdUseCase from "../../application/GetMediasByPlaceIdUseCase.js";
+import GetMediasFullByPlaceIdUseCase from "../../application/GetMediasFullByPlaceIdUseCase.js";
 import TranslateMedia from "../../application/TranslateMedia.js";
 import CreateMediaUseCase from "../../application/CreateMediaUseCase.js";
 import UpdateMediaAndAssociatedRoutesUseCase from "../../application/UpdateMediaAndAssociatedRoutesUseCase.js";
@@ -150,12 +151,17 @@ const resolvers = {
     },
     medias: async (
       parent: any,
-      args: { placeId: string; language?: Languages },
+      args: { placeId: string; language?: Languages; textSearch?: string },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new Error("User not found");
-      return GetMediasByPlaceIdUseCase(userId, args.placeId, args.language);
+      return GetMediasByPlaceIdUseCase(
+        userId,
+        args.placeId,
+        args.language,
+        args.textSearch
+      );
     },
     mediaFull: async (
       parent: any,
@@ -167,6 +173,15 @@ const resolvers = {
       const media = await MongoMediaModel.findById(args.id);
       if (!media) throw new Error("Media not found");
       return media;
+    },
+    mediasFull: async (
+      parent: any,
+      args: { placeId: string; textSearch?: string },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      return GetMediasFullByPlaceIdUseCase(args.placeId, args.textSearch);
     },
   },
 };

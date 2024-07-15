@@ -1,4 +1,5 @@
 import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
+import GetPlacesFullUseCase from "../../application/GetPlacesFullUseCase.js";
 import GetPlaceByIdUseCase from "../../application/GetPlaceByIdUseCase.js";
 import GetPlacesUseCase from "../../application/GetPlacesUseCase.js";
 import GetPlaceFullByIdUseCase from "../../application/GetPlaceFullByIdUseCase.js";
@@ -115,14 +116,24 @@ const resolvers = {
   PlaceFull: {
     id: (parent: IPlace) => parent._id?.toString(),
     nameTranslations: (parent: IPlace) => {
-      return Object.entries(parent.nameTranslations).map(([key, value]) => {
-        return { key, value };
+      return parent.nameTranslations
+        ? Object.entries(parent.nameTranslations).map(([key, value]) => {
+            return { key, value };
+          })
+        : [];
+    },
+    imagesUrl: async (parent: IPlaceTranslated) => {
+      if (!parent.imagesUrl) return [];
+      return parent.imagesUrl.map((photo) => {
+        return `${mediaCloudFrontUrl}/${photo}`;
       });
     },
     description: (parent: IPlace) => {
-      return Object.entries(parent.description).map(([key, value]) => {
-        return { key, value };
-      });
+      return parent.description
+        ? Object.entries(parent.description).map(([key, value]) => {
+            return { key, value };
+          })
+        : [];
     },
     createdBy: async (parent: IPlaceTranslated) => {
       return await GetUserByIdUseCase(parent.createdBy.toString());
@@ -199,6 +210,17 @@ const resolvers = {
         args.imageSize,
         args.language
       );
+    },
+    placesFull: (
+      _: any,
+      args: {
+        textSearch: string;
+      },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return GetPlacesFullUseCase(args.textSearch);
     },
     getPlaceBySearchAndPagination: async (
       _: any,

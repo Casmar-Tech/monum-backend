@@ -175,6 +175,7 @@ const typeDefs = gql`
       imageSize: ImageSize
       language: Language
     ): [Place]
+    placesFull(textSearch: String): [PlaceFull]
     getPlaceBySearchAndPagination(
       textSearch: String!
       pageNumber: Int!

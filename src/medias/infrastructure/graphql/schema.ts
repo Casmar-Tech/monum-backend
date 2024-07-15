@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 const typeDefs = gql`
   type Media {
-    id: ID
+    id: ID!
     place: Place
     title: String!
     text: String
@@ -13,10 +13,11 @@ const typeDefs = gql`
     type: MediaType!
     createdAt: Float
     updatedAt: Float
+    placeId: ID!
   }
 
   type MediaFull {
-    id: ID
+    id: ID!
     place: PlaceFull
     title: [KeyValuePair!]!
     text: [KeyValuePair]
@@ -27,6 +28,7 @@ const typeDefs = gql`
     type: MediaType!
     createdAt: Float
     updatedAt: Float
+    placeId: ID!
   }
 
   enum MediaType {
@@ -52,8 +54,9 @@ const typeDefs = gql`
 
   type Query {
     media(id: ID!, language: Language): Media
-    medias(placeId: ID, language: Language): [Media]
+    medias(placeId: ID, language: Language, textSearch: String): [Media]
     mediaFull(id: ID!): MediaFull
+    mediasFull(placeId: ID, textSearch: String): [MediaFull]
   }
 
   input UpdateMediaInput {

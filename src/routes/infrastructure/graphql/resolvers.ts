@@ -167,11 +167,7 @@ const resolvers = {
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      const route = await UpdateRouteFull(
-        userId,
-        args.id,
-        args.routeUpdateFull
-      );
+      const route = await UpdateRouteFull(args.id, args.routeUpdateFull);
       return route;
     },
     deleteRoute: (

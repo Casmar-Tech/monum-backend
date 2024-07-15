@@ -7,7 +7,8 @@ import { Languages } from "../../shared/Types.js";
 export default async function GetMediasByPlaceIdUseCase(
   userId: string,
   placeId: string,
-  language?: Languages
+  language?: Languages,
+  textSearch?: string
 ): Promise<IMediaTranslated[]> {
   let userLanguage = language;
   if (!userLanguage) {
@@ -17,6 +18,9 @@ export default async function GetMediasByPlaceIdUseCase(
   const query = { deleted: { $ne: true } };
   if (placeId) {
     Object.assign(query, { placeId });
+  }
+  if (textSearch) {
+    Object.assign(query, { $text: { $search: textSearch } });
   }
   const medias = await MongoMediaModel.find(query);
   const translatedMedias = await Promise.all(
