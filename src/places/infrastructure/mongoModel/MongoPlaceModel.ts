@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
 import IPhoto from "../../domain/interfaces/IPhoto.js";
 
@@ -67,7 +67,7 @@ export const PlaceSchema = new Schema<IPlace>(
       required: false,
       default: false,
     },
-    createdBy: { type: Schema.Types.ObjectId, ref: "users", required: true },
+    createdBy: { type: Schema.Types.ObjectId, ref: "users" },
   },
 
   { timestamps: true }
@@ -75,7 +75,8 @@ export const PlaceSchema = new Schema<IPlace>(
 
 export async function createPlaceFromTranslatedPlace(
   place: IPlaceTranslated,
-  language: string
+  language: string,
+  createdBy?: string
 ) {
   // Verify if the place already exists
   const existingPlace = await MongoPlaceModel.findOne({ name: place.name });
@@ -109,6 +110,7 @@ export async function createPlaceFromTranslatedPlace(
     description: {
       [language]: place.description,
     },
+    createdBy: new Types.ObjectId(createdBy),
   });
 }
 

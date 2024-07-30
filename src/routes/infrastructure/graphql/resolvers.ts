@@ -43,6 +43,14 @@ export interface UpdateRouteFullInput {
 }
 
 const resolvers = {
+  Stop: {
+    order: (parent: any) => parent.order || 0,
+    optimizedOrder: (parent: any) => parent.optimizedOrder || parent.order,
+  },
+  StopFull: {
+    order: (parent: any) => parent.order || 0,
+    optimizedOrder: (parent: any) => parent.optimizedOrder || parent.order,
+  },
   Route: {
     id: (parent: IRouteTranslated) => parent._id?.toString(),
     stopsCount: (parent: IRouteTranslated) => parent.stops.length,
@@ -89,7 +97,7 @@ const resolvers = {
       checkToken(token);
       const route = await MongoRouteModel.findById(args.id);
       if (!route) throw new ApolloError("Route not found", "ROUTE_NOT_FOUND");
-      return route;
+      return route.toObject();
     },
     routes: async (
       parent: any,
