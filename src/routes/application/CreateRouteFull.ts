@@ -6,13 +6,13 @@ import { MongoUserModel } from "../../users/infrastructure/mongoModel/MongoUserM
 import { getTranslatedRoute } from "../domain/functions/Route.js";
 import { IRoute, IRouteTranslated } from "../domain/interfaces/IRoute.js";
 import { IStop } from "../domain/interfaces/IStop.js";
-import { CreateRouteFullInput } from "../infrastructure/graphql/resolvers.js";
+import { RouteFullInput } from "../infrastructure/graphql/resolvers.js";
 import { MongoRouteModel } from "../infrastructure/mongoModel/MongoRouteModel.js";
 import { ApolloError } from "apollo-server-errors";
 
 export default async function CreateRouteFull(
   userId: string,
-  route: CreateRouteFullInput
+  route: RouteFullInput
 ): Promise<IRoute> {
   const arrayToObjectLanguage = (array: any[]) =>
     array.reduce((obj, item) => {

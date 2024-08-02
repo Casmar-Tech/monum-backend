@@ -1,7 +1,8 @@
 import { MongoRouteModel } from "../infrastructure/mongoModel/MongoRouteModel.js";
-import { IRoute, IRouteTranslated } from "../domain/interfaces/IRoute.js";
+import { IRouteTranslated } from "../domain/interfaces/IRoute.js";
 import GetUserByIdUseCase from "../../users/application/GetUserByIdUseCase.js";
 import { getTranslatedRoute } from "../domain/functions/Route.js";
+import { Languages } from "../../shared/Types.js";
 
 export default async function GetRoutesFullByFiltersUseCase(
   userId: string,
@@ -9,7 +10,7 @@ export default async function GetRoutesFullByFiltersUseCase(
   textSearch: string,
   limit: number,
   offset: number,
-  language: string
+  language: Languages
 ): Promise<{
   routes: IRouteTranslated[];
   total: number;

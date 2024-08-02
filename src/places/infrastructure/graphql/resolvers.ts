@@ -7,6 +7,8 @@ import DeletePlaceAndAssociatedMediaUseCase from "../../application/DeletePlaceA
 import UpdatePlaceUseCase from "../../application/UpdatePlaceUseCase.js";
 import CreatePlaceUseCase from "../../application/CreatePlaceUseCase.js";
 import UpdatePlacePhotos from "../../application/UpdatePlacePhotos.js";
+import CreatePlaceFullUseCase from "../../application/CreatePlaceFullUseCase.js";
+import UpdatePlaceFullUseCase from "../../application/UpdatePlaceFullUseCase.js";
 import { SortField, SortOrder } from "../../domain/types/SortTypes.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { ApolloError } from "apollo-server-errors";
@@ -43,6 +45,44 @@ export interface NewPhotosUpdateInput {
   photoBase64: string;
   order: number;
   name: string;
+}
+
+export interface AddressFullInput {
+  city: {
+    key: string;
+    value: string;
+  }[];
+  street: {
+    key: string;
+    value: string;
+  }[];
+  province: {
+    key: string;
+    value: string;
+  }[];
+  country: {
+    key: string;
+    value: string;
+  }[];
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
+export interface PlaceFullInput {
+  name: string;
+  nameTranslations: {
+    key: string;
+    value: string;
+  }[];
+  address: AddressFullInput;
+  description: {
+    key: string;
+    value: string;
+  }[];
+
+  importance: number;
 }
 
 const resolvers = {
@@ -228,6 +268,7 @@ const resolvers = {
         textSearch: string;
         pageNumber: number;
         resultsPerPage: number;
+        language?: Languages;
       },
       { token }: { token: string }
     ) => {
@@ -237,7 +278,8 @@ const resolvers = {
         userId,
         args.textSearch,
         args.pageNumber,
-        args.resultsPerPage
+        args.resultsPerPage,
+        args.language
       );
     },
   },
@@ -263,6 +305,16 @@ const resolvers = {
         },
       });
     },
+    createPlaceFull: async (
+      parent: any,
+      args: { id: string; place: PlaceFullInput },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      const place = await CreatePlaceFullUseCase(args.id, args.place);
+      return place;
+    },
     updatePlace: async (
       parent: any,
       args: { id: string; placeUpdate: Partial<IPlaceInput> },
@@ -276,6 +328,16 @@ const resolvers = {
         args.placeUpdate
       );
       return placeUpdated;
+    },
+    updatePlaceFull: async (
+      parent: any,
+      args: { id: string; placeUpdate: Partial<PlaceFullInput> },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      const place = await UpdatePlaceFullUseCase(args.id, args.placeUpdate);
+      return place;
     },
     updatePlacePhotos: async (
       parent: any,

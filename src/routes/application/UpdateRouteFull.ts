@@ -1,5 +1,5 @@
 import { ApolloError } from "apollo-server-errors";
-import { UpdateRouteFullInput } from "../infrastructure/graphql/resolvers.js";
+import { RouteFullInput } from "../infrastructure/graphql/resolvers.js";
 import { Languages } from "../../shared/Types.js";
 import { MongoPlaceModel } from "../../places/infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoMediaModel } from "../../medias/infrastructure/mongoModel/MongoMediaModel.js";
@@ -10,7 +10,7 @@ import { IRoute } from "../domain/interfaces/IRoute.js";
 
 export default async function UpdateRouteFull(
   id: string,
-  routeUpdate: UpdateRouteFullInput
+  routeUpdate: Partial<RouteFullInput>
 ): Promise<IRoute> {
   const arrayToObjectLanguage = (array: any[]) =>
     array.reduce((obj, item) => {

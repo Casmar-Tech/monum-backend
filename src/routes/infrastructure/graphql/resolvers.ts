@@ -9,6 +9,7 @@ import { checkToken } from "../../../middleware/auth.js";
 import { IRoute, IRouteTranslated } from "../../domain/interfaces/IRoute.js";
 import { ApolloError } from "apollo-server-errors";
 import { MongoRouteModel } from "../mongoModel/MongoRouteModel.js";
+import { Languages } from "../../../shared/Types.js";
 
 export interface StopInput {
   placeId: string;
@@ -16,7 +17,7 @@ export interface StopInput {
   order: number;
   optimizedOrder: number;
 }
-export interface CreateRouteFullInput {
+export interface RouteFullInput {
   title: {
     key: string;
     value: string;
@@ -27,19 +28,6 @@ export interface CreateRouteFullInput {
   }[];
   cityId?: string;
   stops: StopInput[];
-}
-
-export interface UpdateRouteFullInput {
-  title?: {
-    key: string;
-    value: string;
-  }[];
-  description?: {
-    key: string;
-    value: string;
-  }[];
-  cityId?: string;
-  stops?: StopInput[];
 }
 
 const resolvers = {
@@ -120,7 +108,7 @@ const resolvers = {
         textSearch: string;
         limit: number;
         offset: number;
-        language: string;
+        language: Languages;
       },
       { token }: { token: string }
     ) => {
@@ -160,7 +148,7 @@ const resolvers = {
   Mutation: {
     createRouteFull: async (
       parent: any,
-      args: { routeFull: CreateRouteFullInput },
+      args: { routeFull: RouteFullInput },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
@@ -170,7 +158,7 @@ const resolvers = {
     },
     updateRouteFull: async (
       parent: any,
-      args: { id: string; routeUpdateFull: UpdateRouteFullInput },
+      args: { id: string; routeUpdateFull: Partial<RouteFullInput> },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
