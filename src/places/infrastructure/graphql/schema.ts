@@ -123,19 +123,21 @@ const typeDefs = gql`
     name: String
   }
 
-  input NameTranslationsInput {
-    en_US: String
-    es_ES: String
-    fr_FR: String
-    ca_ES: String
-  }
-
   input AddressInput {
     street: String!
     city: String!
     postalCode: String!
     province: String!
     country: String!
+    coordinates: CoordinatesInput!
+  }
+
+  input AddressFullInput {
+    street: [KeyValuePairInput]
+    city: [KeyValuePairInput!]!
+    postalCode: String
+    province: [KeyValuePairInput]
+    country: [KeyValuePairInput!]!
     coordinates: CoordinatesInput!
   }
 
@@ -151,6 +153,22 @@ const typeDefs = gql`
     address: AddressInput!
     description: String!
     importance: Int!
+  }
+
+  input CreatePlaceFullInput {
+    name: String!
+    nameTranslations: [KeyValuePairInput!]!
+    address: AddressFullInput!
+    description: [KeyValuePairInput!]!
+    importance: Int!
+  }
+
+  input UpdatePlaceFullInput {
+    name: String
+    nameTranslations: [KeyValuePairInput]
+    address: AddressFullInput
+    description: [KeyValuePairInput]
+    importance: Int
   }
 
   type Query {
@@ -175,16 +193,20 @@ const typeDefs = gql`
       imageSize: ImageSize
       language: Language
     ): [Place]
+    placesFull(textSearch: String): [PlaceFull]
     getPlaceBySearchAndPagination(
       textSearch: String!
       pageNumber: Int!
       resultsPerPage: Int!
+      language: Language
     ): PlaceSearchResults
   }
 
   type Mutation {
     createPlace(place: CreatePlaceInput!): Place
+    createPlaceFull(place: CreatePlaceFullInput!): PlaceFull
     updatePlace(id: ID!, placeUpdate: UpdatePlaceInput!): Place
+    updatePlaceFull(id: ID!, placeUpdate: UpdatePlaceFullInput!): PlaceFull
     updatePlacePhotos(
       id: ID!
       oldPhotos: [OldPhotosUpdateInput!]!

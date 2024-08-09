@@ -6,19 +6,21 @@ import {
 import { getTranslatedPlace } from "../domain/functions/Place.js";
 import { MongoUserModel } from "../../users/infrastructure/mongoModel/MongoUserModel.js";
 import { ApolloError } from "apollo-server-errors";
+import { Languages } from "../../shared/Types.js";
 
 export default async function GetPlaceBySearchAndPaginationUseCase(
   userId: string,
   textSearch: string,
   pageNumber: number,
-  resultsPerPage: number
+  resultsPerPage: number,
+  language?: Languages
 ): Promise<IPlacesSearchResults> {
   const skip = (pageNumber - 1) * resultsPerPage;
   const user = await MongoUserModel.findById(userId);
   if (!user) {
     throw new ApolloError("User not found", "USER_NOT_FOUND");
   }
-  const userLanguage = user.language || "en_US";
+  const userLanguage = language || user.language || "en_US";
   const query = {
     deleted: { $ne: true },
     $or: [

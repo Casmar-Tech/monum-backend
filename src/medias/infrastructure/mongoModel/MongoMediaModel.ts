@@ -16,18 +16,15 @@ export const MediaSchema = new Schema<IMedia>(
     text: {
       type: Object,
       of: String,
-      required: true,
     },
     rating: { type: Number },
     url: {
       type: Object,
       of: String,
-      required: true,
     },
     voiceId: {
       type: Object,
       of: String,
-      required: true,
     },
     duration: {
       type: Object,

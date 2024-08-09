@@ -5,7 +5,7 @@ import IUser from "../users/domain/IUser.js";
 
 dotenv.config();
 
-const SECRET_KEY = process.env.SECRET_KEY!;
+const SECRET_KEY: string = process.env.SECRET_KEY!;
 
 export const checkToken = (token: string): IUser => {
   if (!token) {

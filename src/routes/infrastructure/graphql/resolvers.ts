@@ -3,10 +3,13 @@ import GetRoutesByFiltersUseCase from "../../application/GetRoutesByFiltersUseCa
 import GetRoutesFullByFiltersPaginated from "../../application/GetRoutesFullByFiltersPaginated.js";
 import GetRoutesByFiltersPaginated from "../../application/GetRoutesByFiltersPaginated.js";
 import DeleteRoute from "../../application/DeleteRoute.js";
+import CreateRouteFull from "../../application/CreateRouteFull.js";
+import UpdateRouteFull from "../../application/UpdateRouteFull.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { IRoute, IRouteTranslated } from "../../domain/interfaces/IRoute.js";
 import { ApolloError } from "apollo-server-errors";
 import { MongoRouteModel } from "../mongoModel/MongoRouteModel.js";
+import { Languages } from "../../../shared/Types.js";
 
 export interface StopInput {
   placeId: string;
@@ -14,29 +17,28 @@ export interface StopInput {
   order: number;
   optimizedOrder: number;
 }
-export interface CreateRouteFullInput {
+export interface RouteFullInput {
   title: {
-    [key: string]: string;
-  };
+    key: string;
+    value: string;
+  }[];
   description: {
-    [key: string]: string;
-  };
+    key: string;
+    value: string;
+  }[];
   cityId?: string;
   stops: StopInput[];
 }
 
-export interface UpdateRouteFullInput {
-  title?: {
-    [key: string]: string;
-  };
-  description?: {
-    [key: string]: string;
-  };
-  cityId?: string;
-  stops?: StopInput[];
-}
-
 const resolvers = {
+  Stop: {
+    order: (parent: any) => parent.order || 0,
+    optimizedOrder: (parent: any) => parent.optimizedOrder || parent.order,
+  },
+  StopFull: {
+    order: (parent: any) => parent.order || 0,
+    optimizedOrder: (parent: any) => parent.optimizedOrder || parent.order,
+  },
   Route: {
     id: (parent: IRouteTranslated) => parent._id?.toString(),
     stopsCount: (parent: IRouteTranslated) => parent.stops.length,
@@ -83,7 +85,7 @@ const resolvers = {
       checkToken(token);
       const route = await MongoRouteModel.findById(args.id);
       if (!route) throw new ApolloError("Route not found", "ROUTE_NOT_FOUND");
-      return route;
+      return route.toObject();
     },
     routes: async (
       parent: any,
@@ -106,7 +108,7 @@ const resolvers = {
         textSearch: string;
         limit: number;
         offset: number;
-        language: string;
+        language: Languages;
       },
       { token }: { token: string }
     ) => {
@@ -146,21 +148,23 @@ const resolvers = {
   Mutation: {
     createRouteFull: async (
       parent: any,
-      args: { routeFull: CreateRouteFullInput },
+      args: { routeFull: RouteFullInput },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return null;
+      const route = await CreateRouteFull(userId, args.routeFull);
+      return route;
     },
     updateRouteFull: async (
       parent: any,
-      args: { id: string; routeUpdateFull: UpdateRouteFullInput },
+      args: { id: string; routeUpdateFull: Partial<RouteFullInput> },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return null;
+      const route = await UpdateRouteFull(args.id, args.routeUpdateFull);
+      return route;
     },
     deleteRoute: (
       parent: any,

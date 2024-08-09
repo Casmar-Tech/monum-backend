@@ -11,7 +11,8 @@ export default async function CreatePlaceUseCase(
   const user = await GetUserByIdUseCase(userId);
   const placeCreated = await createPlaceFromTranslatedPlace(
     place,
-    user.language
+    user.language,
+    userId
   );
   if (placeCreated) {
     return getTranslatedPlace(placeCreated, user.language);

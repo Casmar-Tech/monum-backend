@@ -25,7 +25,7 @@ async function createTextMedia(
   language: Languages,
   title: string,
   text: string,
-  rating: number
+  rating?: number
 ) {
   const place = await MongoPlaceModel.findById(placeId);
   if (!place) {
@@ -59,7 +59,7 @@ async function createAudioMedia(
   language: Languages,
   title: string,
   text: string,
-  rating: number
+  rating?: number
 ) {
   const place = await MongoPlaceModel.findById(placeId);
   if (!place) {
@@ -187,9 +187,9 @@ async function createVideoMedia(
   placeId: string,
   language: Languages,
   title: string,
-  rating: number,
   videoBase64: string,
-  videoDurationInSeconds: number
+  videoDurationInSeconds: number,
+  rating?: number
 ) {
   const place = await MongoPlaceModel.findById(placeId);
   if (!place) {
@@ -259,10 +259,10 @@ export default async function CreateMediaUseCase(
   language: Languages,
   title: string,
   type: MediaType,
-  rating: number,
   text?: string,
   videoBase64?: string,
-  videoDurationInSeconds?: number
+  videoDurationInSeconds?: number,
+  rating?: number
 ) {
   switch (type) {
     case "text":
@@ -286,9 +286,9 @@ export default async function CreateMediaUseCase(
         placeId,
         language,
         title,
-        rating,
-        videoBase64!,
-        videoDurationInSeconds!
+        videoBase64,
+        videoDurationInSeconds,
+        rating
       );
     default:
       throw new ApolloError("Invalid media type", "INVALID_MEDIA_TYPE");
