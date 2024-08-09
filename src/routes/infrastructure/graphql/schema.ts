@@ -73,6 +73,11 @@ const typeDefs = gql`
     value: String!
   }
 
+  input KeyFloatPairInput {
+    key: String!
+    value: Float!
+  }
+
   input CreateRouteFullInput {
     title: [KeyValuePairInput!]!
     description: [KeyValuePairInput!]!

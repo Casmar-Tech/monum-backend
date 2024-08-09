@@ -31,6 +31,25 @@ const typeDefs = gql`
     placeId: ID!
   }
 
+  input CreateMediaFullInput {
+    placeId: ID!
+    title: [KeyValuePairInput!]!
+    text: [KeyValuePairInput]
+    type: MediaType!
+    videoBase64: [KeyValuePairInput]
+    videoDurationInSeconds: [KeyFloatPairInput]
+  }
+
+  input UpdateMediaFullInput {
+    placeId: ID!
+    title: [KeyValuePairInput]
+    text: [KeyValuePairInput]
+    type: MediaType
+    videoBase64: [KeyValuePairInput]
+    videoDurationInSeconds: [KeyFloatPairInput]
+    videosToDelete: [Language]
+  }
+
   enum MediaType {
     audio
     video
@@ -47,8 +66,10 @@ const typeDefs = gql`
       videoBase64: String
       videoDurationInSeconds: Int
     ): Media
-    translateMedia(mediaId: ID!, outputLanguage: Language!): Media
+    createMediaFull(createMediaFull: CreateMediaFullInput!): MediaFull
     updateMedia(id: ID!, mediaUpdate: UpdateMediaInput!): Media
+    updateMediaFull(id: ID!, updateMediaFull: UpdateMediaFullInput!): MediaFull
+    translateMedia(mediaId: ID!, outputLanguage: Language!): Media
     deleteMedia(id: ID!): Boolean
   }
 

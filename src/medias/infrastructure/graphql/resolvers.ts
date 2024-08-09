@@ -5,6 +5,8 @@ import GetMediasFullByPlaceIdUseCase from "../../application/GetMediasFullByPlac
 import TranslateMedia from "../../application/TranslateMedia.js";
 import CreateMediaUseCase from "../../application/CreateMediaUseCase.js";
 import UpdateMediaAndAssociatedRoutesUseCase from "../../application/UpdateMediaAndAssociatedRoutesUseCase.js";
+import CreateMediaFullUseCase from "../../application/CreateMediaFullUseCase.js";
+import UpdateMediaFullUseCase from "../../application/UpdateMediaFullUseCase.js";
 import { IMedia, IMediaTranslated } from "../../domain/interfaces/IMedia.js";
 import { checkToken } from "../../../middleware/auth.js";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
@@ -20,6 +22,49 @@ const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
 const client = new S3Client({
   region: "eu-west-1",
 });
+
+export interface CreateMediaFullInput {
+  placeId: string;
+  title: {
+    key: string;
+    value: string;
+  }[];
+  text: {
+    key: string;
+    value: string;
+  }[];
+  type: MediaType;
+  videoBase64?: {
+    key: string;
+    value: string;
+  }[];
+  videoDurationInSeconds?: {
+    key: string;
+    value: number;
+  }[];
+}
+
+export interface UpdateMediaFullInput {
+  placeId: string;
+  title: {
+    key: string;
+    value: string;
+  }[];
+  text: {
+    key: string;
+    value: string;
+  }[];
+  type: MediaType;
+  videoBase64?: {
+    key: string;
+    value: string;
+  }[];
+  videoDurationInSeconds?: {
+    key: string;
+    value: number;
+  }[];
+  videosToDelete?: Languages[];
+}
 
 const resolvers = {
   Media: {
@@ -87,7 +132,7 @@ const resolvers = {
         title: string;
         text: string;
         type: MediaType;
-        rating: number;
+        rating?: number;
         videoBase64?: string;
         videoDurationInSeconds?: number;
       },
@@ -108,11 +153,29 @@ const resolvers = {
         user.language,
         args.title,
         args.type,
-        args.rating,
         args.text,
         videoBase64,
-        args.videoDurationInSeconds
+        args.videoDurationInSeconds,
+        args.rating
       );
+    },
+    createMediaFull: async (
+      parent: any,
+      args: { createMediaFull: CreateMediaFullInput },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      return CreateMediaFullUseCase(userId, args.createMediaFull);
+    },
+    updateMediaFull: async (
+      parent: any,
+      args: { updateMediaFull: UpdateMediaFullInput; id: string },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      return UpdateMediaFullUseCase(userId, args.id, args.updateMediaFull);
     },
     translateMedia: async (
       parent: any,
