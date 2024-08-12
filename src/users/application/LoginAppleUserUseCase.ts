@@ -27,7 +27,7 @@ export default async function LoginAppleUserUseCase({
       ? crypto.createHash("sha256").update(nonce).digest("hex")
       : undefined;
     const appleUser = await appleSignin.verifyIdToken(identityToken, {
-      audience: "org.reactjs.native.example.monum",
+      audience: "es.monum.mobile",
       nonce: cryptoNonce,
       ignoreExpiration: true,
     });

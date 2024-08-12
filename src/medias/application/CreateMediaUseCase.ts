@@ -8,7 +8,7 @@ import { Buffer } from "buffer";
 import { MongoPlaceModel } from "../../places/infrastructure/mongoModel/MongoPlaceModel.js";
 import { MongoMediaModel } from "../infrastructure/mongoModel/MongoMediaModel.js";
 import { ApolloError } from "apollo-server-errors";
-import { Languages } from "../../shared/Types";
+import { Languages } from "../../shared/Types.js";
 import { MediaType } from "../domain/types/MediaType.js";
 import {
   getMediaDuration,

@@ -17,8 +17,6 @@ import { MediaType } from "../../domain/types/MediaType.js";
 import { MongoMediaModel } from "../mongoModel/MongoMediaModel.js";
 import { MongoPlaceModel } from "../../../places/infrastructure/mongoModel/MongoPlaceModel.js";
 
-const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
-
 const client = new S3Client({
   region: "eu-west-1",
 });
