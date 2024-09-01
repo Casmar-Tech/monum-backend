@@ -54,7 +54,7 @@ export function getTranslatedPlace(
       ? placePhotosFiltered
           .sort((a, b) => a.order - b.order)
           .map((photo) => {
-            return photo.sizes[imageSize || "medium"];
+            return photo.sizes[imageSize || "original"];
           })
       : [],
   };

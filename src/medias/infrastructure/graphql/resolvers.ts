@@ -78,6 +78,7 @@ const resolvers = {
       });
       return url;
     },
+    duration: (parent: IMediaTranslated) => parent.duration || 0,
   },
   MediaFull: {
     id: (parent: IMedia) => parent?._id?.toString(),
