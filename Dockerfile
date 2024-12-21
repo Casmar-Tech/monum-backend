@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20-bookworm-slim@sha256:18aacc7993a16f1d766c21e3bff922e830bcdc7b549bbb789ceb7374a6138480
+FROM node:20-slim
 
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
