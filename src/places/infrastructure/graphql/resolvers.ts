@@ -68,6 +68,7 @@ export interface AddressFullInput {
     lat: number;
     lng: number;
   };
+  postalCode: string;
 }
 
 export interface PlaceFullInput {
@@ -307,12 +308,12 @@ const resolvers = {
     },
     createPlaceFull: async (
       parent: any,
-      args: { id: string; place: PlaceFullInput },
+      args: { place: PlaceFullInput },
       { token }: { token: string }
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      const place = await CreatePlaceFullUseCase(args.id, args.place);
+      const place = await CreatePlaceFullUseCase(userId, args.place);
       return place;
     },
     updatePlace: async (

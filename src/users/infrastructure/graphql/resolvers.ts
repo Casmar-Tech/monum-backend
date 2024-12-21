@@ -1,4 +1,5 @@
 import LoginGoogleUserUseCase from "../../application/LoginGoogleUserUseCase.js";
+import NewLoginAppleUserUseCase from "../../application/NewLoginAppleUserUseCase.js";
 import LoginAppleUserUseCase from "../../application/LoginAppleUserUseCase.js";
 import LoginUserUseCase from "../../application/LoginUserUseCase.js";
 import RegisterUserUseCase from "../../application/RegisterUserUseCase.js";
@@ -52,7 +53,7 @@ interface LoginGoogleInput {
     googleId: string;
     name: string;
     photo: string;
-    language?: string;
+    language?: Languages;
   };
 }
 
@@ -63,7 +64,16 @@ interface LoginAppleInput {
     name?: string;
     identityToken: string;
     email?: string;
-    language: string;
+    language: Languages;
+  };
+}
+
+interface NewLoginAppleInput {
+  newLoginAppleInput: {
+    name?: string;
+    identityToken: string;
+    email?: string;
+    language: Languages;
   };
 }
 
@@ -230,6 +240,20 @@ const resolvers = {
     ) => {
       return LoginGoogleUserUseCase({ email, googleId, name, photo, language });
     },
+    newloginAppleUser: async (
+      parent: any,
+      {
+        newLoginAppleInput: { name, identityToken, email, language },
+      }: NewLoginAppleInput
+    ) => {
+      return NewLoginAppleUserUseCase({
+        name,
+        identityToken,
+        email,
+        language,
+      });
+    },
+
     loginAppleUser: async (
       parent: any,
       {

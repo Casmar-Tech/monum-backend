@@ -21,6 +21,7 @@ export default async function CreatePlaceUseCase(
       city: arrayToObjectLanguage(place.address.city),
       country: arrayToObjectLanguage(place.address.country),
       province: arrayToObjectLanguage(place.address.province),
+      postalCode: place.address.postalCode,
       coordinates: {
         type: "Point",
         coordinates: [

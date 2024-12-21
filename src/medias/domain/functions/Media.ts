@@ -19,12 +19,12 @@ export async function getMediaDuration(mediaId: string, language: Languages) {
   const audioUrl = media.url?.[language];
   if (!audioUrl) return 0;
   const client = new S3Client({
-    region: "eu-west-1",
+    region: "us-east-1",
   });
 
   const { Body } = await client.send(
     new GetObjectCommand({
-      Bucket: process.env.S3_BUCKET_AUDIOS!,
+      Bucket: "monum-polly-us-east-1",
       Key: audioUrl,
     })
   );

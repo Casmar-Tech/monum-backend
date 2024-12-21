@@ -23,16 +23,25 @@ const typeDefs = gql`
     googleId: String!
     name: String
     photo: String
-    language: String
+    language: Language
   }
 
   input LoginAppleInput {
-    nonce: String!
-    user: String!
+    nonce: String
+    user: String
     name: String
     identityToken: String
     email: String
-    language: String!
+    language: Language
+  }
+
+  input NewLoginAppleInput {
+    nonce: String
+    user: String
+    name: String
+    identityToken: String
+    email: String
+    language: Language
   }
 
   input UpdateUserInput {
@@ -107,6 +116,7 @@ const typeDefs = gql`
     loginUser(loginInput: LoginInput!): User
     loginGoogleUser(loginGoogleInput: LoginGoogleInput!): User
     loginAppleUser(loginAppleInput: LoginAppleInput!): User
+    newLoginAppleInput(newLoginAppleInput: NewLoginAppleInput!): User
     updateUser(updateUserInput: UpdateUserInput!): User
     updatePassword(oldPassword: String!, newPassword: String!): Boolean
     resetPassword(resetPasswordInput: ResetPasswordInput!): Boolean

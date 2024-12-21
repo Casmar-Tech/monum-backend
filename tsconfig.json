@@ -4,13 +4,13 @@
     "module": "es2022",
     "outDir": "./dist",
     "rootDir": "./src",
-    "lib": ["es2020","DOM"],
+    "lib": ["es2020", "DOM"],
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node"
   },
   "ts-node": {
     "esm": true
