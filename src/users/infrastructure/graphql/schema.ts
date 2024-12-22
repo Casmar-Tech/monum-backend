@@ -116,7 +116,7 @@ const typeDefs = gql`
     loginUser(loginInput: LoginInput!): User
     loginGoogleUser(loginGoogleInput: LoginGoogleInput!): User
     loginAppleUser(loginAppleInput: LoginAppleInput!): User
-    newLoginAppleInput(newLoginAppleInput: NewLoginAppleInput!): User
+    newLoginAppleUser(newLoginAppleInput: NewLoginAppleInput!): User
     updateUser(updateUserInput: UpdateUserInput!): User
     updatePassword(oldPassword: String!, newPassword: String!): Boolean
     resetPassword(resetPasswordInput: ResetPasswordInput!): Boolean

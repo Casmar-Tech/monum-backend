@@ -22,7 +22,6 @@ export default async function LoginAppleUserUseCase({
 }: LoginAppleUserDTO): Promise<IUser> {
   try {
     const appleUser = await appleSignin.verifyIdToken(identityToken);
-    console.log(email);
     email = email || appleUser.email;
     let user = await MongoUserModel.findOne({
       $or: [{ thirdPartyEmail: appleUser.email }, { email: email }],

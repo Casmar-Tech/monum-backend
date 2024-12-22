@@ -240,7 +240,7 @@ const resolvers = {
     ) => {
       return LoginGoogleUserUseCase({ email, googleId, name, photo, language });
     },
-    newloginAppleUser: async (
+    newLoginAppleUser: async (
       parent: any,
       {
         newLoginAppleInput: { name, identityToken, email, language },
@@ -253,7 +253,6 @@ const resolvers = {
         language,
       });
     },
-
     loginAppleUser: async (
       parent: any,
       {
