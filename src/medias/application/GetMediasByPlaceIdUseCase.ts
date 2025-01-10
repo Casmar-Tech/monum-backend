@@ -24,7 +24,6 @@ export default async function GetMediasByPlaceIdUseCase(
   }
   if (userLanguage) {
     Object.assign(query, { [`title.${userLanguage}`]: { $exists: true } });
-    Object.assign(query, { [`text.${userLanguage}`]: { $exists: true } });
   }
   const medias = await MongoMediaModel.find(query);
   const translatedMedias = await Promise.all(
