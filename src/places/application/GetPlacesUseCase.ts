@@ -64,6 +64,7 @@ export default async function GetPlacesUseCase(
     [`address.country.${userLanguage}`]: { $exists: true },
     [`address.province.${userLanguage}`]: { $exists: true },
     [`address.street.${userLanguage}`]: { $exists: true },
+    photos: { $exists: true, $not: { $size: 0 } },
   };
   const permissions = await GetRealPermissionsOfUser(userId, "place", "read");
   const actionPermission = permissions.map((p) => p.action);

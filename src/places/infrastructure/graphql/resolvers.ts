@@ -1,4 +1,5 @@
 import { IPlace, IPlaceTranslated } from "../../domain/interfaces/IPlace.js";
+import GetUniqueCitiesUseCase from "../../application/GetUniqueCitiesUseCase.js";
 import GetPlacesFullUseCase from "../../application/GetPlacesFullUseCase.js";
 import GetPlaceByIdUseCase from "../../application/GetPlaceByIdUseCase.js";
 import GetPlacesUseCase from "../../application/GetPlacesUseCase.js";
@@ -263,10 +264,23 @@ const resolvers = {
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
       return GetPlacesFullUseCase(args.textSearch);
     },
+    uniqueCities: (
+      _: any,
+      args: {
+        textSearch: string;
+      },
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
+      return GetUniqueCitiesUseCase(userId, args.textSearch);
+    },
     getPlaceBySearchAndPagination: async (
       _: any,
       args: {
         textSearch: string;
+        cities?: [string];
+        hasPhotos?: boolean;
         pageNumber: number;
         resultsPerPage: number;
         language?: Languages;
@@ -275,13 +289,15 @@ const resolvers = {
     ) => {
       const { id: userId } = checkToken(token);
       if (!userId) throw new ApolloError("User not found", "USER_NOT_FOUND");
-      return GetPlaceBySearchAndPaginationUseCase(
+      return GetPlaceBySearchAndPaginationUseCase({
         userId,
-        args.textSearch,
-        args.pageNumber,
-        args.resultsPerPage,
-        args.language
-      );
+        textSearch: args.textSearch,
+        cities: args.cities,
+        hasPhotos: args.hasPhotos,
+        pageNumber: args.pageNumber,
+        resultsPerPage: args.resultsPerPage,
+        language: args.language,
+      });
     },
   },
   Mutation: {

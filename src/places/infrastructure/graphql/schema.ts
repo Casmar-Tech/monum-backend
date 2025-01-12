@@ -194,8 +194,11 @@ const typeDefs = gql`
       language: Language
     ): [Place]
     placesFull(textSearch: String): [PlaceFull]
+    uniqueCities(textSearch: String): [String]
     getPlaceBySearchAndPagination(
       textSearch: String!
+      cities: [String]
+      hasPhotos: Boolean
       pageNumber: Int!
       resultsPerPage: Int!
       language: Language
