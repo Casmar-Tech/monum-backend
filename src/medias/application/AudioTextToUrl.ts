@@ -1,5 +1,6 @@
 import {
   DescribeVoicesCommand,
+  Engine,
   LanguageCode,
   PollyClient,
   StartSpeechSynthesisTaskCommand,
@@ -14,32 +15,55 @@ export default async function AudioTextToUrl(
   text: string
 ): Promise<string> {
   const client = new PollyClient({
-    region: "eu-west-1",
+    region: "us-east-1",
   });
-  const s3Client = new S3Client({ region: "eu-west-1" });
+  const s3Client = new S3Client({ region: "us-east-1" });
+
+  const voicesByLanguage: any = {
+    es_ES: {
+      engine: "generative",
+      id: "Sergio",
+    },
+    ca_ES: {
+      engine: "neural",
+      id: "Arlet",
+    },
+    en_US: {
+      engine: "generative",
+      id: "Matthew",
+    },
+    fr_FR: {
+      engine: "generative",
+      id: "Remi",
+    },
+  };
   try {
     const commandListVoices = new DescribeVoicesCommand({
       LanguageCode: language.replace("_", "-") as LanguageCode,
-      Engine: "neural",
+      Engine: voicesByLanguage[language].engine as Engine,
     });
     const responsesListVoices = await client.send(commandListVoices);
     const voiceId =
       (Array.isArray(responsesListVoices.Voices) &&
-        responsesListVoices.Voices[0].Id) ||
+        responsesListVoices.Voices.find(
+          (voice) => voice.Id === voicesByLanguage[language].id
+        )?.Id) ||
       "";
+
     const s3Key = `${placeId}/en_US/${mediaId}`;
+
     const command = new StartSpeechSynthesisTaskCommand({
       Engine: "neural",
       Text: text || "",
       OutputFormat: "mp3",
-      OutputS3BucketName: process.env.S3_BUCKET_AUDIOS!,
+      OutputS3BucketName: "monum-polly-us-east-1",
       OutputS3KeyPrefix: s3Key,
       VoiceId: voiceId || undefined,
       LanguageCode: language.replace("_", "-") as LanguageCode,
     });
     const response = await client.send(command);
     const key = response?.SynthesisTask?.OutputUri?.split(
-      `${process.env.S3_BUCKET_AUDIOS!}/`
+      `$monum-polly-us-east-1/`
     )?.[1];
 
     if (key) {
@@ -50,7 +74,7 @@ export default async function AudioTextToUrl(
         try {
           // Use S3 SDK to check if the object exists in the bucket
           const headObjectCommand = new HeadObjectCommand({
-            Bucket: process.env.S3_BUCKET_AUDIOS!,
+            Bucket: "monum-polly-us-east-1",
             Key: key,
           });
           await s3Client.send(headObjectCommand); // If object exists, no error will be thrown

@@ -94,7 +94,7 @@ app.use(
 );
 
 // Modified server startup
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4001;
 await new Promise<void>((resolve) =>
   httpServer.listen({ port: port }, resolve)
 );

@@ -58,7 +58,11 @@ export default async function GetUniqueCitiesUseCase(
 
     const result = await MongoPlaceModel.aggregate(pipeline);
 
-    return result.length > 0 ? result[0].uniqueCities : [];
+    return result.length > 0
+      ? result[0].uniqueCities.sort((a: string, b: string) =>
+          a.localeCompare(b)
+        )
+      : [];
   } catch (error) {
     console.error("Error fetching unique cities:", error);
     throw new Error("Unable to fetch unique cities.");

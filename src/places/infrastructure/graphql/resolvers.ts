@@ -21,7 +21,7 @@ import {
   IAddressTranslated,
 } from "../../domain/interfaces/IAddress.js";
 import { FromSupport } from "../../domain/types/FromSupportTypes.js";
-import IPhoto, { IPhotoExisting } from "../../domain/interfaces/IPhoto.js";
+import IPhoto from "../../domain/interfaces/IPhoto.js";
 import GetUserByIdUseCase from "../../../users/application/GetUserByIdUseCase.js";
 
 const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;

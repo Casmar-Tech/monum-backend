@@ -65,7 +65,7 @@ export default async function GetPlaceBySearchAndPaginationUseCase({
   }
 
   // Filtro por fotos
-  if (hasPhotos !== undefined || hasPhotos !== null) {
+  if (hasPhotos !== undefined && hasPhotos !== null) {
     if (hasPhotos) {
       query.photos = { $exists: true, $not: { $size: 0 } };
     } else {
