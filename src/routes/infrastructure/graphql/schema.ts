@@ -32,6 +32,7 @@ const typeDefs = gql`
     stops: [Stop]!
     stopsCount: Int!
     cityId: ID!
+    city: City!
     createdAt: Float!
     updatedAt: Float!
   }
@@ -47,6 +48,7 @@ const typeDefs = gql`
     stops: [StopFull]!
     stopsCount: Int!
     cityId: ID!
+    city: CityFull!
     createdAt: Float!
     updatedAt: Float!
   }

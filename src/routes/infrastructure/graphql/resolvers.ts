@@ -10,6 +10,7 @@ import { IRoute, IRouteTranslated } from "../../domain/interfaces/IRoute.js";
 import { ApolloError } from "apollo-server-errors";
 import { MongoRouteModel } from "../mongoModel/MongoRouteModel.js";
 import { Languages } from "../../../shared/Types.js";
+import { MongoCityModel } from "../../../cities/infrastructure/mongoModel/MongoCityModel.js";
 
 export interface StopInput {
   placeId: string;
@@ -46,6 +47,12 @@ const resolvers = {
       parent.optimizedDuration || parent.duration,
     optimizedDistance: (parent: IRouteTranslated) =>
       parent.optimizedDistance || parent.distance,
+    city: async (parent: IRouteTranslated) => {
+      const city = await MongoCityModel.findById(parent.cityId)
+        .select("name")
+        .lean();
+      return city;
+    },
   },
   RouteFull: {
     id: (parent: IRoute) => parent._id?.toString(),
@@ -64,6 +71,12 @@ const resolvers = {
       parent.optimizedDuration || parent.duration,
     optimizedDistance: (parent: IRoute) =>
       parent.optimizedDistance || parent.distance,
+    city: async (parent: IRoute) => {
+      const city = await MongoCityModel.findById(parent.cityId)
+        .select("name")
+        .lean();
+      return city;
+    },
   },
 
   Query: {

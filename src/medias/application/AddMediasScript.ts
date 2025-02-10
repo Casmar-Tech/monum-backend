@@ -23,6 +23,8 @@ function randomRating() {
   return parseFloat(numero.toFixed(2));
 }
 
+const REMOVE_OLD_MEDIAS = true;
+
 async function generateAudioForLanguage(
   mediaModel: any, // asegúrate de que este tipo sea un documento de mongoose, por ej: DocumentType<IMedia>
   language: Languages
@@ -198,7 +200,30 @@ async function createFullMedia(placeId: string, media: any) {
 }
 
 async function AddMediasScript() {
-  const mediasSliced = medias.slice(330);
+  const mediasSliced = medias.slice(0);
+  if (REMOVE_OLD_MEDIAS) {
+    debugger;
+    const allPlaces = mediasSliced.reduce((acc: string[], media) => {
+      if (!acc.includes(media.placeId.$oid)) {
+        acc.push(media.placeId.$oid);
+      }
+      return acc;
+    }, []);
+    const allMedias = await MongoMediaModel.find({
+      placeId: { $in: allPlaces },
+    });
+    for (const media of allMedias) {
+      const filter = { _id: media._id };
+      const update = { deleted: true };
+      await MongoMediaModel.findOneAndUpdate(filter, update, {
+        new: true, // return the updated document
+        useFindAndModify: false, // to use MongoDB driver's findOneAndUpdate() instead of findAndModify()
+      });
+    }
+    console.log("Old medias removed");
+  }
+  console.log("Start creating medias");
+
   let mediasToCreate = 0;
   for (const media of mediasSliced) {
     await createFullMedia(media.placeId.$oid, media);

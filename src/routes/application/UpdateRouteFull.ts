@@ -7,6 +7,7 @@ import { IMedia } from "../../medias/domain/interfaces/IMedia.js";
 import { IStop } from "../domain/interfaces/IStop.js";
 import { MongoRouteModel } from "../infrastructure/mongoModel/MongoRouteModel.js";
 import { IRoute } from "../domain/interfaces/IRoute.js";
+import { Types } from "mongoose";
 
 export default async function UpdateRouteFull(
   id: string,
@@ -58,6 +59,9 @@ export default async function UpdateRouteFull(
   }
   if (routeUpdate.description) {
     route.description = arrayToObjectLanguage(routeUpdate.description);
+  }
+  if (routeUpdate.cityId) {
+    route.cityId = new Types.ObjectId(routeUpdate.cityId);
   }
   return await route.save();
 }
