@@ -16,9 +16,9 @@
   "dependencies": {
     "@apollo/server": "^4.9.0",
     "@aws-sdk/client-polly": "^3.726.1",
-    "@aws-sdk/client-s3": "^3.418.0",
-    "@aws-sdk/client-ses": "^3.454.0",
-    "@aws-sdk/s3-request-presigner": "^3.418.0",
+    "@aws-sdk/client-s3": "^3.726.1",
+    "@aws-sdk/client-ses": "^3.726.1",
+    "@aws-sdk/s3-request-presigner": "^3.726.1",
     "@google-cloud/translate": "^8.1.0",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.0",
