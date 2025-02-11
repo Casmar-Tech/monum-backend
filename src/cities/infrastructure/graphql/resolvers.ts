@@ -6,10 +6,13 @@ import GetCitiesFullByTextSearchUseCase from "../../application/GetCitiesFullByT
 import { ICity } from "../../domain/interfaces/ICity.js";
 import { Languages } from "../../../shared/Types.js";
 
+const mediaCloudFrontUrl = process.env.MEDIA_CLOUDFRONT_URL;
+
 const resolvers = {
   City: {
     id: (parent: ICity) => parent?._id?.toString(),
-    imageUrl: (parent: ICity) => parent.photo?.url,
+    imageUrl: (parent: ICity) =>
+      `${mediaCloudFrontUrl}/cities/${parent._id.toString()}/medium.webp`,
     coordinates: (parent: ICity) => {
       return {
         lat: parent.coordinates.coordinates[1],
