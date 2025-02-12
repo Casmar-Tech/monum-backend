@@ -51,6 +51,7 @@ const typeDefs = gql`
     photoBase64: String
     language: String
     email: String
+    websiteUrl: String
   }
 
   input ResetPasswordInput {
@@ -84,6 +85,9 @@ const typeDefs = gql`
     organization: OrganizationFull
     permissions: [Permission!]
     deviceId: String
+    thirdPartyAccount: ThirdPartyAccount
+    thirdPartyEmail: String
+    websiteUrl: String
   }
 
   enum ThirdPartyAccount {
@@ -109,6 +113,7 @@ const typeDefs = gql`
     deviceId: String
     thirdPartyAccount: ThirdPartyAccount
     thirdPartyEmail: String
+    websiteUrl: String
   }
 
   type Mutation {

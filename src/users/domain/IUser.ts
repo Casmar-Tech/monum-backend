@@ -24,4 +24,5 @@ export default interface IUser {
   deviceId?: string;
   thirdPartyAccount?: "google" | "apple";
   thirdPartyEmail?: string;
+  websiteUrl?: string;
 }

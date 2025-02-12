@@ -85,6 +85,7 @@ interface UpdateUserInput {
     photoBase64?: string;
     language?: Languages;
     email?: string;
+    websiteUrl?: string;
   };
 }
 
@@ -286,7 +287,15 @@ const resolvers = {
     updateUser: async (
       parent: any,
       {
-        updateUserInput: { id, username, name, photoBase64, language, email },
+        updateUserInput: {
+          id,
+          username,
+          name,
+          photoBase64,
+          language,
+          email,
+          websiteUrl,
+        },
       }: UpdateUserInput,
       { token }: { token: string }
     ) => {
@@ -300,6 +309,7 @@ const resolvers = {
         photoBase64,
         language,
         email,
+        websiteUrl,
       });
     },
     updatePassword: async (

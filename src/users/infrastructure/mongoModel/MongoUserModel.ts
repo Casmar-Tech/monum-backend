@@ -63,6 +63,16 @@ const userSchema = new Schema<IUser>(
       enum: ["google", "apple"],
     },
     thirdPartyEmail: { type: String },
+    websiteUrl: {
+      type: String,
+      validate: {
+        validator: function (value: any) {
+          const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/;
+          return urlPattern.test(value);
+        },
+        message: "Website URL must be a valid URL",
+      },
+    },
   },
   { timestamps: true }
 );
