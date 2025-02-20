@@ -25,6 +25,7 @@ const typeDefs = gql`
     title: String!
     description: String!
     rating: Float
+    reviews: EntityReviews
     duration: Float
     optimizedDuration: Float
     distance: Float
@@ -33,6 +34,7 @@ const typeDefs = gql`
     stopsCount: Int!
     cityId: ID!
     city: City!
+    userReviewId: ID
     createdAt: Float!
     updatedAt: Float!
   }
@@ -41,6 +43,8 @@ const typeDefs = gql`
     id: ID!
     title: [KeyValuePair!]!
     description: [KeyValuePair!]!
+    rating: Float
+    reviews: EntityReviews
     duration: Float
     optimizedDuration: Float
     distance: Float
@@ -49,6 +53,7 @@ const typeDefs = gql`
     stopsCount: Int!
     cityId: ID!
     city: CityFull!
+    userReviewId: ID
     createdAt: Float!
     updatedAt: Float!
   }

@@ -11,6 +11,8 @@ import { ApolloError } from "apollo-server-errors";
 import { MongoRouteModel } from "../mongoModel/MongoRouteModel.js";
 import { Languages } from "../../../shared/Types.js";
 import { MongoCityModel } from "../../../cities/infrastructure/mongoModel/MongoCityModel.js";
+import GetReviewsUseCase from "../../../reviews/application/GetReviewsUseCase.js";
+import { MongoReviewModel } from "../../../reviews/infrastructure/mongoModel/MongoReviewModel.js";
 
 export interface StopInput {
   placeId: string;
@@ -53,6 +55,49 @@ const resolvers = {
         .lean();
       return city;
     },
+    rating: async (parent: IRouteTranslated) => {
+      const ratings = await GetReviewsUseCase({
+        entityId: parent._id?.toString() as string,
+        entityType: "route",
+      });
+      if (ratings.length >= 5) {
+        const sum = ratings.reduce((acc, rating) => acc + rating.rating, 0);
+        return sum / ratings.length;
+      } else {
+        return parent.rating;
+      }
+    },
+    reviews: async (parent: IRouteTranslated) => {
+      const reviews = await GetReviewsUseCase({
+        entityId: parent._id?.toString() as string,
+        entityType: "route",
+      });
+      if (reviews.length >= 5) {
+        const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return {
+          rating: sum / reviews.length,
+          ratingCount: reviews.length,
+          reviews: reviews,
+        };
+      } else {
+        return { rating: parent.rating, ratingCount: null, reviews: [] };
+      }
+    },
+    userReviewId: async (
+      parent: IRouteTranslated,
+      args: any,
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      const rating = await MongoReviewModel.findOne({
+        entityId: parent._id?.toString(),
+        entityType: "route",
+        createdById: userId,
+      });
+      if (!rating) return null;
+      return rating?._id?.toString();
+    },
   },
   RouteFull: {
     id: (parent: IRoute) => parent._id?.toString(),
@@ -76,6 +121,49 @@ const resolvers = {
         .select("name")
         .lean();
       return city;
+    },
+    rating: async (parent: IRoute) => {
+      const ratings = await GetReviewsUseCase({
+        entityId: parent._id?.toString() as string,
+        entityType: "route",
+      });
+      if (ratings.length >= 5) {
+        const sum = ratings.reduce((acc, rating) => acc + rating.rating, 0);
+        return sum / ratings.length;
+      } else {
+        return parent.rating;
+      }
+    },
+    reviews: async (parent: IRoute) => {
+      const reviews = await GetReviewsUseCase({
+        entityId: parent._id?.toString() as string,
+        entityType: "route",
+      });
+      if (reviews.length >= 5) {
+        const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return {
+          rating: sum / reviews.length,
+          ratingCount: reviews.length,
+          reviews: reviews,
+        };
+      } else {
+        return { rating: parent.rating, ratingCount: null, reviews: [] };
+      }
+    },
+    userReviewId: async (
+      parent: IRoute,
+      args: any,
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      const rating = await MongoReviewModel.findOne({
+        entityId: parent._id?.toString(),
+        entityType: "route",
+        createdById: userId,
+      });
+      if (!rating) return null;
+      return rating?._id?.toString();
     },
   },
 

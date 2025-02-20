@@ -16,6 +16,8 @@ import GetUserByIdUseCase from "../../../users/application/GetUserByIdUseCase.js
 import { MediaType } from "../../domain/types/MediaType.js";
 import { MongoMediaModel } from "../mongoModel/MongoMediaModel.js";
 import { MongoPlaceModel } from "../../../places/infrastructure/mongoModel/MongoPlaceModel.js";
+import GetReviewsUseCase from "../../../reviews/application/GetReviewsUseCase.js";
+import { MongoReviewModel } from "../../../reviews/infrastructure/mongoModel/MongoReviewModel.js";
 
 const client = new S3Client({
   region: "eu-west-1",
@@ -79,6 +81,49 @@ const resolvers = {
       return url;
     },
     duration: (parent: IMediaTranslated) => parent.duration || 0,
+    rating: async (parent: IMediaTranslated) => {
+      const ratings = await GetReviewsUseCase({
+        entityId: parent._id?.toString() as string,
+        entityType: "media",
+      });
+      if (ratings.length >= 5) {
+        const sum = ratings.reduce((acc, rating) => acc + rating.rating, 0);
+        return sum / ratings.length;
+      } else {
+        return parent.rating;
+      }
+    },
+    reviews: async (parent: IMediaTranslated) => {
+      const reviews = await GetReviewsUseCase({
+        entityId: parent._id?.toString() as string,
+        entityType: "media",
+      });
+      if (reviews.length >= 5) {
+        const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return {
+          rating: sum / reviews.length,
+          ratingCount: reviews.length,
+          reviews: reviews,
+        };
+      } else {
+        return { rating: parent.rating, ratingCount: null, reviews: [] };
+      }
+    },
+    userReviewId: async (
+      parent: IMediaTranslated,
+      args: any,
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      const rating = await MongoReviewModel.findOne({
+        entityId: parent._id?.toString(),
+        entityType: "media",
+        createdById: userId,
+      });
+      if (!rating) return null;
+      return rating?._id?.toString();
+    },
   },
   MediaFull: {
     id: (parent: IMedia) => parent?._id?.toString(),
@@ -122,6 +167,49 @@ const resolvers = {
     },
     place: async (parent: IMedia) =>
       await MongoPlaceModel.findById(parent.placeId),
+    rating: async (parent: IMedia) => {
+      const ratings = await GetReviewsUseCase({
+        entityId: parent._id?.toString() as string,
+        entityType: "media",
+      });
+      if (ratings.length >= 5) {
+        const sum = ratings.reduce((acc, rating) => acc + rating.rating, 0);
+        return sum / ratings.length;
+      } else {
+        return parent.rating;
+      }
+    },
+    reviews: async (parent: IMedia) => {
+      const reviews = await GetReviewsUseCase({
+        entityId: parent._id?.toString() as string,
+        entityType: "media",
+      });
+      if (reviews.length >= 5) {
+        const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return {
+          rating: sum / reviews.length,
+          ratingCount: reviews.length,
+          reviews: reviews,
+        };
+      } else {
+        return { rating: parent.rating, ratingCount: null, reviews: [] };
+      }
+    },
+    userReviewId: async (
+      parent: IMedia,
+      args: any,
+      { token }: { token: string }
+    ) => {
+      const { id: userId } = checkToken(token);
+      if (!userId) throw new Error("User not found");
+      const rating = await MongoReviewModel.findOne({
+        entityId: parent._id?.toString(),
+        entityType: "media",
+        createdById: userId,
+      });
+      if (!rating) return null;
+      return rating?._id?.toString();
+    },
   },
   Mutation: {
     createMedia: async (

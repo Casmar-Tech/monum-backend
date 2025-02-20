@@ -79,10 +79,12 @@ const typeDefs = gql`
     name: String!
     address: Address!
     description: String!
+    reviews: EntityReviews
     importance: Int!
     imagesUrl: [String]
     photos: [PlacePhoto!]!
     createdBy: User
+    userReviewId: ID
     createdAt: Float
     updatedAt: Float
   }
@@ -93,10 +95,12 @@ const typeDefs = gql`
     nameTranslations: [KeyValuePair!]!
     address: AddressFull!
     description: [KeyValuePair!]!
+    reviews: EntityReviews
     importance: Int!
     imagesUrl: [String]
     photos: [PlacePhoto!]!
     createdBy: UserFull
+    userReviewId: ID
     createdAt: Float
     updatedAt: Float
   }

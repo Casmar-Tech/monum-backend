@@ -7,6 +7,7 @@ const typeDefs = gql`
     title: String!
     text: String
     rating: Float
+    reviews: EntityReviews
     url: String
     voiceId: String
     duration: Float!
@@ -14,6 +15,7 @@ const typeDefs = gql`
     createdAt: Float
     updatedAt: Float
     placeId: ID!
+    userReviewId: ID
   }
 
   type MediaFull {
@@ -22,6 +24,7 @@ const typeDefs = gql`
     title: [KeyValuePair!]!
     text: [KeyValuePair]
     rating: Float
+    reviews: EntityReviews
     url: [KeyValuePair]
     voiceId: [KeyValuePair]
     duration: [KeyValuePair!]!
@@ -29,6 +32,7 @@ const typeDefs = gql`
     createdAt: Float
     updatedAt: Float
     placeId: ID!
+    userReviewId: ID
   }
 
   input CreateMediaFullInput {
