@@ -1,0 +1,952 @@
+[{
+  "_id": {
+    "$oid": "67e46f73606fc50632889128"
+  },
+  "importance": 3,
+  "name": "Catedral de Burgos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889129"
+  },
+  "importance": 3,
+  "name": "Monasterio de las Huelgas Reales",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288912a"
+  },
+  "importance": 3,
+  "name": "Cartuja de Miraflores",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288912b"
+  },
+  "importance": 3,
+  "name": "Arco de Santa María",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288912c"
+  },
+  "importance": 2,
+  "name": "Plaza Mayor de Burgos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288912d"
+  },
+  "importance": 2,
+  "name": "Casa del Cordón",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288912e"
+  },
+  "importance": 1,
+  "name": "Paseo del Espolón",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288912f"
+  },
+  "importance": 2,
+  "name": "Iglesia de San Nicolás de Bari",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889130"
+  },
+  "importance": 2,
+  "name": "Puente de San Pablo",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889131"
+  },
+  "importance": 2,
+  "name": "Monumento al Cid Campeador",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889132"
+  },
+  "importance": 1,
+  "name": "Solar del Cid",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889133"
+  },
+  "importance": 1,
+  "name": "Fuente de Santa María",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889134"
+  },
+  "importance": 1,
+  "name": "Iglesia de San Lorenzo",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889135"
+  },
+  "importance": 1,
+  "name": "Hospital del Rey",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889136"
+  },
+  "importance": 1,
+  "name": "Iglesia de Santa Águeda",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889137"
+  },
+  "importance": 1,
+  "name": "Plaza de la Libertad de Burgos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889138"
+  },
+  "importance": 1,
+  "name": "Teatro Principal",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889139"
+  },
+  "importance": 1,
+  "name": "Palacio de la Isla",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288913b"
+  },
+  "importance": 1,
+  "name": "Iglesia de San Gil Abad",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288913c"
+  },
+  "importance": 1,
+  "name": "Puente de Malatos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288913d"
+  },
+  "importance": 1,
+  "name": "Monumento a Miguel de Cervantes",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288913e"
+  },
+  "importance": 1,
+  "name": "Edificio de Correos de Burgos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288913f"
+  },
+  "importance": 1,
+  "name": "Casa Consistorial de Burgos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889140"
+  },
+  "importance": 1,
+  "name": "Plaza de España",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889141"
+  },
+  "importance": 1,
+  "name": "Paseo de la Isla",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889142"
+  },
+  "importance": 1,
+  "name": "Estatua de Diego Porcelos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889143"
+  },
+  "importance": 1,
+  "name": "Monumento a Doña Jimena",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889145"
+  },
+  "importance": 1,
+  "name": "Iglesia de San Cosme y San Damián",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889146"
+  },
+  "importance": 3,
+  "name": "Castillo de Burgos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889147"
+  },
+  "importance": 2,
+  "name": "Real Monasterio de San Juan",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889148"
+  },
+  "importance": 1,
+  "name": "Iglesia de la Merced",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889149"
+  },
+  "importance": 1,
+  "name": "Plaza de Vega",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288914a"
+  },
+  "importance": 1,
+  "name": "Mirador del Castillo",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288914b"
+  },
+  "importance": 1,
+  "name": "Iglesia de San Esteban",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288914c"
+  },
+  "importance": 2,
+  "name": "Museo de la Evolución Humana (MEH)",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288914d"
+  },
+  "importance": 1,
+  "name": "Puente Santa María",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288914e"
+  },
+  "importance": 2,
+  "name": "Los Gigantillos",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288914f"
+  },
+  "importance": 2,
+  "name": "El Plantío",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889150"
+  },
+  "importance": 3,
+  "name": "Mezquita-Catedral de Córdoba",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889151"
+  },
+  "importance": 3,
+  "name": "Alcázar de los Reyes Cristianos",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889152"
+  },
+  "importance": 3,
+  "name": "Puente Romano",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889153"
+  },
+  "importance": 3,
+  "name": "Judería de Córdoba",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889154"
+  },
+  "importance": 3,
+  "name": "Templo Romano de Córdoba",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889155"
+  },
+  "importance": 2,
+  "name": "Plaza de la Corredera",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889156"
+  },
+  "importance": 2,
+  "name": "Torre de la Calahorra",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889158"
+  },
+  "importance": 1,
+  "name": "Sinagoga de Córdoba",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889159"
+  },
+  "importance": 2,
+  "name": "Plaza de las Tendillas",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288915a"
+  },
+  "importance": 2,
+  "name": "Puerta del Puente",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288915c"
+  },
+  "importance": 1,
+  "name": "Plaza del Cardenal Salazar",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288915d"
+  },
+  "importance": 2,
+  "name": "Calleja de las Flores",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288915e"
+  },
+  "importance": 1,
+  "name": "Patio de los Naranjos",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889161"
+  },
+  "importance": 1,
+  "name": "Casa de Sefarad",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889163"
+  },
+  "importance": 1,
+  "name": "Estatua de Averroes",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889164"
+  },
+  "importance": 1,
+  "name": "Estatua de Maimónides",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889165"
+  },
+  "importance": 1,
+  "name": "Plaza de los Capuchinos",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889166"
+  },
+  "importance": 1,
+  "name": "Iglesia de San Nicolás de Villa",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889167"
+  },
+  "importance": 2,
+  "name": "Palacio de Viana",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889168"
+  },
+  "importance": 1,
+  "name": "Iglesia de San Lorenzo",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288916a"
+  },
+  "importance": 3,
+  "name": "Yacimiento Arqueológico de Medina Azahara",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288916b"
+  },
+  "importance": 1,
+  "name": "Alminar de San Juan",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288916f"
+  },
+  "importance": 1,
+  "name": "Iglesia de San Miguel Arcángel",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889170"
+  },
+  "importance": 2,
+  "name": "Puerta de Almodóvar",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889171"
+  },
+  "importance": 1,
+  "name": "Iglesia de San Agustín",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889172"
+  },
+  "importance": 1,
+  "name": "Iglesia de Santa Marina de Aguas Santas",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889173"
+  },
+  "importance": 1,
+  "name": "Monumento a Ibn Hazm",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889175"
+  },
+  "importance": 1,
+  "name": "Puente de San Rafael",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889176"
+  },
+  "importance": 1,
+  "name": "Palacio de Congresos y Exposiciones de Córdoba",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889179"
+  },
+  "importance": 2,
+  "name": "Muralla y foso de Puerta de Almodóvar",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288917a"
+  },
+  "importance": 1,
+  "name": "Jardines de la Merced",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288917b"
+  },
+  "importance": 1,
+  "name": "Baños del Alcázar Califal",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288917c"
+  },
+  "importance": 2,
+  "name": "Museo Arqueológico de Córdoba",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288917f"
+  },
+  "importance": 1,
+  "name": "Jardines de la Agricultura",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889180"
+  },
+  "importance": 1,
+  "name": "Estadio El Arcángel",
+  "city": "Córdoba"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889181"
+  },
+  "importance": 3,
+  "name": "La Alhambra",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889182"
+  },
+  "importance": 3,
+  "name": "Generalife",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889183"
+  },
+  "importance": 3,
+  "name": "Palacio de Carlos V",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889184"
+  },
+  "importance": 3,
+  "name": "Catedral de Granada",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889185"
+  },
+  "importance": 3,
+  "name": "Capilla Real de Granada",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889186"
+  },
+  "importance": 3,
+  "name": "Barrio del Albaicín",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889187"
+  },
+  "importance": 2,
+  "name": "Mirador de San Nicolás",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889188"
+  },
+  "importance": 3,
+  "name": "Monasterio de San Jerónimo",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889189"
+  },
+  "importance": 2,
+  "name": "Iglesia de San Gil y Santa Ana",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288918b"
+  },
+  "importance": 1,
+  "name": "Puente del Cadí",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288918c"
+  },
+  "importance": 1,
+  "name": "Casa de los Pisa",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288918d"
+  },
+  "importance": 1,
+  "name": "Corral del Carbón",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288918e"
+  },
+  "importance": 1,
+  "name": "Baños Árabes de El Bañuelo",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288918f"
+  },
+  "importance": 2,
+  "name": "Casa del Chapiz",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889190"
+  },
+  "importance": 1,
+  "name": "Fuente de las Batallas",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889191"
+  },
+  "importance": 2,
+  "name": "Puerta de Elvira",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889192"
+  },
+  "importance": 2,
+  "name": "Iglesia del Sagrario",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889193"
+  },
+  "importance": 1,
+  "name": "Plaza de Bib-Rambla",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889194"
+  },
+  "importance": 1,
+  "name": "La Alcaicería",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889195"
+  },
+  "importance": 2,
+  "name": "Iglesia de San Nicolás",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889196"
+  },
+  "importance": 2,
+  "name": "Carmen de los Mártires",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889197"
+  },
+  "importance": 2,
+  "name": "Sacromonte",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889198"
+  },
+  "importance": 2,
+  "name": "Abadía del Sacromonte",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc50632889199"
+  },
+  "importance": 2,
+  "name": "Estatua de Isabel la Católica y Cristóbal Colón",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288919c"
+  },
+  "importance": 1,
+  "name": "Casa Morisca Horno de Oro",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288919d"
+  },
+  "importance": 2,
+  "name": "Palacio de la Madraza",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288919e"
+  },
+  "importance": 2,
+  "name": "Plaza de Toros de Granada",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc5063288919f"
+  },
+  "importance": 1,
+  "name": "Hospital Real de Granada",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a0"
+  },
+  "importance": 2,
+  "name": "Jardines del Triunfo",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a1"
+  },
+  "importance": 1,
+  "name": "Iglesia de Santo Domingo",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a2"
+  },
+  "importance": 2,
+  "name": "Palacio de los Córdova",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a3"
+  },
+  "importance": 1,
+  "name": "Mezquita Mayor de Granada",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a4"
+  },
+  "importance": 1,
+  "name": "Ermita de San Miguel Alto",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a5"
+  },
+  "importance": 2,
+  "name": "Casa de Zafra",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a6"
+  },
+  "importance": 2,
+  "name": "Paseo de los Tristes",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a8"
+  },
+  "importance": 1,
+  "name": "Fuente de las Granadas",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891a9"
+  },
+  "importance": 2,
+  "name": "Puerta de las Granadas",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891aa"
+  },
+  "importance": 1,
+  "name": "Torres Bermejas",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891ab"
+  },
+  "importance": 2,
+  "name": "Patio de los Arrayanes",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891ac"
+  },
+  "importance": 1,
+  "name": "Ayuntamiento de Granada",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891ad"
+  },
+  "importance": 2,
+  "name": "Palacio del Partal",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891ae"
+  },
+  "importance": 1,
+  "name": "Puerta del Vino",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891af"
+  },
+  "importance": 2,
+  "name": "Torre de Comares",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e46f73606fc506328891b0"
+  },
+  "importance": 2,
+  "name": "Estadio Municipal Nuevo Los Cármenes",
+  "city": "Granada"
+},
+{
+  "_id": {
+    "$oid": "67e470e3606fc5063288934f"
+  },
+  "importance": 1,
+  "name": "Arco de Fernán González",
+  "city": "Burgos"
+},
+{
+  "_id": {
+    "$oid": "67ebc4dc606fc50632889351"
+  },
+  "importance": 2,
+  "name": "Palacio de la Merced",
+  "city": "Córdoba"
+}]

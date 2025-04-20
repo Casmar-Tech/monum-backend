@@ -1,4 +1,4 @@
-import medias from "./test.medias.json";
+import medias from "./new-medias.json";
 import "../../connection.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -23,7 +23,7 @@ function randomRating() {
   return parseFloat(numero.toFixed(2));
 }
 
-const REMOVE_OLD_MEDIAS = true;
+const REMOVE_OLD_MEDIAS = false;
 
 async function generateAudioForLanguage(
   mediaModel: any, // asegúrate de que este tipo sea un documento de mongoose, por ej: DocumentType<IMedia>
@@ -200,7 +200,7 @@ async function createFullMedia(placeId: string, media: any) {
 }
 
 async function AddMediasScript() {
-  const mediasSliced = medias.slice(0);
+  const mediasSliced = medias.slice(23 + 214);
   if (REMOVE_OLD_MEDIAS) {
     debugger;
     const allPlaces = mediasSliced.reduce((acc: string[], media) => {

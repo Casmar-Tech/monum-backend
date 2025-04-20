@@ -15,6 +15,6 @@
   "ts-node": {
     "esm": true
   },
-  "include": ["src/*"],
+  "include": ["src/*", "add_data"],
   "exclude": ["node_modules"]
 }

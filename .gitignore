@@ -3,4 +3,5 @@
 /node_modules
 .env
 bun.lockb
+/scripts/node_modules
 /data

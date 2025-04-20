@@ -14,6 +14,10 @@ import IPhoto from "../domain/interfaces/IPhoto.js";
 
 const s3 = new S3Client({
   region: "eu-west-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID_MONUM!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_MONUM!,
+  },
 });
 
 const bucketName = process.env.S3_BUCKET_PLACES_IMAGES!;
