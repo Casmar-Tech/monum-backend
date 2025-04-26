@@ -15,10 +15,6 @@ const getTranslation = (
 
 const s3Client = new S3Client({
   region: "eu-west-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID_MONUM!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_MONUM!,
-  },
 });
 
 export async function getMediaDuration(mediaId: string, language: Languages) {
