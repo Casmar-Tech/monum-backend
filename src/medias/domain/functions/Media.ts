@@ -13,18 +13,37 @@ const getTranslation = (
   return translations[language] || Object.values(translations)[0] || "";
 };
 
+const s3Client = new S3Client({
+  region: "eu-west-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID_MONUM!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_MONUM!,
+  },
+});
+
 export async function getMediaDuration(mediaId: string, language: Languages) {
   const media = await MongoMediaModel.findById(mediaId);
   if (!media) return 0;
   const audioUrl = media.url?.[language];
   if (!audioUrl) return 0;
-  const client = new S3Client({
-    region: "us-east-1",
-  });
 
-  const { Body } = await client.send(
+  const getFileMimeType = (url: string) => {
+    const extension = url.split(".").pop()?.toLowerCase();
+    switch (extension) {
+      case "aac":
+        return "audio/aac";
+      case "opus":
+        return "audio/opus";
+      case "mp3":
+        return "audio/mpeg";
+      default:
+        return "audio/mpeg";
+    }
+  };
+
+  const { Body } = await s3Client.send(
     new GetObjectCommand({
-      Bucket: "monum-polly-us-east-1",
+      Bucket: "monum-polly",
       Key: audioUrl,
     })
   );
@@ -37,8 +56,11 @@ export async function getMediaDuration(mediaId: string, language: Languages) {
     }
   }
   const buffer = Buffer.concat(chunks);
+
+  const mimeType = getFileMimeType(audioUrl);
+
   const metadata = await mm.parseBuffer(buffer, {
-    mimeType: "audio/mpeg",
+    mimeType: mimeType,
     size: buffer.length,
   });
 

@@ -36,19 +36,28 @@ export default async function GetMapSearcherResults({
         $and: [
           {
             $or: [
+              { name: { $regex: textSearch || "", $options: "i" } },
               {
-                "nameTranslations.en_US": { $regex: textSearch, $options: "i" },
+                $expr: {
+                  $gt: [
+                    {
+                      $size: {
+                        $filter: {
+                          input: { $objectToArray: "$nameTranslations" },
+                          cond: {
+                            $regexMatch: {
+                              input: "$$this.v",
+                              regex: textSearch || "",
+                              options: "i",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    0,
+                  ],
+                },
               },
-              {
-                "nameTranslations.es_ES": { $regex: textSearch, $options: "i" },
-              },
-              {
-                "nameTranslations.fr_FR": { $regex: textSearch, $options: "i" },
-              },
-              {
-                "nameTranslations.de_DE": { $regex: textSearch, $options: "i" },
-              },
-              { name: { $regex: textSearch, $options: "i" } },
             ],
           },
           {
@@ -61,12 +70,13 @@ export default async function GetMapSearcherResults({
           {
             deleted: { $ne: true },
           },
+          { photos: { $exists: true, $not: { $size: 0 } } },
         ],
       },
     },
 
     { $sort: { distance: 1 } },
-  ]).limit(10);
+  ]).limit(20);
   const placesSearchResult = placesOrdered.map((place) =>
     transformPlaceToSearchResult(place, language, coordinates)
   );
